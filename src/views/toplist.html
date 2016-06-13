@@ -1,0 +1,41 @@
+<!Doctype html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+    <title>涨幅榜</title>
+</head>
+
+<body ng-app="app_toplist" ng-controller="c_toplist">
+    <table class="table table-bordered table-condensed table-hover">
+        <thead>
+            <tr style="background-color: lightblue;">
+                <th>股票代码</th>
+                <th>股票名称</th>
+                <th>最新价</th>
+                <th>涨幅</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="codeinfo in codes">
+                <td>
+                    {{codeinfo.cid}}
+                </td>
+                <td>
+                    {{codeinfo.name}}
+                </td>
+                <td>
+                    预留字段
+                </td>
+                <td>
+                    预留字段
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+<script src="../controllers/toplist.js"></script>
+
+</html>
