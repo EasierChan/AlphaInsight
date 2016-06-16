@@ -12,25 +12,13 @@
     <table class="table table-bordered table-condensed table-hover">
         <thead>
             <tr style="background-color: lightblue;">
-                <th>股票代码</th>
-                <th>股票名称</th>
-                <th>最新价</th>
-                <th>涨幅</th>
+                <th ng-repeat="header in headers">{{header}}</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="codeinfo in codes">
-                <td>
-                    {{codeinfo.cid}}
-                </td>
-                <td>
-                    {{codeinfo.name}}
-                </td>
-                <td>
-                    预留字段
-                </td>
-                <td>
-                    预留字段
+                <td ng-repeat="prop in codeinfo">
+                    {{prop}}
                 </td>
             </tr>
         </tbody>

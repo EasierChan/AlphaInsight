@@ -47,7 +47,7 @@
                     }
                 },
                 {
-                    label: 'Trending',
+                    label: 'Alerts',
                     type: 'checkbox',
                     click: (item, wind) => {
                         console.log('click ' + item.label + ' is ' + item.checked);
@@ -77,7 +77,7 @@
         }
     ];
 
-    function MenuWindow(application) {
+    function MenuWindow() {
         var ssize = require('electron').screen.getPrimaryDisplay().workAreaSize;
         // Create the browser window.
 

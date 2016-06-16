@@ -7,7 +7,7 @@
 
   const {BrowserWindow} = require('electron');
 
-  function ChartWindow(application) {
+  function ChartWindow() {
     this.win = new BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: false, show: false })
     this.win.loadURL('file://' + __dirname + '/../views/chart.html');
     this.show = () => {
@@ -19,7 +19,7 @@
     };
 
     this.hide = () => {
-      if (this.win)
+      if (this.win != null)
         this.win.hide();
     };
 
@@ -32,19 +32,20 @@
     //this.win.openDevTools();
   }
 
-  function TableWindow(application) {
+  function TableWindow() {
     this.win = new BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false })
     this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
     this.show = () => {
-      if (!this.win) {
+      if (this.win === null) {
         this.win = new BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false })
         this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
+        this.win.openDevTools();
       }
       this.win.show();
     };
 
     this.hide = () => {
-      if (this.win)
+      if (this.win != null)
         this.win.hide();
     };
 
