@@ -7,8 +7,8 @@
     //"start": "electron main.js"
   },
   "repository": {
-    "type": "",
-    "url": ""
+    "type": "master",
+    "url": "git@192.168.15.201:fangxiang/alpha_insight_front.git"
   },
   "author": "Easier",
   "license": "CC0-1.0",
