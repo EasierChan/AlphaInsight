@@ -6,15 +6,16 @@
   'use strict';
 
   const {BrowserWindow} = require('electron');
+  const extension = require('../services/extension');
 
   function ChartWindow() {
     this.win = new BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: false, show: false })
     this.win.loadURL('file://' + __dirname + '/../views/chart.html');
     this.show = () => {
-      if (!this.win) {
-        this.win = new BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: false, show: false })
-        this.win.loadURL('file://' + __dirname + '/../views/chart.html');
+      if (this.win == null) {
+        this.win = new ChartWindow();
       }
+      
       this.win.show();
     };
 
@@ -37,9 +38,7 @@
     this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
     this.show = () => {
       if (this.win === null) {
-        this.win = new BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false })
-        this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
-        this.win.openDevTools();
+        this.win = new TableWindow();
       }
       this.win.show();
     };
@@ -57,6 +56,10 @@
     });
     this.win.openDevTools();
   }
+  
+  
+  extension.registerWindow('ChartWin', ()=>{return new ChartWindow()}, [], 'Chars', true);
+  extension.registerWindow('TableWindow', ()=>{return new TableWindow()}, [0], 'Alerts', false);
 
   module.exports = { ChartWindow, TableWindow };
 }).call(this);

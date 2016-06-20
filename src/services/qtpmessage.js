@@ -39,9 +39,17 @@
 
 
         this.send = (data, callback) => {
-            this.sock.write(data);
+            var len = this.sock.write(data);
+            //console.log("send data len: ", len);
             if (callback) {
                 callback();
+            }
+        };
+
+        this.close = () => {
+            if (this.sock != null) {
+                this.sock.end();
+                this.sock = null;
             }
         };
     }
@@ -72,6 +80,7 @@
         this.inBuffer = Buffer.alloc(this.chunkLen, 0);
         this.inBufferBeg = 0;
         this.inBufferEnd = 0;
+        this.listeners = new Array();
         this.eventHandle = undefined;
 
         this.connectTo = (ip, port) => {
@@ -86,7 +95,6 @@
             } else {
                 //console.log(this.inBuffer);
                 //console.log(data);
-                var temp = this.chunkLen > this.inBufferEnd ? this.chunkLen - this.inBufferEnd : 0;
                 var tmpInBuffer = Buffer.alloc(this.inBuffer.length + this.chunkLen);
                 var orginlen = this.inBuffer.copy(tmpInBuffer, 0, this.inBufferBeg, this.inBufferEnd);
                 var datalen = data.copy(tmpInBuffer, orginlen);
@@ -95,15 +103,6 @@
                 this.inBuffer = null;
                 this.inBuffer = tmpInBuffer;
                 tmpInBuffer = null;
-                /*
-                if (temp > 0) {
-                    data.copy(this.inBuffer, this.inBufferEnd, 0, temp);
-                    this.inBufferEnd += data.length;
-                    this.inBuffer = Buffer.concat([this.inBuffer, data.slice(temp)], this.inBufferEnd);
-                } else {
-                    this.inBufferEnd += data.length;
-                    this.inBuffer = Buffer.concat([this.inBuffer, data], this.inBufferEnd);
-                }*/
             }
 
             if (this.inBufferEnd > this.maxLen) { /** could set the length as a configuration */
@@ -123,6 +122,10 @@
                     //header.writeUInt32LE(0x00000014, 8);
                     break;
                 case QtpConstant.MSG_TYPE_LOGOUT:
+                    //todo
+                    break;
+                case QtpConstant.MSG_TYPE_ALERT_TYPE:
+                    header.writeUInt16LE(QtpConstant.MSG_TYPE_ALERT_TYPE, 2);
                     //todo
                     break;
                 case QtpConstant.MSG_TYPE_TOPLIST:
@@ -193,25 +196,32 @@
             this.readHeader();
 
             if (contentLen < this.headerLen + this.datalen) {
-                console.log("wait form more buffer, actual len: %d, expect len: %d"
+                console.log("wait for more buffer, actual len: %d, expect len: %d"
                     , contentLen, this.headerLen + this.datalen);
                 return null; // a uncomplete msg;
             }
 
             switch (this.msgtype) {
+                case QtpConstant.MSG_TYPE_LOGIN_ANSWER:
+                    console.info("Received Login_Ansewer Msg ,type: %d", this.msgtype);
+                    break;
+                case QtpConstant.MSG_TYPE_ALERT_TYPE_ANSER:
+                    console.info("Received a ALERT_TYPE_ANSER Msg, type: %d", this.msgtype);
+                    break;
                 case QtpConstant.MSG_TYPE_TOPLIST_ANSWER:
-                    console.info("Received a Toplist Msg, datalen: %d", this.datalen);
+                    console.info("Received a Toplist Msg, datalen: type: %d", this.msgtype);
                     break;
                 case QtpConstant.MSG_TYPE_ALERT_RESULT:
-                    console.info("Received a Alert_RESULT Msg, datalen: %d", this.datalen);
+                    console.info("Received a Alert_RESULT Msg, datalen: type: %d", this.msgtype);
                     break;
                 case QtpConstant.MSG_TYPE_ALERT_ANSWER:
-                    console.info("Received a ALERT_ANSWER Msg, datalen: %d", this.datalen);
+                    console.info("Received a ALERT_ANSWER Msg, datalen: type: %d", this.msgtype);
                     break;
                 default:
                     console.info("Received a Unknown Msg, datalen: %d, msgtype: %d", this.datalen, this.msgtype);
                     break;
             }
+
 
             var res = this.readContent();
 
@@ -223,17 +233,29 @@
                 this.inBufferBeg = 0;
             }
 
-            return res;
+            for (var idx in this.listeners) {
+                if (this.listeners[idx].type == this.msgtype) {
+                    this.listeners[idx].callback(res);
+                }
+            }
+
+            //return {type: this.msgtype, result: res};
         };
 
-        this.onEvent = (callback) => {
-            this.eventHandle = setInterval(() => {
-                var res = this.resolve();
-                callback(res);
-            }, 1000);
-        };
+        this.addListener = (ptype, pcallback) => {
+            this.listeners.push({ type: ptype, callback: pcallback });
+        }
+
+        //this.onEvent = (callback) => {
+        this.eventHandle = setInterval(() => {
+            //var ret = this.resolve();
+            //callback(res);
+            this.resolve();
+        }, 1000);
+        //};
 
         this.stop = () => {
+            this.clientSock.close();
             this.clientSock = null;
             clearInterval(this.eventHandle);
             this.inBuffer = null;

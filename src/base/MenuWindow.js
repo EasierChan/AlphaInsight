@@ -1,5 +1,5 @@
 (function () {
-    const {Menu, MenuItem,app,BrowserWindow, dialog} = require('electron');
+    const {Menu, MenuItem, app, BrowserWindow, dialog} = require('electron');
 
     var menutemplate = [
         {//File Menu
@@ -38,21 +38,12 @@
             accelerator: 'Alt+W',
             submenu: [
                 {
-                    label: 'Channel',
-                    type: 'checkbox',
-                    checked: false,
-                    click: (item, wind) => {
-                        console.log('click ' + item.label + ' is ' + item.checked);
-                        app.emit('open-url', 'ChartWindow', item.checked);
-                    }
+                    label: 'Alerts',
+                    submenu: []
                 },
                 {
-                    label: 'Alerts',
-                    type: 'checkbox',
-                    click: (item, wind) => {
-                        console.log('click ' + item.label + ' is ' + item.checked);
-                        app.emit('open-url', 'TableWindow', item.checked);
-                    }
+                    label: 'Toplist',
+                    submenu: []
                 }
             ]
         },
@@ -126,5 +117,5 @@
         this.win.hide();
     }
 
-    module.exports = MenuWindow;
+    module.exports = {MenuWindow, menutemplate};
 }).call(this);

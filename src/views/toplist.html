@@ -5,24 +5,98 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
-    <title>涨幅榜</title>
+    <script type="text/javascript" src="../js/angular-tree-control.js"></script>
+    <!-- link for CSS when using the tree as a Dom element -->
+    <link rel="stylesheet" type="text/css" href="../css/tree-control.css">
+    <!-- link for CSS when using the tree as an attribute -->
+    <link rel="stylesheet" type="text/css" href="../css/tree-control-attribute.css">
+    <title>Alert Windows</title>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        div.slides {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            left: 0;
+            top: 0;
+            position: absolute;
+            display: block;
+            -webkit-transition: -webkit-transform 2s ease-in-out;
+            transition: -webkit-transform 2s ease-in-out;
+        }
+        
+        div.slide {
+            display: none;
+            position: absolute;
+            overflow: hidden;
+            overflow-y: scroll;
+            width: 500px;
+            height: 300px;
+            left: 50%;
+            top: 50%;
+            margin-top: -150px;
+            background: -webkit-gradient(linear, left bottom, left top, from(#bbd), to(#fff));
+            -webkit-transition: margin 0.25s ease-in-out;
+            transition: margin 0.25s ease-in-out;
+            background-color: #eee;
+        }
+        
+        div.current {
+            display: block;
+            margin-left: -250px;
+        }
+        
+        div.future {
+            display: none;
+            margin-left: 0px;
+        }
+        
+        
+        .btn-alert-ok {
+            z-index: 100;
+            position: fixed;
+            top: 5x;
+            left: 5x;
+        }
+        
+        treecontrol {
+            position: relative;
+            top: 30px;
+        }
+    </style>
 </head>
 
-<body ng-app="app_toplist" ng-controller="c_toplist">
-    <table class="table table-bordered table-condensed table-hover">
-        <thead>
-            <tr style="background-color: lightblue;">
-                <th ng-repeat="header in headers">{{header}}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="codeinfo in codes">
-                <td ng-repeat="prop in codeinfo">
-                    {{prop}}
-                </td>
-            </tr>
-        </tbody>
-    </table>
+<body ng-app="app_toplist">
+    <div class="slides" ng-controller="c_parent">
+        <div id="tv_alert" ng-controller="c_treeview" class="slide current">
+            <button name="btn_ok" id="btn_ok" class="btn-alert-ok" ng-click="subAlerts()">Subscribe Alerts</button>
+            <treecontrol class="tree-light" tree-model="dataForTheTree" options="treeOptions" on-selection="showSelected(node)">
+                <input type="checkbox" ng-model="node.check" /> &nbsp; {{node.name}}
+            </treecontrol>
+        </div>
+        <div id="tb_alert" class="slide future" ng-controller="c_toplist">
+            <table class="table table-bordered table-condensed table-hover">
+                <thead id="header">
+                    <tr style="background-color: lightblue;">
+                        <th ng-repeat="header in headers">{{header}}</th>
+                    </tr>
+                </thead>
+                <tbody id="content">
+                    <tr ng-repeat="codeinfo in codes">
+                        <td ng-repeat="prop in codeinfo">
+                            {{prop}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 <script src="../controllers/toplist.js"></script>
 

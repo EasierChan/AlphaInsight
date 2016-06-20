@@ -5,10 +5,7 @@ const electron = require('electron');
 
 const app = electron.app; 
 
-const rootpath = __dirname + '/src';
-
-const AIApplication = require(rootpath + '/AIApplication');
-
+const AIApplication = require('./AIApplication');
 
 let application = null;
 // This method will be called when Electron has finished
@@ -38,6 +35,6 @@ app.on('activate', function () {
 
 app.on('open-url', (url, bShow) => {
   if(application){
-    application.SetWindow(url, bShow);
+    application.SetWindow(url);
   }
 });
