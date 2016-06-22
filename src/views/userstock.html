@@ -1,0 +1,33 @@
+<!Doctype html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
+    <title>Favourites Windows</title>
+</head>
+
+<body ng-app="app_userstock">
+    <div id="tb_stock" ng-controller="c_userstock">
+        <input type="text" name="txt_newcode" ng-model="newcode">
+        <button ng-click="addCode()">Add</button>
+        <table class="table table-bordered table-condensed table-hover">
+            <thead id="header">
+                <tr style="background-color: lightblue;">
+                    <th ng-repeat="header in headers">{{header}}</th>
+                </tr>
+            </thead>
+            <tbody id="content">
+                <tr ng-repeat="codeinfo in codes">
+                    <td>
+                        {{codeinfo}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+<script src="../controllers/userstock.js"></script>
+
+</html>

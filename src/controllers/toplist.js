@@ -15,8 +15,8 @@ angular.module('app_toplist', ['treeControl'])
 
     })
     .controller('c_parent', function ($scope) {
-        $scope.$on("alert_change", (e, data) => {
-            $scope.$broadcast("alert_pub", data);
+        $scope.$on("alert_change", (e, alerts, formats) => {
+            $scope.$broadcast("alert_pub", alerts, formats);
         });
     })
     .controller('c_treeview', function ($scope, $interval, qtpclient) {
@@ -35,7 +35,7 @@ angular.module('app_toplist', ['treeControl'])
                 console.error('no data');
                 return;
             }
-            console.log(data);
+            //console.log(data);
             console.log(data.alerttype);
             for (var idx in data.alerttype) {
                 curalert = data.alerttype[idx];
@@ -86,12 +86,14 @@ angular.module('app_toplist', ['treeControl'])
         };
 
         var alertset = new Array();
+        var formatset = new Array();
         $scope.subAlerts = () => {
             alertset.length = 0;
             for (var i in $scope.dataForTheTree) {
                 for (var j in $scope.dataForTheTree[i].children) {
                     if ($scope.dataForTheTree[i].children[j].check) {
                         alertset.push($scope.dataForTheTree[i].children[j].alertid);
+                        formatset.push($scope.dataForTheTree[i].alertid); //formats;
                     }
                 }
             }
@@ -104,7 +106,7 @@ angular.module('app_toplist', ['treeControl'])
             angular.element(document.getElementById("tv_alert")).removeClass("current").addClass("future");
             angular.element(document.getElementById("tb_alert")).removeClass("future").addClass("current");
             //alert(alertset.join());
-            $scope.$emit("alert_change", alertset);
+            $scope.$emit("alert_change", alertset, formatset);
         };
 
         var temp = new Array();
@@ -124,29 +126,51 @@ angular.module('app_toplist', ['treeControl'])
             filter: []
         };
 
-        $scope.headers = ['信号ID','股票代码','股票名称', '时间', '数量'];
+        $scope.headers = ['时间', '信号类型', '股票代码', '股票名称', '数量'];
         var codes = [];
         // alert(qtpclient.alertset);
         // var qtpMsgClt = new QtpMessageClient();
         // qtpMsgClt.connectTo('172.24.10.35', '9005');
-        $scope.$on("alert_pub", (e, alerts) => {
+        $scope.$on("alert_pub", (e, alerts, formats) => {
             bigBuyAlert.alertset = alerts;
             qtpclient.getInstance().send(QtpConstant.MSG_TYPE_ALERT_SUB, bigBuyAlert);
             qtpclient.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_ANSWER, (res) => {
-                if (res == undefined || res == null || res.code == undefined)
+                if (res == undefined || res == null || res.code == undefined) {
+                    console.log('invalid alert!');
                     return;
+                }
+                var idx = -1;
+                if ((idx = bigBuyAlert.alertset.indexOf(res.alert)) < 0) {
+                    console.log('a unsubscribed alert!');
+                    return;
+                }
                 console.log(res);
+
                 var codeinfo = new Object();
-                codeinfo.alertid = res.alert;
+                codeinfo.raisetime = res.time.toString();
+                codeinfo.raisetime = codeinfo.raisetime.slice(0, 2) + ':' + codeinfo.raisetime.slice(2, 4) + ':' + codeinfo.raisetime.slice(4, 6);
+                codeinfo.alertname = res.alertname;
                 codeinfo.codeid = res.code;
                 codeinfo.codename = res.cnname;
-                codeinfo.raisetime = res.time;
-               
-                codeinfo.quantity = res.quantity;
-                if (codes.length == 10) {
-                    codes.shift();
+                switch (formats[idx]) {
+                    case 1000:
+                        codeinfo.quantity = res.quantity;
+                        break;
+                    case 1001:
+                        codeinfo.quantity = (res.quantity / 100).toString() + '%';
+                        break;
+                    case 1002:
+                        codeinfo.quantity = res.quantity /10000;
+                        break;
+                    default:
+                        codeinfo.quantity = res.quantity;
+                        break;
                 }
-                codes.push(codeinfo);
+                codeinfo.color = 'red';//res.alertcolor;
+                if (codes.length == 10) {
+                    codes.pop();
+                }
+                codes.unshift(codeinfo);
             });
 
             $interval(() => {

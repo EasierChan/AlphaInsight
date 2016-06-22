@@ -262,6 +262,14 @@
             this.inBuffer = Buffer.alloc(this.chunkLen, 0);
             this.inBufferBeg = this.inBufferEnd = 0;
         }
+        
+        this.getInstance = (function(){
+            var qtpclient = new QtpMessageClient();
+            qtpclient.connectTo('172.24.10.35', '9005');
+            return function() {
+                return qtpclient;
+            }
+        })();
         //setInterval(this.resolve, 1000);
     }
 

@@ -1,5 +1,6 @@
 (function () {
-    const {Menu, MenuItem, app, BrowserWindow, dialog} = require('electron');
+    //const {Menu, app, BrowserWindow, dialog} = require('electron');
+    const electron = require('electron');
 
     var menutemplate = [
         {//File Menu
@@ -11,7 +12,7 @@
                     accelerator: 'Alt+F4',
                     click: (item, wind) => {
                         console.log('click MenuItem ' + item.label);
-                        app.quit();
+                        electron.app.quit();
                     }
                 }
             ]
@@ -60,7 +61,7 @@
                 {
                     label: 'About',
                     click: (item, wind) => {
-                        dialog.showMessageBox(wind, {type:'info', title:'About', message:'AlphaInsight version 0.1.0\nreserved by LeHigh',
+                        electron.dialog.showMessageBox(wind, {type:'info', title:'About', message:'AlphaInsight version 0.1.0\nreserved by LeHigh',
                                                     buttons:['OK']});
                     }
                 }
@@ -86,14 +87,14 @@
         option.x = (ssize.width - option.width) / 2;
         option.y = 0;
         //option.transparent = true;
-        this.win = new BrowserWindow(option);
+        this.win = new electron.BrowserWindow(option);
         
-        this.win.setMenu(Menu.buildFromTemplate(menutemplate));
+        this.win.setMenu(electron.Menu.buildFromTemplate(menutemplate));
         // and load the index.html of the app.
         //this.win.loadURL(menutemplate);
         this.win.on('close', (e) => {
             this.win = null;
-            app.quit();
+            electron.app.quit();
             //e.preventDefault();
             /*dialog.showMessageBox(this.win, { type: 'warning', title: 'Warning', buttons: ['Yes', 'No'], message: 'Sure to Quit?' }, (res) => {
                 if (res == 0) {//Yes

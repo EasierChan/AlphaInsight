@@ -5,41 +5,35 @@
 (function () {
   'use strict';
 
-  const {BrowserWindow} = require('electron');
+  const electron = require('electron');
   const extension = require('../services/extension');
 
   function ChartWindow() {
-    this.win = new BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: false, show: false })
+    this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: false, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/chart.html');
-    this.show = () => {
+    this.show = function () {
       if (this.win == null) {
         this.win = new ChartWindow();
       }
-      
+
       this.win.show();
     };
 
-    this.hide = () => {
+    this.hide = function () {
       if (this.win != null)
         this.win.hide();
     };
 
-    this.win.on('close', (event) => {
+    this.win.on('close', function (event) {
       this.win = null;
-      //event.preventDefault();
-      //this.hide();
-      //application.SetWindow('ChartWindow', false); //close
     });
     //this.win.openDevTools();
   }
 
   function TableWindow() {
-    this.win = new BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false })
+    this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
     this.show = () => {
-      if (this.win === null) {
-        this.win = new TableWindow();
-      }
       this.win.show();
     };
 
@@ -48,18 +42,45 @@
         this.win.hide();
     };
 
-    this.win.on('close', (event) => {
+    this.win.on('close', function (event) {
       this.win = null;
-      //event.preventDefault();
-      //this.hide();
-      //application.SetWindow('TableWindow', false); //close
     });
     this.win.openDevTools();
   }
-  
-  
-  extension.registerWindow('ChartWin', ()=>{return new ChartWindow()}, [], 'Chars', true);
-  extension.registerWindow('TableWindow', ()=>{return new TableWindow()}, [0], 'Alerts', false);
+
+  function UserStockWind() {
+    var isClosed = false;
+    this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false });
+    this.win.loadURL('file://' + __dirname + '/../views/userstock.html');
+    this.show = () => {
+      if (isClosed) {
+        this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false });
+        this.win.loadURL('file://' + __dirname + '/../views/userstock.html');
+        this.win.on('close', function (event) {
+          //close;
+          isClosed = true;
+        });
+        this.win.openDevTools();
+      }
+      this.win.show();
+      isClosed = false;
+    };
+
+    this.hide = () => {
+      if (!isClosed)
+        this.win.hide();
+    };
+
+    this.win.on('close', function (event) {
+      //close;
+      isClosed = true;
+    });
+
+    this.win.openDevTools();
+  }
+
+  extension.registerWindow('UserStockWind', function () { return new UserStockWind() }, [], 'Favourites', true);
+  extension.registerWindow('TableWindow', function () { return new TableWindow() }, [0], 'Alerts', false);
 
   module.exports = { ChartWindow, TableWindow };
 }).call(this);

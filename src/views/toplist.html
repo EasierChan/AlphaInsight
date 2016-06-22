@@ -69,6 +69,10 @@
             position: relative;
             top: 30px;
         }
+        
+        .red{
+            background-color: red;
+        }
     </style>
 </head>
 
@@ -88,8 +92,8 @@
                     </tr>
                 </thead>
                 <tbody id="content">
-                    <tr ng-repeat="codeinfo in codes">
-                        <td ng-repeat="prop in codeinfo">
+                    <tr ng-repeat="codeinfo in codes" ng-class="codeinfo.color">
+                        <td ng-repeat="prop in codeinfo" ng-if="prop!='red'">
                             {{prop}}
                         </td>
                     </tr>

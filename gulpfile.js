@@ -1,11 +1,15 @@
+var combiner = require('stream-combiner2');
 var gulp = require('gulp');
-var ts = require('gulp-typescript');
+
+var uglify = require('gulp-uglify');
 
 gulp.task('default', function(){
-    gulp.src(['src/**/*.ts'])
-    .pipe(ts({
-        module: 'amd',
-        removeComments: false
-    }))
-    .pipe(gulp.dest('out'));;
+    var combined = combiner.obj([
+        gulp.src('src/*.js'),
+        uglify(),
+        gulp.dest('out')
+    ]);
+    
+    combined.on('error', console.error.bind(console));
+    return combined;
 });

@@ -3,14 +3,14 @@
 // Module to control application life.
 const electron = require('electron');
 
-const app = electron.app; 
+const app = electron.app;
 
 const AIApplication = require('./AIApplication');
 
-let application = null;
+var application = null;
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-app.on('ready', function(){
+app.on('ready', function () {
   application = new AIApplication();
   application.Start();
   console.log(process.versions['chrome']);
@@ -33,8 +33,8 @@ app.on('activate', function () {
   }
 });
 
-app.on('open-url', (url, bShow) => {
-  if(application){
+app.on('open-url', function(url, bShow) {
+  if (application != null) {
     application.SetWindow(url);
   }
 });

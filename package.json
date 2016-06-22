@@ -4,15 +4,15 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
-    //"start": "electron main.js"
+    "start": "electron main.js"
   },
   "repository": {
-    "type": "master",
+    "type": "git",
     "url": "git@192.168.15.201:fangxiang/alpha_insight_front.git"
   },
   "author": "Easier",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron-prebuilt": "^0.37.7"
+    "gulp-uglify": "^1.5.3"
   }
 }
