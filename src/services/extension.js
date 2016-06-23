@@ -10,7 +10,7 @@
          * nickname
          * isSingleton
          * */ 
-        registerWindow: (type, createInstanceMethod, ancestorIdxArr, nickname, isSingleton) => {
+        registerWindow: function(type, createInstanceMethod, ancestorIdxArr, nickname, isSingleton){
             
             if(!type || !createInstanceMethod || !ancestorIdxArr){
                 console.error('three params is required.');

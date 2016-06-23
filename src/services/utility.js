@@ -7,16 +7,16 @@
     const extension = require('./extension');
     const menutemplate = require('../base/MenuWindow').menutemplate;
 
-    var insertMenu = (targetMenu, idx) => {
+    var insertMenu = function(targetMenu, idx) {
         if (idx >= 0 && idx < targetMenu.length) {
             return targetMenu[idx].submenu ? targetMenu[idx].submenu : (targetMenu[idx].submenu = [], targetMenu[idx].submenu);
         }
         return -1;
     }
 
-    this.loadExtension = (windows) => {
+    this.loadExtension = function(windows) {
         var app = require('electron').app;
-        extension.windowsMap.forEach((obj) => {
+        extension.windowsMap.forEach(function(obj) {
             if (obj && obj.type && obj.getInstance && obj.ancestorIdxArr && obj.nickname) {
                 if (obj.isSingleton) {
                     windows[obj.type] = obj.getInstance();
@@ -25,7 +25,7 @@
                 }
                 if (obj.ancestorIdxArr.length == 0) {
                     menutemplate[2].submenu.push({
-                        label: obj.nickname, click: (item, wind) => {
+                        label: obj.nickname, click: function(item, wind){
                             app.emit('open-url', obj.type);
                         }
                     });
@@ -38,7 +38,7 @@
                         res = insertMenu(targetMenu, obj.ancestorIdxArr[i++]);
                     }
                     targetMenu.push({
-                        label: obj.nickname, click: (item, wind) => {
+                        label: obj.nickname, click: function(item, wind) {
                             app.emit('open-url', obj.type);
                         }
                     });

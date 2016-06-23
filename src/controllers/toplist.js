@@ -3,34 +3,29 @@
  */
 'use strict';
 
-const { QtpConstant, QtpMessageClient } = require('../services/qtpmessage');
+//const { QtpConstant, QtpMessageClient } = require('../services/qtpmessage');
+const Qtp = require('../services/qtpmessage');
+const QtpConstant = require('../models/qtpmodel');
 
 angular.module('app_toplist', ['treeControl'])
-    .service('qtpclient', function () {
-        var qtpMsgClt = new QtpMessageClient();
-        qtpMsgClt.connectTo('172.24.10.35', '9005');
-        this.getInstance = () => {
-            return qtpMsgClt;
-        }
-
-    })
-    .controller('c_parent', function ($scope) {
-        $scope.$on("alert_change", (e, alerts, formats) => {
+    .controller('c_parent', ['$scope', function ($scope) {
+        $scope.$on("alert_change", function (e, alerts, formats) {
             $scope.$broadcast("alert_pub", alerts, formats);
         });
-    })
-    .controller('c_treeview', function ($scope, $interval, qtpclient) {
+    }])
+    .controller('c_treeview', ['$scope','$interval',function ($scope, $interval) {
         var reqobj = {
             reqno: 1,
-            msgtype: 4
+            msgtype: QtpConstant.MSG_TYPE_ALERT_TYPE
         };
 
         var dataForTheTree = new Object();
         var superType = new Array();
         var curalert = null;
-
-        qtpclient.getInstance().send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
-        qtpclient.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_TYPE_ANSER, (data) => {
+        //qtpclient.connectTo('172.24.10.35', 9005);
+        //qtpclient.send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
+        Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
+        Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_TYPE_ANSER, function (data) {
             if (data == null) {
                 console.error('no data');
                 return;
@@ -87,7 +82,7 @@ angular.module('app_toplist', ['treeControl'])
 
         var alertset = new Array();
         var formatset = new Array();
-        $scope.subAlerts = () => {
+        $scope.subAlerts = function () {
             alertset.length = 0;
             for (var i in $scope.dataForTheTree) {
                 for (var j in $scope.dataForTheTree[i].children) {
@@ -110,7 +105,7 @@ angular.module('app_toplist', ['treeControl'])
         };
 
         var temp = new Array();
-        $interval(() => {
+        $interval(function () {
             temp.length = 0;
             for (var prop in dataForTheTree) {
                 temp.push(dataForTheTree[prop]);
@@ -118,36 +113,41 @@ angular.module('app_toplist', ['treeControl'])
 
             $scope.dataForTheTree = temp;
         }, 1000);
-    })
-    .controller('c_toplist', function ($scope, $interval, qtpclient) {
+    }])
+    .controller('c_toplist', ['$scope', '$interval', function ($scope, $interval) {
         var bigBuyAlert = {
             reqno: 1,
             msgtype: QtpConstant.MSG_TYPE_ALERT_SUB,
             filter: []
         };
-
+        const fs = require('fs');
+        var config_file = __dirname + "/../conf/user-stock.json";
+        var care_codes = JSON.parse(fs.readFileSync(config_file));
         $scope.headers = ['时间', '信号类型', '股票代码', '股票名称', '数量'];
         var codes = [];
         // alert(qtpclient.alertset);
         // var qtpMsgClt = new QtpMessageClient();
         // qtpMsgClt.connectTo('172.24.10.35', '9005');
-        $scope.$on("alert_pub", (e, alerts, formats) => {
+        $scope.$on("alert_pub", function (e, alerts, formats) {
             bigBuyAlert.alertset = alerts;
-            qtpclient.getInstance().send(QtpConstant.MSG_TYPE_ALERT_SUB, bigBuyAlert);
-            qtpclient.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_ANSWER, (res) => {
+            Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_SUB, bigBuyAlert);
+            Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_ANSWER, function (res) {
                 if (res == undefined || res == null || res.code == undefined) {
                     console.log('invalid alert!');
                     return;
                 }
                 var idx = -1;
-                if ((idx = bigBuyAlert.alertset.indexOf(res.alert)) < 0) {
+                if ((idx = bigBuyAlert.alertset.indexOf(res.alertid)) < 0 
+                  || care_codes.indexOf(res.code) < 0) {
+                    console.log(res);
                     console.log('a unsubscribed alert!');
                     return;
                 }
                 console.log(res);
 
                 var codeinfo = new Object();
-                codeinfo.raisetime = res.time.toString();
+                var raisetime = res.time.toString();
+                codeinfo.raisetime = raisetime.length < 9 ? '0' + raisetime : raisetime;
                 codeinfo.raisetime = codeinfo.raisetime.slice(0, 2) + ':' + codeinfo.raisetime.slice(2, 4) + ':' + codeinfo.raisetime.slice(4, 6);
                 codeinfo.alertname = res.alertname;
                 codeinfo.codeid = res.code;
@@ -160,21 +160,31 @@ angular.module('app_toplist', ['treeControl'])
                         codeinfo.quantity = (res.quantity / 100).toString() + '%';
                         break;
                     case 1002:
-                        codeinfo.quantity = res.quantity /10000;
+                        codeinfo.quantity = res.quantity / 10000;
                         break;
                     default:
                         codeinfo.quantity = res.quantity;
                         break;
                 }
-                codeinfo.color = 'red';//res.alertcolor;
+
+                switch (res.alertcolor) {
+                    case 1:
+                        codeinfo.color = 'red';
+                        break;
+                    case -1:
+                        codeinfo.color = 'green';
+                        break;
+                    default:
+                        codeinfo.color = 'none';
+                }
                 if (codes.length == 10) {
                     codes.pop();
                 }
                 codes.unshift(codeinfo);
             });
 
-            $interval(() => {
+            $interval(function () {
                 $scope.codes = codes;
             }, 1000);
         });
-    });
+    }]);

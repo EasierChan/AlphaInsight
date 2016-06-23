@@ -3,12 +3,13 @@
 
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
-    <script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>
-    <title>Favourites Windows</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/angular.js"></script>
+   <!--<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>-->
+    <title>Favourites Window</title>
 </head>
 
-<body ng-app="app_userstock">
+<body ng-app="app_userstock" ng-strict-di>
     <div id="tb_stock" ng-controller="c_userstock">
         <input type="text" name="txt_newcode" ng-model="newcode">
         <button ng-click="addCode()">Add</button>

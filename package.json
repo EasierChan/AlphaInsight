@@ -14,5 +14,8 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "gulp-uglify": "^1.5.3"
+  },
+  "dependencies": {
+    "imagemin-advpng": "^3.1.0"
   }
 }

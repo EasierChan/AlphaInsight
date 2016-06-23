@@ -10,7 +10,7 @@
                 {
                     label: 'Quit',
                     accelerator: 'Alt+F4',
-                    click: (item, wind) => {
+                    click: function (item, wind) {
                         console.log('click MenuItem ' + item.label);
                         electron.app.quit();
                     }
@@ -22,13 +22,13 @@
             submenu: [
                 {
                     label: 'Log in',
-                    click: (item, wind) => {
+                    click: function (item, wind) {
                         console.log('click ' + item.label + 'on ' + wind.title);
                     }
                 },
                 {
                     label: 'Log out',
-                    click: (item, wind) => {
+                    click: function (item, wind) {
                         console.log('click ' + item.label + 'on ' + wind.title);
                     }
                 }
@@ -54,15 +54,17 @@
             submenu: [
                 {
                     label: 'Help',
-                    click: (item, wind) => {
+                    click: function (item, wind) {
                         console.log('click ' + item.label + 'on ' + wind.title);
                     }
                 },
                 {
                     label: 'About',
-                    click: (item, wind) => {
-                        electron.dialog.showMessageBox(wind, {type:'info', title:'About', message:'AlphaInsight version 0.1.0\nreserved by LeHigh',
-                                                    buttons:['OK']});
+                    click: function (item, wind) {
+                        electron.dialog.showMessageBox(wind, {
+                            type: 'info', title: 'About', message: 'AlphaInsight version 0.1.0\nreserved by LeHigh',
+                            buttons: ['OK']
+                        });
                     }
                 }
             ]
@@ -79,7 +81,7 @@
             autoHideMenuBar: false,
             show: false
         };
-        
+
         option.maxWidth = ssize.width;
         option.maxHeight = 50;
         option.maximizable = false;
@@ -88,12 +90,13 @@
         option.y = 0;
         //option.transparent = true;
         this.win = new electron.BrowserWindow(option);
-        
+
         this.win.setMenu(electron.Menu.buildFromTemplate(menutemplate));
         // and load the index.html of the app.
         //this.win.loadURL(menutemplate);
-        this.win.on('close', (e) => {
-            this.win = null;
+        var realthis = this;
+        this.win.on('close', function (e) {
+            realthis.win = null;
             electron.app.quit();
             //e.preventDefault();
             /*dialog.showMessageBox(this.win, { type: 'warning', title: 'Warning', buttons: ['Yes', 'No'], message: 'Sure to Quit?' }, (res) => {
@@ -113,10 +116,11 @@
     MenuWindow.prototype.show = function () {
         this.win.show();
     }
-    
-    MenuWindow.prototype.hide = ()=>{
+
+    MenuWindow.prototype.hide = function () {
         this.win.hide();
     }
 
-    module.exports = {MenuWindow, menutemplate};
+    module.exports.MenuWindow = MenuWindow;
+    module.exports.menutemplate = menutemplate;
 }).call(this);
