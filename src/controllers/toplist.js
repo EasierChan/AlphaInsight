@@ -4,8 +4,10 @@
 'use strict';
 
 //const { QtpConstant, QtpMessageClient } = require('../services/qtpmessage');
-const Qtp = require('../services/qtpmessage');
-const QtpConstant = require('../models/qtpmodel');
+//const Qtp = require('../services/qtpmessage');
+const QtpConstant = require('../models/qtpmodel').QtpConstant;
+const MsgChannel = require('../models/qtpmodel').MsgChannel;
+const electron = require('electron');
 
 angular.module('app_toplist', ['treeControl'])
     .controller('c_parent', ['$scope', function ($scope) {
@@ -13,7 +15,7 @@ angular.module('app_toplist', ['treeControl'])
             $scope.$broadcast("alert_pub", alerts, formats);
         });
     }])
-    .controller('c_treeview', ['$scope','$interval',function ($scope, $interval) {
+    .controller('c_treeview', ['$scope', '$interval', function ($scope, $interval) {
         var reqobj = {
             reqno: 1,
             msgtype: QtpConstant.MSG_TYPE_ALERT_TYPE
@@ -24,8 +26,10 @@ angular.module('app_toplist', ['treeControl'])
         var curalert = null;
         //qtpclient.connectTo('172.24.10.35', 9005);
         //qtpclient.send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
-        Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
-        Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_TYPE_ANSER, function (data) {
+        //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
+        //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_TYPE_ANSER, function (data) {
+        electron.ipcRenderer.send(MsgChannel.Alert_Sub, reqobj);
+        electron.ipcRenderer.on(MsgChannel.Alert_Pub, function (event, data) {
             if (data == null) {
                 console.error('no data');
                 return;
@@ -130,15 +134,18 @@ angular.module('app_toplist', ['treeControl'])
         // qtpMsgClt.connectTo('172.24.10.35', '9005');
         $scope.$on("alert_pub", function (e, alerts, formats) {
             bigBuyAlert.alertset = alerts;
-            Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_SUB, bigBuyAlert);
-            Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_ANSWER, function (res) {
+
+            //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_SUB, bigBuyAlert);
+            //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_ANSWER, function (res) {
+            electron.ipcRenderer.send(MsgChannel.Alert_Sub, bigBuyAlert);
+            electron.ipcRenderer.on(MsgChannel.Alert_Pub, function (event, res) {
                 if (res == undefined || res == null || res.code == undefined) {
                     console.log('invalid alert!');
                     return;
                 }
                 var idx = -1;
-                if ((idx = bigBuyAlert.alertset.indexOf(res.alertid)) < 0 
-                  || care_codes.indexOf(res.code) < 0) {
+                if ((idx = bigBuyAlert.alertset.indexOf(res.alertid)) < 0
+                    || care_codes.indexOf(res.code) < 0) {
                     console.log(res);
                     console.log('a unsubscribed alert!');
                     return;
@@ -181,10 +188,10 @@ angular.module('app_toplist', ['treeControl'])
                     codes.pop();
                 }
                 codes.unshift(codeinfo);
+                //
+                $scope.$apply(function () {
+                    $scope.codes = codes;
+                });
             });
-
-            $interval(function () {
-                $scope.codes = codes;
-            }, 1000);
         });
     }]);

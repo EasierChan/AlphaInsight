@@ -35,8 +35,10 @@
     var realthis = this;
     this.win.on('close', function (event) {
       realthis.win = null;
+      //electron
+      
     });
-    //this.win.openDevTools();
+    this.win.openDevTools();
   }
 
   TableWindow.prototype.show = function () {
@@ -59,26 +61,29 @@
       realthis.isClosed = true;
     });
 
-    this.win.openDevTools();
+    //this.win.openDevTools();
   }
 
   UserStockWind.prototype.show = function () {
     if (this.isClosed) {
       this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false });
       this.win.loadURL('file://' + __dirname + '/../views/userstock.html');
+      var realthis = this;
+
       this.win.on('close', function (event) {
         //close;
-        this.isClosed = true;
+        realthis.isClosed = true;
       });
-      //this.win.openDevTools();
     }
     this.win.show();
     this.isClosed = false;
+    //this.win.openDevTools();
   };
 
   UserStockWind.prototype.hide = function () {
-    if (!this.isClosed)
+    if (!this.isClosed) {
       this.win.hide();
+    }
   };
 
   extension.registerWindow('UserStockWind', function () { return new UserStockWind() }, [], 'Favourites', true);

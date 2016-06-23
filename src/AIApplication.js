@@ -3,6 +3,7 @@
 //const {BrowserWindow, Menu, MenuItem} = require('electron');
 const MenuClass = require('./base/MenuWindow');
 require('./base/ContentWindow');
+require('./base/message');
 const utility = require('./services/utility');
 const electron = require('electron');
 // Keep a global reference of the window object, if you don't, the window will

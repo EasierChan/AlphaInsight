@@ -17,6 +17,13 @@
         MSG_TYPE_HEARTBEAT: 12,
         MSG_TYPE_NONE: -1
     };
-    
-    module.exports = QtpConstant;
+
+
+    var MsgChannel = {
+        Alert_Sub: "alert_sub",
+        Alert_Pub: "alert_pub",
+        Alert_Sub_Cancel: "alert_sub_cancel"
+    };
+    module.exports.QtpConstant = QtpConstant;
+    module.exports.MsgChannel = MsgChannel;
 }).call(this);

@@ -5,22 +5,31 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <script src="../js/angular.js"></script>
-   <!--<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>-->
+    <!--<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>-->
     <title>Favourites Window</title>
 </head>
 
 <body ng-app="app_userstock" ng-strict-di>
     <div id="tb_stock" ng-controller="c_userstock">
-        <input type="text" name="txt_newcode" ng-model="newcode">
-        <button ng-click="addCode()">Add</button>
+        <input type="text" placeholder="股票代码: 600446.sh" ng-model="newcode">
+        <button ng-click="addCode()" title="add code">Add</button>
+        <button ng-click="delCode()">Delete</button>
+        <button ng-click="enableThis()">启用过滤</button>
+        <button ng-click="disableThis()">禁用过滤</button>
         <table class="table table-bordered table-condensed table-hover">
             <thead id="header">
                 <tr style="background-color: lightblue;">
+                    <th>
+                        <input type="checkbox" ng-model="bAllSelect" ng-click="toggleAll()"></button>
+                    </th>
                     <th ng-repeat="header in headers">{{header}}</th>
                 </tr>
             </thead>
             <tbody id="content">
                 <tr ng-repeat="codeinfo in codes">
+                    <td>
+                        <input type="checkbox" ng-click="toggle($index)"></button>
+                    </td>
                     <td>
                         {{codeinfo}}
                     </td>

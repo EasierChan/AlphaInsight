@@ -3,7 +3,7 @@
 
     const net = require('net');
     const stream = require('stream');
-    const QtpConstant = require('../models/qtpmodel');
+    const QtpConstant = require('../models/qtpmodel').QtpConstant;
 
     function TcpClient(mresolver) {
         this.sock_ = null;
@@ -80,13 +80,14 @@
 
     QtpMessageClient.prototype.setInBuffer = function (data) {
 
-        if (this.inBufferEnd_ + data.length <= this.chunkLen_) {
+        if (this.inBufferEnd_ + data.length <= this.inBuffer_.length) {
             var len = data.copy(this.inBuffer_, this.inBufferEnd_, 0);
             this.inBufferEnd_ += len;
         } else {
             //console.log(this.inBuffer_);
             //console.log(data);
-            var tmpInBuffer = Buffer.alloc(this.inBuffer_.length + this.chunkLen_);
+            var count = parseInt(data.length/this.chunkLen_, 10) +1;
+            var tmpInBuffer = Buffer.alloc(this.inBuffer_.length + this.chunkLen_*count);
             var orginlen = this.inBuffer_.copy(tmpInBuffer, 0, this.inBufferBeg_, this.inBufferEnd_);
             var dlen = data.copy(tmpInBuffer, orginlen);
             this.inBufferBeg_ = 0;
@@ -125,6 +126,8 @@
             case QtpConstant.MSG_TYPE_ALERT_SUB:
                 header.writeUInt16LE(QtpConstant.MSG_TYPE_ALERT_SUB, 2);
                 break;
+            case QtpConstant.MSG_TYPE_ALERT_CANCLE:
+                header.writeUInt16LE(QtpConstant.MSG_TYPE_ALERT_CANCLE,2);
             case QtpConstant.MSG_TYPE_TOPLIST:
                 //
                 break;
@@ -224,19 +227,43 @@
             this.inBufferEnd_ -= this.inBufferBeg_;
             this.inBufferBeg_ = 0;
         }
-
+        
+        
         for (var idx in this.listeners_) {
             if (this.listeners_[idx].type == header.type) {
-
-                this.listeners_[idx].callback(res);
+                for(var k=0; k < this.listeners_[idx].fnArr.length; ++k){
+                    if((this.listeners_[idx].fnArr[k])(res) == false){ // false to delete from fnArr.
+                        this.listeners_[idx].fnArr.splice(k,1);
+                        --k;
+                    }
+                }
+                
+                if(this.listeners_[idx].fnArr.length == 0){
+                    this.send(QtpConstant.MSG_TYPE_ALERT_CANCLE);
+                }
             }
         }
+        
+        header = null;
+        //console.log(res);
 
         //return {type: msgtype, result: res};
     };
 
     QtpMessageClient.prototype.addListener = function (ptype, pcallback) {
-        this.listeners_.push({ type: ptype, callback: pcallback });
+        if(ptype == undefined){
+            console.error('error parameter for addListener');
+            return;
+        }
+        
+        for(var i in this.listeners_){
+            if(this.listeners_[i].type == ptype){
+                this.listeners_[i].fnArr.push(pcallback);
+                return;
+            }
+        }
+        
+        this.listeners_.push({ type: ptype, fnArr: [pcallback] });
     }
 
     QtpMessageClient.prototype.stop = function () {
@@ -250,7 +277,6 @@
 
     var getInstance = (function () {
         var qtpclient = new QtpMessageClient();
-        qtpclient.connectTo('172.24.10.35', '9005');
         return function () {
             return qtpclient;
         }
