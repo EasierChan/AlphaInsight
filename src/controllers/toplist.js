@@ -21,9 +21,6 @@ angular.module('app_toplist', ['treeControl'])
             msgtype: QtpConstant.MSG_TYPE_ALERT_TYPE
         };
 
-        var dataForTheTree = new Object();
-        var superType = new Array();
-        var curalert = null;
         //qtpclient.connectTo('172.24.10.35', 9005);
         //qtpclient.send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
         //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
@@ -36,6 +33,10 @@ angular.module('app_toplist', ['treeControl'])
             }
             //console.log(data);
             console.log(data.alerttype);
+            var dataForTheTree = new Object();
+            var superType = new Array();
+            var curalert = null;
+
             for (var idx in data.alerttype) {
                 curalert = data.alerttype[idx];
                 if (superType.indexOf(curalert.format) < 0) { // not found
@@ -56,6 +57,22 @@ angular.module('app_toplist', ['treeControl'])
                 subObj.children = new Array();
                 dataForTheTree[curalert.format].children.push(subObj);
             }
+            
+            superType = null; //unref
+            curalert = null; //unref
+            
+            var temp = new Array();
+            $scope.$apply(function () {
+                temp.length = 0;
+                for (var prop in dataForTheTree) {
+                    temp.push(dataForTheTree[prop]);
+                }
+
+                $scope.dataForTheTree = temp;
+            });
+            
+            temp = null;
+            dataForTheTree = null;
         });
 
         $scope.treeOptions = {
@@ -108,15 +125,15 @@ angular.module('app_toplist', ['treeControl'])
             $scope.$emit("alert_change", alertset, formatset);
         };
 
-        var temp = new Array();
-        $interval(function () {
-            temp.length = 0;
-            for (var prop in dataForTheTree) {
-                temp.push(dataForTheTree[prop]);
-            }
+        // var temp = new Array();
+        // $interval(function () {
+        //     temp.length = 0;
+        //     for (var prop in dataForTheTree) {
+        //         temp.push(dataForTheTree[prop]);
+        //     }
 
-            $scope.dataForTheTree = temp;
-        }, 1000);
+        //     $scope.dataForTheTree = temp;
+        // }, 1000);
     }])
     .controller('c_toplist', ['$scope', '$interval', function ($scope, $interval) {
         var bigBuyAlert = {
