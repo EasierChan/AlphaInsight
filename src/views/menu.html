@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>Alpha Insight</title>
+    <style>
+        div {
+            height: 10px;
+            vertical-align: middle;
+            color: green;
+        }
+        
+        span.left,
+        strong {
+            float: left;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        
+        strong {
+            margin-left: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <span id="delay" class="left"> 0 </span>
+        <strong>&nbsp;ms</strong>
+    </div>
+    <script>
+        const ipcRenderer = require('electron').ipcRenderer;
+            ipcRenderer.on('connstate', function(e, arg){
+                document.getElementById("delay").innerText = arg;
+               //alert(arg); 
+            });
+    </script>
+</body>
+
+</html>

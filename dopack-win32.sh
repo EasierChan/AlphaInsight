@@ -1,0 +1,1 @@
+electron-packager ./out/ --platform=win32 --arch=x64 --app-version=1.0.0 --asar=true --out=/home/easier/projects/ --overwrite=true --version=0.37.8 --download.cache=/home/easier/.electron --download.mirror=https://npm.taobao.org/mirrors/electron/

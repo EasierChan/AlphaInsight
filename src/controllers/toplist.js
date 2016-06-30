@@ -26,7 +26,7 @@ angular.module('app_toplist', ['treeControl'])
         //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
         //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_TYPE_ANSER, function (data) {
         electron.ipcRenderer.send(MsgChannel.Alert_Sub, reqobj);
-        electron.ipcRenderer.on(MsgChannel.Alert_Pub, function (event, data) {
+        electron.ipcRenderer.once(MsgChannel.Alert_Pub, function (event, data) {
             if (data == null) {
                 console.error('no data');
                 return;
@@ -57,20 +57,20 @@ angular.module('app_toplist', ['treeControl'])
                 subObj.children = new Array();
                 dataForTheTree[curalert.format].children.push(subObj);
             }
-            
+
             superType = null; //unref
             curalert = null; //unref
-            
+
             var temp = new Array();
             $scope.$apply(function () {
-                temp.length = 0;
+                //temp.length = 0;
                 for (var prop in dataForTheTree) {
                     temp.push(dataForTheTree[prop]);
                 }
 
                 $scope.dataForTheTree = temp;
             });
-            
+
             temp = null;
             dataForTheTree = null;
         });
@@ -92,19 +92,26 @@ angular.module('app_toplist', ['treeControl'])
         };
 
         $scope.selectedNodes = [];
+        //var inode = -1;
         $scope.showSelected = function (node, selected) {
+            // inode = $scope.dataForTheTree.indexOf(node);
+            // if(inode < 0){
+            //     return;
+            // }
+            
+            // node = $scope.dataForTheTree[inode];
             if (node.children.length > 0) { // 目前只支持二级菜单
                 for (var idx in node.children) {
                     node.children[idx].check = node.check;
                 }
             }
-
+            //console.log($scope.dataForTheTree);
         };
 
         var alertset = new Array();
         var formatset = new Array();
         $scope.subAlerts = function () {
-            alertset.length = 0;
+            //alertset.length = 0;
             for (var i in $scope.dataForTheTree) {
                 for (var j in $scope.dataForTheTree[i].children) {
                     if ($scope.dataForTheTree[i].children[j].check) {
@@ -113,7 +120,7 @@ angular.module('app_toplist', ['treeControl'])
                     }
                 }
             }
-
+            
             //console.log(angular.element(document.getElementById("tv_alert")));
             if (alertset.length == 0) {
                 alert("未订阅信号！");
@@ -141,9 +148,13 @@ angular.module('app_toplist', ['treeControl'])
             msgtype: QtpConstant.MSG_TYPE_ALERT_SUB,
             filter: []
         };
-        const fs = require('fs');
-        var config_file = __dirname + "/../conf/user-stock.json";
-        var care_codes = JSON.parse(fs.readFileSync(config_file));
+
+        var temparg = undefined;
+        electron.ipcRenderer.on('backend_change', function (e, arg) {
+            console.log(arg);
+            temparg = arg;
+        });
+
         $scope.headers = ['时间', '信号类型', '股票代码', '股票名称', '数量'];
         var codes = [];
         // alert(qtpclient.alertset);
@@ -161,13 +172,16 @@ angular.module('app_toplist', ['treeControl'])
                     return;
                 }
                 var idx = -1;
-                if ((idx = bigBuyAlert.alertset.indexOf(res.alertid)) < 0
-                    || care_codes.indexOf(res.code) < 0) {
+                if ((idx = bigBuyAlert.alertset.indexOf(res.alertid)) < 0) {
                     console.log(res);
-                    console.log('a unsubscribed alert!');
                     return;
                 }
-                console.log(res);
+
+                if (temparg.bEnable && temparg.codes.indexOf(res.code) < 0) {
+                    console.log(res);
+                    console.log('a unsubscribed stock code, %s!', res.code);
+                    return;
+                }
 
                 var codeinfo = new Object();
                 var raisetime = res.time.toString();
@@ -201,7 +215,7 @@ angular.module('app_toplist', ['treeControl'])
                     default:
                         codeinfo.color = 'none';
                 }
-                if (codes.length == 10) {
+                if (codes.length == 100) {
                     codes.pop();
                 }
                 codes.unshift(codeinfo);

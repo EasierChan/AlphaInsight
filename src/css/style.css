@@ -22,11 +22,11 @@ div.slide {
     position: absolute;
     overflow: hidden;
     overflow-y: scroll;
-    width: 500px;
-    height: 300px;
-    left: 50%;
+    width: 100%;
+    height: 100%;
+    /*left: 50%;
     top: 50%;
-    margin-top: -150px;
+    margin-top: -150px;*/
     background: -webkit-gradient(linear, left bottom, left top, from(#bbd), to(#fff));
     -webkit-transition: margin 0.25s ease-in-out;
     transition: margin 0.25s ease-in-out;
@@ -35,20 +35,18 @@ div.slide {
 
 div.current {
     display: block;
-    margin-left: -250px;
+    /*margin-left: -250px;*/
 }
 
 div.future {
     display: none;
-    margin-left: 0px;
+    /*margin-left: 0px;*/
 }
 
 
 .btn-alert-ok {
     z-index: 100;
     position: fixed;
-    top: 5x;
-    left: 5x;
 }
 
 treecontrol {
@@ -57,9 +55,16 @@ treecontrol {
 }
 
 .red{
-    background-color: red;
+    color: #ff3232;
 }
 
 .green{
-    background-color: green;
+    color: #12fc12;
+}
+
+.table>tbody>tr>td{
+    background-color: black;
+    border-top: 0px solid black;
+    font-size: 13px;
+    padding: 2px;
 }

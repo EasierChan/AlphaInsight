@@ -11,19 +11,19 @@
     <!-- link for CSS when using the tree as an attribute -->
     <link rel="stylesheet" type="text/css" href="../css/tree-control-attribute.css">
     <link rel="stylesheet" type="text/css" href="../css/style.css">
-    <title>Alert Windows</title>
+    <title>信号监视窗口</title>
 </head>
 
 <body ng-app="app_toplist" ng-strict-di>
     <div class="slides" ng-controller="c_parent">
         <div id="tv_alert" ng-controller="c_treeview" class="slide current">
-            <button name="btn_ok" id="btn_ok" class="btn-alert-ok" ng-click="subAlerts()">Subscribe Alerts</button>
-            <treecontrol class="tree-light" tree-model="dataForTheTree" options="treeOptions" on-selection="showSelected(node)">
+            <button name="btn_ok" id="btn_ok" class="btn-alert-ok" ng-click="subAlerts()">订阅信号</button>
+            <treecontrol class="tree-light" selected-nodes="selectedNodes" tree-model="dataForTheTree" options="treeOptions" on-selection="showSelected(node)">
                 <input type="checkbox" ng-model="node.check" /> &nbsp; {{node.name}}
             </treecontrol>
         </div>
         <div id="tb_alert" class="slide future" ng-controller="c_toplist">
-            <table class="table table-bordered table-condensed table-hover">
+            <table class="table table-condensed">
                 <thead id="header">
                     <tr style="background-color: lightblue;">
                         <th ng-repeat="header in headers">{{header}}</th>

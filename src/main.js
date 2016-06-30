@@ -33,8 +33,16 @@ app.on('activate', function () {
   }
 });
 
-app.on('open-url', function(url, bShow) {
+app.on('open-url', function (url, bShow) {
   if (application != null) {
     application.SetWindow(url);
   }
 });
+
+app.on('disconnected', function () {
+  electron.dialog.showMessageBox({ type: "warning", buttons: ["重新连接", "忽略"], title: "连接断开", message: "与服务器的连接已断开！" }, function (res) {
+    if (res == 0) {
+      app.emit('reconnect');
+    }
+  });
+})

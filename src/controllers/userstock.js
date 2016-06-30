@@ -3,6 +3,7 @@
  */
 'use strict';
 
+const electron = require('electron');
 
 angular.module('app_userstock', [])
     .controller('c_userstock', ['$scope', function ($scope) {
@@ -34,13 +35,24 @@ angular.module('app_userstock', [])
             var items = document.getElementById('content').querySelectorAll("input[type='checkbox']");
             var codes = new Array();
             for (var i = 0; i < items.length; ++i) {
-                if(!items[i].checked){
+                if (!items[i].checked) {
                     codes.push($scope.codes[i]);
                 }
             }
             $scope.codes = codes;
             fs.writeFileSync(config_file, JSON.stringify($scope.codes));
         };
+
+        electron.ipcRenderer.on('backend_change', function (e, bFavour) {
+            //console.log(bFavour);
+            $scope.$apply(function () {
+                $scope.bEnable = bFavour;
+            })
+        });
+
+        $scope.enableThis = function () {
+            electron.ipcRenderer.send('userstock_change', $scope.bEnable);
+        }
 
         $scope.toggleAll = function () {
             //alert($scope.bAllSelect);

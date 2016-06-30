@@ -20,36 +20,29 @@ gulp.task('html', function () {
 });
 
 gulp.task('js', function () {
-    var combined = gulp.src('src/**/*.js')
+    return gulp.src('src/**/*.js')
         .pipe(uglify())
+        .on('error',function (err) {
+            console.log(err.message);
+            this.end();
+        })
         .pipe(gulp.dest('out'));
-
-    combined.on('error', console.error.bind(console));
-    return combined;
 });
 
 gulp.task('css', function () {
-    var combined = gulp.src('src/**/*.css')
+    return gulp.src('src/**/*.css')
         .pipe(cssmin())
         .pipe(gulp.dest('out'));
-
-    combined.on('error', console.error.bind(console));
-    return combined;
 });
 
 gulp.task('png', function () {
-    var combined = gulp.src('src/**/*.png')
+    return gulp.src('src/**/*.png')
         //.pipe(pngmin({optimizationLevel: 4})())
         .pipe(gulp.dest('out'));
-
-    combined.on('error', console.error.bind(console));
-    return combined;
 });
 
 gulp.task('json', function () {
-    var combined = gulp.src('src/**/*.json')
+    return gulp.src('src/**/*.json')
         .pipe(gulp.dest('out'));
-    combined.on('error', console.error.bind(console));
-    return combined;
 });
 gulp.task('default', ['html', 'js', 'css', 'png', 'json']);

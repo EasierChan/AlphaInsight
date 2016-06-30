@@ -7,6 +7,10 @@
 
   const electron = require('electron');
   const extension = require('../services/extension');
+  const EventEmitter = require('events');
+  //class MyEmitter extends EventEmitter { }
+
+  const myEmmiter = new EventEmitter();
 
   function ChartWindow() {
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: false, show: false });
@@ -30,20 +34,41 @@
   };
 
   function TableWindow() {
-    this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false });
+    this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
     var realthis = this;
     this.win.on('close', function (event) {
       realthis.win = null;
-      //electron
-      
     });
-    this.win.openDevTools();
+
+    this.win.webContents.on('did-finish-load', function () {
+      realthis.win.webContents.send('backend_change'
+        , {
+          bEnable: global.Configuration.enableFavourites,
+          codes: global.UserStockCode
+        });
+    });
+
+    myEmmiter.on('favour-toggle', function () {
+      if (realthis.win == null) {
+        return;
+      }
+      realthis.win.webContents.send('backend_change'
+        , {
+          bEnable: global.Configuration.enableFavourites,
+          codes: global.UserStockCode
+        });
+    });
+
+    if (global.Configuration.environment === 'development') {
+      this.win.openDevTools();
+    }
   }
 
   TableWindow.prototype.show = function () {
     this.win.show();
   };
+
   TableWindow.prototype.hide = function () {
     if (this.win != null)
       this.win.hide();
@@ -61,8 +86,17 @@
       realthis.isClosed = true;
     });
 
-    //this.win.openDevTools();
+    this.win.webContents.on('did-finish-load', function () {
+      realthis.win.webContents.send('backend_change', global.Configuration.enableFavourites);
+    });
   }
+
+  electron.ipcMain.on('userstock_change', function (e, arg) {
+    //console.log("toggle favourites feature. current is %s", arg);
+    global.Configuration.enableFavourites = arg;
+
+    myEmmiter.emit('favour-toggle');
+  });
 
   UserStockWind.prototype.show = function () {
     if (this.isClosed) {
@@ -73,6 +107,11 @@
       this.win.on('close', function (event) {
         //close;
         realthis.isClosed = true;
+      });
+
+
+      this.win.webContents.on('did-finish-load', function () {
+        realthis.win.webContents.send('backend_change', global.Configuration.enableFavourites);
       });
     }
     this.win.show();
@@ -86,7 +125,7 @@
     }
   };
 
-  extension.registerWindow('UserStockWind', function () { return new UserStockWind() }, [], 'Favourites', true);
-  extension.registerWindow('TableWindow', function () { return new TableWindow() }, [0], 'Alerts', false);
+  extension.registerWindow('UserStockWind', function () { return new UserStockWind() }, [], '自选股', true);
+  extension.registerWindow('TableWindow', function () { return new TableWindow() }, [0], '新建', false);
 }).call(this);
 

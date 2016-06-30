@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <script src="../js/angular.js"></script>
+    <!--<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>-->
+    <title>Preference Window</title>
+
+    <style>
+        div#preference {
+            width: 100px;
+            float: left;
+        }
+        
+        div#p_content {
+            width: 360px;
+            float: right;
+            padding-right: 10px;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body ng-app="app_preference" ng-strict-di>
+    <div id="preference">
+        <ul class="nav nav-tabs nav-stacked">
+            <li><a href="#base">基本设置</a></li>
+            <li><a href="#other">其它设置</a></li>
+        </ul>
+    </div>
+    <div id="p_content" ng-controller="c_preference">
+        <form>
+            <div class="form-group">
+                <input type="text" class="form-control" ng-model="server_ip" placeholder="服务器IP">
+                <br>
+                <input type="text" class="form-control" ng-model="server_port" placeholder="服务器端口">
+                <br>
+                <div class="input-group">
+                    <input type="text" class="form-control" ng-model="recv_freq" placeholder="接收频率" aria-describedby="basic-addon2">
+                    <span class="input-group-addon" id="basic-addon2">ms</span>
+                </div>
+            </div>
+            <button class="btn btn-default">保存</button>&nbsp;<i style="color:red">重连生效</i>
+            <button class="btn btn-default" ng-click="save()">保存并重连</button>
+        </form>
+    </div>
+</body>
+<script src="../controllers/preference.js"></script>
+
+</html>
