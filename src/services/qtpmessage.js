@@ -24,7 +24,7 @@
         })
 
         this.sock_.on('data', function (data) {
-            console.log("Received from server a message: msglen = %d", data.length);
+            console.log("Recv server message: msglen = %d", data.length);
             if (parent.mresolver_.setInBuffer(data) === false) {
                 console.log('Warning: NetWork data length reached the limit!');
                 parent.sock_.pause();
@@ -86,36 +86,36 @@
         this.inBufferBeg_ = 0;
         this.inBufferEnd_ = 0;
         this.listeners_ = new Array();
-        this.eventHandle_ = null;
+        //this.eventHandle_ = null;
         this.cb_disconnect_ = cb_disconnect;
         this.recordNum = 0;
         var realthis = this;
-        setInterval(function () {
-            if (realthis.recordNum > 10 && (realthis.inBufferEnd_ - realthis.inBufferBeg_) > 0) {
-                if (realthis.eventHandle_) {
-                    clearInterval(realthis.eventHandle_);
-                    global.Configuration.recvfrequency >>= 1;
-                    global.Configuration.recvfrequency = global.Configuration.recvfrequency > 0 ? global.Configuration.recvfrequency : 10;
-                    realthis.eventHandle_ = setInterval(function () {
-                        realthis.resolve();
-                    }, global.Configuration.recvfrequency);
-                    //console.log("#################### ########### come in: %d", global.Configuration.recvfrequency);
-                }
-                return;
-            }
+        // setInterval(function () {
+        //     if (realthis.recordNum > 10 && (realthis.inBufferEnd_ - realthis.inBufferBeg_) > 0) {
+        //         if (realthis.eventHandle_) {
+        //             clearInterval(realthis.eventHandle_);
+        //             global.Configuration.recvfrequency >>= 1;
+        //             global.Configuration.recvfrequency = global.Configuration.recvfrequency > 0 ? global.Configuration.recvfrequency : 10;
+        //             realthis.eventHandle_ = setInterval(function () {
+        //                 realthis.resolve();
+        //             }, global.Configuration.recvfrequency);
+        //             //console.log("#################### ########### come in: %d", global.Configuration.recvfrequency);
+        //         }
+        //         return;
+        //     }
             
-            if(realthis.recordNum == 0 && (realthis.inBufferEnd_ - realthis.inBufferBeg_) < 12){
-                if (realthis.eventHandle_) {
-                    clearInterval(realthis.eventHandle_);
-                    global.Configuration.recvfrequency += 10;
-                    global.Configuration.recvfrequency = global.Configuration.recvfrequency < 100 ? global.Configuration.recvfrequency : 100;
-                    realthis.eventHandle_ = setInterval(function () {
-                        realthis.resolve();
-                    }, global.Configuration.recvfrequency);
-                    //console.log("#################### ########### come in: %d", global.Configuration.recvfrequency);
-                }
-            }
-        }, 1000);
+        //     if(realthis.recordNum == 0 && (realthis.inBufferEnd_ - realthis.inBufferBeg_) < 12){
+        //         if (realthis.eventHandle_) {
+        //             clearInterval(realthis.eventHandle_);
+        //             global.Configuration.recvfrequency += 10;
+        //             global.Configuration.recvfrequency = global.Configuration.recvfrequency < 100 ? global.Configuration.recvfrequency : 100;
+        //             realthis.eventHandle_ = setInterval(function () {
+        //                 realthis.resolve();
+        //             }, global.Configuration.recvfrequency);
+        //             //console.log("#################### ########### come in: %d", global.Configuration.recvfrequency);
+        //         }
+        //     }
+        // }, 1000);
     }
 
     // to connect, maybe can't connect to the server.
@@ -128,9 +128,9 @@
         var realthis = this;
         return this.clientSock_.connectTo(ip, port, function () {
             realthis.connState = 2;
-            realthis.eventHandle_ = setInterval(function () {
-                realthis.resolve();
-            }, global.Configuration.recvfrequency);
+            // realthis.eventHandle_ = setInterval(function () {
+            //     realthis.resolve();
+            // }, global.Configuration.recvfrequency);
         });
     };
 
@@ -159,6 +159,9 @@
         }
 
         console.log(this.inBufferBeg_, this.inBufferEnd_);
+        while(this.resolve()){
+            ;
+        } // add test
         return true;
     };
 
@@ -167,7 +170,7 @@
             return false;
         }
 
-        console.log("send a request: msgtype=%d", type);
+        //console.log("send a request: msgtype=%d", type);
         var header = Buffer.alloc(12, 0);
         header.writeUInt16LE(type, 2);
         switch (type) {
@@ -253,7 +256,7 @@
         var contentLen = this.inBufferEnd_ - this.inBufferBeg_;
         if (contentLen < this.headerLen_) {
             console.log('wait for a message!');
-            return null; // a uncomplete msg;
+            return false; // a uncomplete msg;
         }
         //read msg header;
         var header = this.readHeader();
@@ -261,7 +264,7 @@
         if (contentLen < this.headerLen_ + header.datalen) {
             console.log("wait for more buffer, actual len: %d, expect len: %d"
                 , contentLen, this.headerLen_ + header.datalen);
-            return null; // a uncomplete msg;
+            return false; // a uncomplete msg;
         }
 
         switch (header.type) {
@@ -321,6 +324,7 @@
 
         header = null;
         //console.log(res);
+        return true;
     };
 
     QtpMessageClient.prototype.addListener = function (ptype, pcallback) {
@@ -347,9 +351,9 @@
     }
 
     QtpMessageClient.prototype.reset = function () {
-        if (this.eventHandle_) {
-            clearInterval(this.eventHandle_);
-        }
+        // if (this.eventHandle_) {
+        //     clearInterval(this.eventHandle_);
+        // }
         this.clientSock_.close();
         this.inBuffer_ = null;
         this.inBuffer_ = Buffer.alloc(this.chunkLen_, 0);
@@ -358,15 +362,17 @@
     }
 
     QtpMessageClient.prototype.clearInBuffer = function () {
-        clearInterval(this.eventHandle_);
+        // if(this.eventHandle_){
+        //     clearInterval(this.eventHandle_);
+        // }
         this.inBuffer_ = null;
         this.inBuffer_ = Buffer.alloc(this.chunkLen_, 0);
         this.inBufferBeg_ = this.inBufferEnd_ = 0;
         this.recordNum = 0;
         var realthis = this;
-        this.eventHandle_ = setInterval(function () {
-            realthis.resolve();
-        }, global.Configuration.recvfrequency);
+        // this.eventHandle_ = setInterval(function () {
+        //     realthis.resolve();
+        // }, global.Configuration.recvfrequency);
     }
 
     QtpMessageClient.prototype.watchDisconnection = function (cb_disconnect) {

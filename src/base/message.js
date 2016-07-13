@@ -2,7 +2,7 @@
     'use strict';
     const Qtp = require('../services/qtpmessage');
     const QtpConstant = require('../models/qtpmodel').QtpConstant;
-    const MsgChannel = require('../models/qtpmodel').MsgChannel;
+    const IPCMSG = require('../models/qtpmodel').IPCMSG;
     const app = require('electron').app;
     const ipcMain = require('electron').ipcMain;
     const dialog = require('electron').dialog;
@@ -10,30 +10,27 @@
 
     var alerts = new Array();
 
-
-    Array.prototype.unique = function () {
-        var i = this.length;
-        while (i--) {
-            this.splice(i)
-        }
-    }
-
     this.Start = function () {
+        console.log('start connect to server.');
         Qtp.getInstance().connectTo(global.Configuration.FeedHandler.ip
             , global.Configuration.FeedHandler.port);
         Qtp.getInstance().watchDisconnection(function () {
             app.emit('disconnected');
+            app.emit('heartbeat', 10000);
         });
-        
-        var idelay = 0;
+
+        var istart = 0, iend = 900;
         setInterval(function () {
+            if (iend < istart) {
+                app.emit('heartbeat', 10000);
+            }
             Qtp.getInstance().send(QtpConstant.MSG_TYPE_HEARTBEAT);
-            idelay = new Date().getTime();
+            istart = Date.now();
         }, 10000);
-        
-        Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_HEARTBEAT, function(){
-            idelay = (new Date()).getTime() - idelay;
-            app.emit('heartbeat', idelay);
+
+        Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_HEARTBEAT, function () {
+            iend = Date.now();
+            app.emit('heartbeat', iend - istart);
         });
     }
 
@@ -79,7 +76,7 @@
         Reset();
     });
 
-    ipcMain.on(MsgChannel.Alert_Sub, function (event, msg) {
+    ipcMain.on(IPCMSG.BackendPoint, function (event, msg) {
         if (msg.msgtype == undefined) {
             console.error('invalid client request!');
             //event.sender.send('alerts-reply', { errmsg: "invalid client request!" });
@@ -90,10 +87,11 @@
 
         switch (msg.msgtype) {
             case QtpConstant.MSG_TYPE_ALERT_TYPE:
+            case QtpConstant.MSG_TYPE_TOPLIST:
                 Qtp.getInstance().send(msg.msgtype, msg);
-                Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_TYPE, function (res) {
+                Qtp.getInstance().addListener(msg.msgtype, function (res) {
                     if (!event.sender.isDestroyed()) {
-                        event.sender.send(MsgChannel.Alert_Pub, res);
+                        event.sender.send(IPCMSG.FrontendPoint, res);
                         //console.log(res);
                         return true;
                     }
@@ -107,12 +105,12 @@
                         alerts.push(msg.alertset[x]);
                     }
                 }
-
+                msg.alertset = alerts;
                 Qtp.getInstance().send(msg.msgtype, msg);
 
                 Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT, function (res) {
                     if (!event.sender.isDestroyed()) {
-                        event.sender.send(MsgChannel.Alert_Pub, res);
+                        event.sender.send(IPCMSG.FrontendPoint, res);
                         return true;
                     }
                     return false;
@@ -122,5 +120,22 @@
                 break;
         }
     });
-
+    
+    this.requestMsg = function(type, callback){
+        switch (type) {
+            case QtpConstant.MSG_TYPE_ALERT_TYPE:
+                Qtp.getInstance().send(type, {reqno:1, msgtype: type});
+                Qtp.getInstance().addListener(type, callback);
+                break;
+            case QtpConstant.MSG_TYPE_TOPLIST:
+                Qtp.getInstance().send(type, {reqno:2, msgtype: type});
+                Qtp.getInstance().addListener(type, callback);
+                break;
+            default:
+                console.error('wrong type: %d', type);
+                break;
+        }
+    };
+    
+    
 }).call(this);

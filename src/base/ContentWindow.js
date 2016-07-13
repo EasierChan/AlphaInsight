@@ -8,9 +8,10 @@
   const electron = require('electron');
   const extension = require('../services/extension');
   const EventEmitter = require('events');
+  const msgServ = require('./message');
   //class MyEmitter extends EventEmitter { }
 
-  const myEmmiter = new EventEmitter();
+  //const myEmmiter = new EventEmitter();
 
   function ChartWindow() {
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: false, show: false });
@@ -35,7 +36,7 @@
 
   function TableWindow() {
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
-    this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
+    this.win.loadURL('file://' + __dirname + '/../views/alert.html');
     var realthis = this;
     this.win.on('close', function (event) {
       realthis.win = null;
@@ -49,7 +50,9 @@
         });
     });
 
-    myEmmiter.on('favour-toggle', function () {
+    electron.ipcMain.on('userstock_change', function (e, arg) {
+      //console.log("toggle favourites feature. current is %s", arg);
+      global.Configuration.enableFavourites = arg;
       if (realthis.win == null) {
         return;
       }
@@ -58,6 +61,7 @@
           bEnable: global.Configuration.enableFavourites,
           codes: global.UserStockCode
         });
+      //myEmmiter.emit('favour-toggle');
     });
 
     if (global.Configuration.environment === 'development') {
@@ -68,12 +72,6 @@
   TableWindow.prototype.show = function () {
     this.win.show();
   };
-
-  TableWindow.prototype.hide = function () {
-    if (this.win != null)
-      this.win.hide();
-  };
-
 
   function UserStockWind() {
     this.isClosed = false;
@@ -90,13 +88,6 @@
       realthis.win.webContents.send('backend_change', global.Configuration.enableFavourites);
     });
   }
-
-  electron.ipcMain.on('userstock_change', function (e, arg) {
-    //console.log("toggle favourites feature. current is %s", arg);
-    global.Configuration.enableFavourites = arg;
-
-    myEmmiter.emit('favour-toggle');
-  });
 
   UserStockWind.prototype.show = function () {
     if (this.isClosed) {
@@ -125,7 +116,30 @@
     }
   };
 
+  function ToplistWind() {
+    this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
+    this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
+    var realthis = this;
+    this.win.on('close', function (event) {
+      realthis.win = null;
+    });
+
+    this.win.webContents.on('did-finish-load', function () {
+      // TODO
+      //msgServ.requestMsg()
+    });
+
+    if (global.Configuration.environment === 'development') {
+      this.win.openDevTools();
+    }
+  }
+
+  ToplistWind.prototype.show = function () {
+    this.win.show();
+  };
+
   extension.registerWindow('UserStockWind', function () { return new UserStockWind() }, [], '自选股', true);
   extension.registerWindow('TableWindow', function () { return new TableWindow() }, [0], '新建', false);
+  extension.registerWindow('Toplist', function () { return new ToplistWind() }, [1], '新建', false);
 }).call(this);
 

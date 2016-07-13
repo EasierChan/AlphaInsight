@@ -42,6 +42,7 @@
         global.Configuration.FeedHandler.ip = arg.ip;
         global.Configuration.FeedHandler.port = arg.port;
         global.Configuration.recvfrequency = arg.freq;
+        global.Configuration.save();
         require('electron').app.emit('reset');
     });
     

@@ -4,36 +4,169 @@
 <head>
     <title>Alpha Insight</title>
     <style>
-        div {
-            height: 10px;
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        
+        #left {
+            height: 20px;
+            width: 100px;
             vertical-align: middle;
             color: green;
-        }
-        
-        span.left,
-        strong {
+            margin-left: 10px;
             float: left;
-            margin-left: 5px;
-            vertical-align: middle;
+            padding-top: 5px;
         }
         
-        strong {
-            margin-left: auto;
+        #right {
+            height: 20px;
+            /*width: 100px;*/
+            padding-top: 5px;
+            margin-right: 10px;
+            float: right;
+        }
+        
+        #right > span {
+            display: inline-block;
+            width: 3px;
+            background-color: green;
+        }
+        
+        #right > span:nth-child(1) {
+            height: 4px;
+            margin-top: 16px;
+        }
+        
+        #right > span:nth-child(2) {
+            height: 8px;
+            margin-top: 12px;
+        }
+        
+        #right > span:nth-child(3) {
+            height: 12px;
+            margin-top: 8px;
+        }
+        
+        #right > span:nth-child(4) {
+            height: 16px;
+            margin-top: 4px;
+        }
+        
+        #right > span:nth-child(5) {
+            height: 20px;
+            margin-top: 0px;
         }
     </style>
 </head>
 
 <body>
-    <div>
-        <span id="delay" class="left"> 0 </span>
+    <div id="left">
+        <span id="delay"> 5 </span>
         <strong>&nbsp;ms</strong>
+    </div>
+    <div id="right">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
     </div>
     <script>
         const ipcRenderer = require('electron').ipcRenderer;
-            ipcRenderer.on('connstate', function(e, arg){
-                document.getElementById("delay").innerText = arg;
-               //alert(arg); 
-            });
+        const ele = document.getElementById("delay");
+        const tempArr = document.querySelectorAll('#right > span');
+        ipcRenderer.on('connstate', function(e, arg){
+            ele.innerText = arg;
+            var curColor;
+            if(arg < 1000){
+                curColor = 'green';
+            } else if(arg < 10000){
+                curColor = 'orange';
+            } else{
+                curColor = 'red';
+            }
+            
+            ele.parentNode.style.color = curColor;
+            
+            if(arg < 200){
+                tempArr[4].style.height = "20px";
+                tempArr[4].style.backgroundColor = "green";
+                tempArr[3].style.height = "16px";
+                tempArr[3].style.backgroundColor = "green";
+                tempArr[2].style.height = "12px";
+                tempArr[2].style.backgroundColor = "green";
+                tempArr[1].style.height = "8px";
+                tempArr[1].style.backgroundColor = "green";
+                tempArr[0].style.height = "4px";
+                tempArr[0].style.backgroundColor = "green";
+                return;
+            } 
+            if (arg < 500){
+                tempArr[4].style.height = "20px";
+                tempArr[4].style.backgroundColor = "orange";
+                tempArr[3].style.height = "16px";
+                tempArr[3].style.backgroundColor = "green";
+                tempArr[2].style.height = "12px";
+                tempArr[2].style.backgroundColor = "green";
+                tempArr[1].style.height = "8px";
+                tempArr[1].style.backgroundColor = "green";
+                tempArr[0].style.height = "4px";
+                tempArr[0].style.backgroundColor = "green";
+                return;
+            }
+            if(arg < 800) {
+                tempArr[4].style.height = "20px";
+                tempArr[4].style.backgroundColor = "orange";
+                tempArr[3].style.height = "16px";
+                tempArr[3].style.backgroundColor = "orange";
+                tempArr[2].style.height = "12px";
+                tempArr[2].style.backgroundColor = "green";
+                tempArr[1].style.height = "8px";
+                tempArr[1].style.backgroundColor = "green";
+                tempArr[0].style.height = "4px";
+                tempArr[0].style.backgroundColor = "green";
+                return;
+            }
+            if(arg < 1200) {
+                tempArr[4].style.height = "20px";
+                tempArr[4].style.backgroundColor = "orange";
+                tempArr[3].style.height = "16px";
+                tempArr[3].style.backgroundColor = "orange";
+                tempArr[2].style.height = "12px";
+                tempArr[2].style.backgroundColor = "orange";
+                tempArr[1].style.height = "8px";
+                tempArr[1].style.backgroundColor = "green";
+                tempArr[0].style.height = "4px";
+                tempArr[0].style.backgroundColor = "green";
+                return;
+            }
+            if(arg < 10000){
+                tempArr[4].style.height = "20px";
+                tempArr[4].style.backgroundColor = "orange";
+                tempArr[3].style.height = "16px";
+                tempArr[3].style.backgroundColor = "orange";
+                tempArr[2].style.height = "12px";
+                tempArr[2].style.backgroundColor = "orange";
+                tempArr[1].style.height = "8px";
+                tempArr[1].style.backgroundColor = "orange";
+                tempArr[0].style.height = "4px";
+                tempArr[0].style.backgroundColor = "green";
+                return;
+            }
+            
+            tempArr[4].style.height = "20px";
+            tempArr[4].style.backgroundColor = "red";
+            tempArr[3].style.height = "16px";
+            tempArr[3].style.backgroundColor = "red";
+            tempArr[2].style.height = "12px";
+            tempArr[2].style.backgroundColor = "red";
+            tempArr[1].style.height = "8px";
+            tempArr[1].style.backgroundColor = "red";
+            tempArr[0].style.height = "4px";
+            tempArr[0].style.backgroundColor = "red";
+            
+        });
     </script>
 </body>
 

@@ -62,9 +62,9 @@ treecontrol {
     color: #12fc12;
 }
 
-.table>tbody>tr>td{
+tbody#content>tr>td{
     background-color: black;
     border-top: 0px solid black;
-    font-size: 13px;
+    font-size: 14px;
     padding: 2px;
 }

@@ -17,6 +17,7 @@
     }
 
     this.loadExtension = function (windows) {
+        console.log('start loading extension.');
         var app = require('electron').app;
         extension.windowsMap.forEach(function (obj) {
             if (obj && obj.type && obj.getInstance && obj.ancestorIdxArr && obj.nickname) {
@@ -53,17 +54,29 @@
 
     var fpath = __dirname + "/../conf/alpha.json";
     this.loadConfig = function () {
+        console.log('start loading configuration.');
         var errmsg = "incorrect configuration file.";
         var configObj = JSON.parse(fs.readFileSync(fpath));
         assert(configObj.hasOwnProperty('FeedHandler'), errmsg);
         assert(configObj.hasOwnProperty('enableFavourites'), errmsg);
         global.Configuration = configObj;
-        if(!global.Configuration.hasOwnProperty('recvfrequency')){
+        global.Configuration.save = function () {
+            fs.writeFile(fpath
+                , JSON.stringify(global.Configuration, null, 2)
+                , function (err) {
+                    if(err){
+                        throw err;
+                    }
+                    console.log('Save Configuration successfully!');
+                });
+        };
+        if (!global.Configuration.hasOwnProperty('recvfrequency')) {
             global.Configuration.recvfrequency = 1000;
         }
+
         configObj = null;
-        fpath = __dirname + "/../conf/user-stock.json";
-        global.UserStockCode = JSON.parse(fs.readFileSync(fpath));
+        var fstockpath = __dirname + "/../conf/user-stock.json";
+        global.UserStockCode = JSON.parse(fs.readFileSync(fstockpath));
     }
 
     var startWatcher = function () {

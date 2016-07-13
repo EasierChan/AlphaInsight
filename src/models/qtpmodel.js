@@ -15,26 +15,12 @@
         MSG_TYPE_TOPLIST: 20,
         MSG_TYPE_NONE: -1
     };
-    
-    function AlertSubModel() {
-        this.reqno = 0;
-        this.msgtype = QtpConstant.MSG_TYPE_ALERT_SUB;
-        this.alertset = [];
-        this.filter = [];
-    }
-    
-    function AlertTypeModel() {
-        this.reqno = 0;
-        this.msgtype = QtpConstant.MSG_TYPE_ALERT_TYPE;
-    }
 
-    var MsgChannel = {
-        Alert_Sub: "alert_sub",
-        Alert_Pub: "alert_pub",
-        Alert_Sub_Cancel: "alert_sub_cancel"
+    var IPCMSG = {
+        BackendPoint: "to-backend",
+        FrontendPoint: "to-frontend"
     };
     
     module.exports.QtpConstant = QtpConstant;
-    module.exports.MsgChannel = MsgChannel;
-    module.exports.AlertSubModel = AlertSubModel;
+    module.exports.IPCMSG = IPCMSG;
 }).call(this);
