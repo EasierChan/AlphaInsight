@@ -43,6 +43,8 @@ app.on('disconnected', function () {
   electron.dialog.showMessageBox({ type: "warning", buttons: ["重新连接", "忽略"], title: "连接断开", message: "与服务器的连接已断开！" }, function (res) {
     if (res == 0) {
       app.emit('reconnect');
+    } else {
+      app.emit('heartbeat', global.Configuration.hearbeatInterval);
     }
   });
 })

@@ -8,6 +8,8 @@
     const menutemplate = require('../base/MenuWindow').menutemplate;
     const assert = require('assert');
     const fs = require('fs');
+    const os = require('os');
+    const StringDecoder = require('string_decoder').StringDecoder;
 
     var insertMenu = function (targetMenu, idx) {
         if (idx >= 0 && idx < targetMenu.length) {
@@ -52,34 +54,61 @@
         });
     }
 
-    var fpath = __dirname + "/../conf/alpha.json";
     this.loadConfig = function () {
         console.log('start loading configuration.');
+        loadDefaultSetting();
+        loadUserStock();
+    }
+
+    function loadDefaultSetting() {
+        var fpath = __dirname + "/../conf/default-setting.json";
         var errmsg = "incorrect configuration file.";
         var configObj = JSON.parse(fs.readFileSync(fpath));
         assert(configObj.hasOwnProperty('FeedHandler'), errmsg);
         assert(configObj.hasOwnProperty('enableFavourites'), errmsg);
+        errmsg = null;
         global.Configuration = configObj;
         global.Configuration.save = function () {
             fs.writeFile(fpath
                 , JSON.stringify(global.Configuration, null, 2)
                 , function (err) {
-                    if(err){
+                    if (err) {
                         throw err;
                     }
                     console.log('Save Configuration successfully!');
                 });
         };
+        
         if (!global.Configuration.hasOwnProperty('recvfrequency')) {
             global.Configuration.recvfrequency = 1000;
         }
-
+        
+        if(!global.Configuration.hasOwnProperty('hearbeatInterval')){
+            global.Configuration.hearbeatInterval = 10000;
+        }
         configObj = null;
-        var fstockpath = __dirname + "/../conf/user-stock.json";
-        global.UserStockCode = JSON.parse(fs.readFileSync(fstockpath));
     }
-
-    var startWatcher = function () {
+    
+    function loadUserStock(){
+        var fstockpath = __dirname + "/../conf/user-stock.csv";
+        global.UserStock = new Object();
+        global.UserStock.detail = new Array();
+        global.UserStock.codes = new Array();
+        
+        const decoder = new StringDecoder('utf8');
+        const rows = decoder.write(fs.readFileSync(fstockpath)).split(os.EOL);
+        const rl = require('readline');
+        var tempArr;
+        rows.forEach(function(row){
+            tempArr = row.split(',');
+            global.UserStock.detail.push(tempArr);
+            global.UserStock.codes.push(tempArr[0]);
+        });
+        
+        //console.log(global.UserStock);
+    }
+    
+    function startWatcher() {
         fs.watch(fpath, function (event, filename) {
             console.log(event, filename);
         });

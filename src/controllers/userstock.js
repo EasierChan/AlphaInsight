@@ -7,14 +7,12 @@ const electron = require('electron');
 
 angular.module('app_userstock', [])
     .controller('c_userstock', ['$scope', function ($scope) {
-        $scope.headers = ['股票代码'];
+        $scope.headers = ['股票代码','股票名称'];
         $scope.bAllSelect = false;
         var pattern = /^[0-9]{6}\.s[zh]$/;
-        const fs = require('fs');
+        //const fs = require('fs');
         //read from conf/user-stock.json
         //console.log(__dirname);
-        var config_file = __dirname + "/../conf/user-stock.json";
-        $scope.codes = JSON.parse(fs.readFileSync(config_file));
         $scope.addCode = function () {
             if (!pattern.test($scope.newcode)) {
                 alert('unvalid stock code!');
@@ -27,7 +25,7 @@ angular.module('app_userstock', [])
                 }
             }
             $scope.codes.push($scope.newcode);
-            fs.writeFileSync(config_file, JSON.stringify($scope.codes));
+            //fs.writeFileSync(config_file, JSON.stringify($scope.codes));
         };
 
         $scope.delCode = function () {
@@ -39,14 +37,16 @@ angular.module('app_userstock', [])
                     codes.push($scope.codes[i]);
                 }
             }
+            
             $scope.codes = codes;
-            fs.writeFileSync(config_file, JSON.stringify($scope.codes));
+            //fs.writeFileSync(config_file, JSON.stringify($scope.codes));
         };
 
-        electron.ipcRenderer.on('backend_change', function (e, bFavour) {
+        electron.ipcRenderer.on('backend_change', function (e, obj) {
             //console.log(bFavour);
             $scope.$apply(function () {
-                $scope.bEnable = bFavour;
+                $scope.bEnable = obj.bEnable;
+                $scope.codes = obj.codeDetail;
             })
         });
 

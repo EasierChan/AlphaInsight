@@ -16,17 +16,17 @@
             , global.Configuration.FeedHandler.port);
         Qtp.getInstance().watchDisconnection(function () {
             app.emit('disconnected');
-            app.emit('heartbeat', 10000);
+            app.emit('heartbeat', global.Configuration.hearbeatInterval);
         });
 
         var istart = 0, iend = 900;
         setInterval(function () {
             if (iend < istart) {
-                app.emit('heartbeat', 10000);
+                app.emit('heartbeat', global.Configuration.hearbeatInterval);
             }
             Qtp.getInstance().send(QtpConstant.MSG_TYPE_HEARTBEAT);
             istart = Date.now();
-        }, 10000);
+        }, global.Configuration.hearbeatInterval);
 
         Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_HEARTBEAT, function () {
             iend = Date.now();

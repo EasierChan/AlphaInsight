@@ -6,15 +6,18 @@
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <script src="../js/angular.js"></script>
     <!--<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>-->
-    <title>Favourites Window</title>
+    <title>自选股</title>
 </head>
 
 <body ng-app="app_userstock" ng-strict-di>
     <div id="tb_stock" ng-controller="c_userstock">
-        <input type="text" placeholder="股票代码: 600446.sh" ng-model="newcode">
-        <button ng-click="addCode()" title="add code">添加自选</button>
-        <button ng-click="delCode()">删除</button>
-        <input type="checkbox" ng-model="bEnable" ng-click="enableThis()">启用过滤</button>
+        <div class="input-prepend" style="padding-left: 10px;">
+            <span class="add-on">股票代码</span>
+            <input class="span2" type="text" placeholder="股票代码: 600446.sh" ng-model="newcode">
+            <button class="btn btn-default" ng-click="addCode()" title="add code">添加自选</button>
+            <button class="btn btn-default" ng-click="delCode()">删除</button>
+            <input type="checkbox" ng-model="bEnable" ng-click="enableThis()">启用过滤</button>
+        </div>
         <table class="table table-bordered table-condensed table-hover">
             <thead id="header">
                 <tr style="background-color: lightblue;">
@@ -25,12 +28,12 @@
                 </tr>
             </thead>
             <tbody id="content">
-                <tr ng-repeat="codeinfo in codes">
+                <tr ng-repeat="row in codes">
                     <td>
                         <input type="checkbox" ng-click="toggle($index)"></button>
                     </td>
-                    <td>
-                        {{codeinfo}}
+                    <td ng-repeat="col in row">
+                        {{col}}
                     </td>
                 </tr>
             </tbody>

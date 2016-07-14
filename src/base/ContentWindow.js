@@ -46,7 +46,7 @@
       realthis.win.webContents.send('backend_change'
         , {
           bEnable: global.Configuration.enableFavourites,
-          codes: global.UserStockCode
+          codes: global.UserStock.codes
         });
     });
 
@@ -59,7 +59,7 @@
       realthis.win.webContents.send('backend_change'
         , {
           bEnable: global.Configuration.enableFavourites,
-          codes: global.UserStockCode
+          codes: global.UserStock.codes
         });
       //myEmmiter.emit('favour-toggle');
     });
@@ -85,7 +85,10 @@
     });
 
     this.win.webContents.on('did-finish-load', function () {
-      realthis.win.webContents.send('backend_change', global.Configuration.enableFavourites);
+      realthis.win.webContents.send('backend_change', {
+          bEnable: global.Configuration.enableFavourites,
+          codeDetail: global.UserStock.detail
+        });
     });
   }
 
