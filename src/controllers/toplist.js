@@ -4,7 +4,7 @@ const ipcRenderer = require('electron').ipcRenderer;
 const QtpConstant = require('../models/qtpmodel').QtpConstant;
 const IPCMSG = require('../models/qtpmodel').IPCMSG;
 
-angular.module("app_toplist", ['ui.bootstrap'])
+angular.module("app_toplist", ['ui.bootstrap','ngAnimate'])
     .controller('c_parent', ['$scope', function ($scope) {
 
     }])
@@ -12,7 +12,9 @@ angular.module("app_toplist", ['ui.bootstrap'])
         $scope.oneAtATime = true;
         $scope.status = {
             isFirstOpen: true,
-            isFirstDisable: false
+            isFirstDisable: false,
+            bopen: false,
+            aopen: true
         };
         
         ipcRenderer.send(IPCMSG.BackendPoint, {reqno: 1, msgtype: QtpConstant.MSG_TYPE_TOPLIST});

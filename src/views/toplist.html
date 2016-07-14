@@ -25,7 +25,7 @@
             <uib-accordion close-others="oneAtATime">
                 <uib-accordion-group is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
                     <uib-accordion-heading>
-                        {{topArr[0].top}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                        {{topArr[0].top}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.isFirstOpen, 'glyphicon-chevron-right': !status.isFirstOpen}"></i>
                     </uib-accordion-heading>
                     <div class="checkbox">
                         <label ng-repeat="item in topArr[0].option"><input type="checkbox"> {{item.columnname}} |</label>
@@ -52,9 +52,9 @@
                     <p>Please, to delete your account, click the button below</p>
                     <button class="btn btn-danger">Delete</button>
                 </uib-accordion-group>-->
-                <uib-accordion-group is-open="status.open">
+                <uib-accordion-group is-open="status.bopen">
                     <uib-accordion-heading>
-                        {{topArr[1].top}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                        {{topArr[1].top}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.bopen, 'glyphicon-chevron-right': !status.bopen}"></i>
                     </uib-accordion-heading>
                     <div ng-repeat="item in topArr[1].option">
                         <label><input type="checkbox"> {{item.columnname}}</label>
