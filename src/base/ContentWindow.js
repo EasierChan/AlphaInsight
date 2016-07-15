@@ -71,6 +71,11 @@
 
   TableWindow.prototype.show = function () {
     this.win.show();
+    if (global.Configuration.windowSetting) {
+      if (global.Configuration.windowSetting.alwaysOnTop) {
+        this.win.setAlwaysOnTop(true);
+      }
+    }
   };
 
   function UserStockWind() {
@@ -86,9 +91,9 @@
 
     this.win.webContents.on('did-finish-load', function () {
       realthis.win.webContents.send('backend_change', {
-          bEnable: global.Configuration.enableFavourites,
-          codeDetail: global.UserStock.detail
-        });
+        bEnable: global.Configuration.enableFavourites,
+        codeDetail: global.UserStock.detail
+      });
     });
   }
 
@@ -99,7 +104,6 @@
       var realthis = this;
 
       this.win.on('close', function (event) {
-        //close;
         realthis.isClosed = true;
       });
 

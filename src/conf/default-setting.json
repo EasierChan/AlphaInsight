@@ -6,5 +6,8 @@
   "enableFavourites": false,
   "recvfrequency": "100",
   "hearbeatInterval": "10000",
-  "environment": "production"
+  "environment": "production",
+  "windowSetting": {
+     "alwaysOnTop": false
+  }
 }

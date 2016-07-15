@@ -86,6 +86,10 @@
         if(!global.Configuration.hasOwnProperty('hearbeatInterval')){
             global.Configuration.hearbeatInterval = 10000;
         }
+        
+        if(!global.Configuration.hasOwnProperty('windowSetting')){
+            global.Configuration['windowSetting']['alwaysOnTop'] = true; 
+        }
         configObj = null;
     }
     

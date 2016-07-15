@@ -97,9 +97,9 @@
         // Create the browser window.
         option = {
             title: 'AlphaInsight',
-            width: 420, height: 30,
             autoHideMenuBar: false,
-            show: false
+            show: false,
+            resizeable: false
         };
 
         option.maxWidth = ssize.width;
@@ -107,9 +107,10 @@
         option.useContentSize = true;
         option.maximizable = false;
         option.width = ssize.width - 200;//parseInt(ssize.width * 0.9);
+        option.height = 30;
         option.x = (ssize.width - option.width) / 2;
         option.y = 0;
-        //option.transparent = true;
+        
         this.win = new electron.BrowserWindow(option);
         this.win.loadURL("file://"+ __dirname + "/../views/menu.html");
         this.win.setMenu(electron.Menu.buildFromTemplate(menutemplate));
@@ -119,16 +120,6 @@
         this.win.on('close', function (e) {
             realthis.win = null;
             electron.app.quit();
-            //e.preventDefault();
-            /*dialog.showMessageBox(this.win, { type: 'warning', title: 'Warning', buttons: ['Yes', 'No'], message: 'Sure to Quit?' }, (res) => {
-                if (res == 0) {//Yes
-                    console.log('click Yes');
-                    this.win = null;
-                    app.exit(0);
-                } else {
-                    console.log('click No');
-                }
-            });*/
         });
         
         electron.app.on('heartbeat', function(idelay){
@@ -138,6 +129,12 @@
 
     MenuWindow.prototype.show = function () {
         this.win.show();
+        
+        if(global.Configuration.windowSetting){
+            if(global.Configuration.windowSetting.alwaysOnTop){
+                this.win.setAlwaysOnTop(true);
+            }
+        }
     }
 
     MenuWindow.prototype.hide = function () {
