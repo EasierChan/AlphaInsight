@@ -116,6 +116,16 @@
                     return false;
                 });
                 break;
+            case QtpConstant.MSG_TYPE_TOPLIST_BASE:
+                Qtp.getInstance().send(msg.msgtype, msg);
+                Qtp.getInstance().addListener(msg.msgtype, function (res) {
+                    if (!event.sender.isDestroyed()) {
+                        event.sender.send(IPCMSG.FrontendPoint, res);
+                        return true;
+                    }
+                    return false;
+                });
+                break;
             default:
                 break;
         }

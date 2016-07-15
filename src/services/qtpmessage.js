@@ -202,6 +202,9 @@
             case QtpConstant.MSG_TYPE_TOPLIST:
                 console.log("Send MSG_TYPE_TOPLIST");
                 break;
+            case QtpConstant.MSG_TYPE_TOPLIST_BASE:
+                console.log("Send MSG_TYPE_TOPLIST_BASE");
+                break;
             default:
                 console.log('unknown request type!');
                 break;
@@ -276,6 +279,9 @@
                 break;
             case QtpConstant.MSG_TYPE_TOPLIST:
                 console.info("Received MSG_TYPE_TOPLIST, datalen: type: %d", header.type);
+                break;
+            case QtpConstant.MSG_TYPE_TOPLIST_BASE:
+                console.info("Received MSG_TYPE_TOPLIST_BASE, datalen: type: %d", header.type);
                 break;
             case QtpConstant.MSG_TYPE_ALERT_SUB:
                 console.info("Received MSG_TYPE_ALERT_SUB, datalen: type: %d", header.type);

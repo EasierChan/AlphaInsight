@@ -10,25 +10,24 @@
     <script src="http://cdn.bootcss.com/angular-ui-bootstrap/1.3.3/ui-bootstrap-tpls.min.js"></script>
     <script src="http://cdn.bootcss.com/angular-ui-bootstrap/1.3.3/ui-bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="../js/angular-tree-control.js"></script>
-    <!-- link for CSS when using the tree as a Dom element -->
-    <link rel="stylesheet" type="text/css" href="../css/tree-control.css">
-    <!-- link for CSS when using the tree as an attribute -->
-    <link rel="stylesheet" type="text/css" href="../css/tree-control-attribute.css">
     <link rel="stylesheet" type="text/css" href="../css/style.css">
     <title>排序窗口</title>
 </head>
 
 <body ng-app="app_toplist" ng-strict-di>
     <div class="slides" ng-controller="c_parent">
+        <!--<uib-pager total-items="totalItems" ng-model="currentPage" data-ng-change="pageChange()"></uib-pager>-->
         <div id="toplist_config" ng-controller="c_config" class="slide current">
+            <div>
+                <button style="width:100%" class="btn btn-primary" ng-click="reqToplist()">提交</button>
+            </div>
             <uib-accordion close-others="oneAtATime">
                 <uib-accordion-group is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
                     <uib-accordion-heading>
                         {{topArr[0].top}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.isFirstOpen, 'glyphicon-chevron-right': !status.isFirstOpen}"></i>
                     </uib-accordion-heading>
                     <div class="checkbox">
-                        <label ng-repeat="item in topArr[0].option"><input type="checkbox"> {{item.columnname}} |</label>
+                        <label style="width:25%" ng-repeat="item in topArr[0].option" ng-click="setColumn(item.fieldname, item.columnname, bCheck)"><input type="checkbox" ng-model="bCheck">{{item.columnname}}</label>
                     </div>
                 </uib-accordion-group>
                 <!--<uib-accordion-group heading="{{group.title}}" ng-repeat="group in groups">
@@ -63,11 +62,17 @@
                 </uib-accordion-group>
             </uib-accordion>
         </div>
-        <div id="toplist_content" class="slide future">
-            <table class="table table-condensed">
+        <div id="toplist_content" ng-controller="c_topcontent" class="slide future">
+            <table class="table table-condensed table-bordered">
                 <thead>
+                    <tr>
+                        <th ng-repeat="hdr in shareObject.header">{{hdr}}</th>
+                    </tr>
                 </thead>
                 <tbody>
+                    <tr ng-repeat="row in rows">
+                        <td ng-repeat="col in row">{{col}}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
