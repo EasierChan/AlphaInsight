@@ -88,40 +88,46 @@
                     console.log('Save Configuration successfully!');
                 });
         };
-        
+
         if (!global.Configuration.hasOwnProperty('recvfrequency')) {
             global.Configuration.recvfrequency = 1000;
         }
-        
-        if(!global.Configuration.hasOwnProperty('hearbeatInterval')){
+
+        if (!global.Configuration.hasOwnProperty('hearbeatInterval')) {
             global.Configuration.hearbeatInterval = 10000;
         }
-        
-        if(!global.Configuration.hasOwnProperty('windowSetting')){
-            global.Configuration['windowSetting']['alwaysOnTop'] = true; 
+
+        if (!global.Configuration.hasOwnProperty('windowSetting')) {
+            global.Configuration['windowSetting']['alwaysOnTop'] = true;
         }
         configObj = null;
     }
-    
-    function loadUserStock(){
+
+    function loadUserStock() {
         var fstockpath = __dirname + "/../conf/user-stock.csv";
         global.UserStock = new Object();
         global.UserStock.detail = new Array();
         global.UserStock.codes = new Array();
-        
+
         const decoder = new StringDecoder('utf8');
         const rows = decoder.write(fs.readFileSync(fstockpath)).split(os.EOL);
         const rl = require('readline');
         var tempArr;
-        rows.forEach(function(row){
+        rows.forEach(function (row) {
             tempArr = row.split(',');
             global.UserStock.detail.push(tempArr);
             global.UserStock.codes.push(tempArr[0]);
         });
-        
+
+        global.UserStock.save = function () {
+            fs.writeFile(fstockpath, global.UserStock.detail.join(os.EOL), function(err) {
+                if(err) throw err;
+                console.log("stock file saved succesfully!");
+            });
+        };
         //console.log(global.UserStock);
     }
-    
+
     function startWatcher() {
         fs.watch(fpath, function (event, filename) {
             console.log(event, filename);

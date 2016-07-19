@@ -130,15 +130,20 @@
                 break;
         }
     });
+
+    ipcMain.on('save-user-stock', function (e, data) {
+        global.UserStock.detail = data;
+        global.UserStock.save();
+    });
     
-    this.requestMsg = function(type, callback){
+    this.requestMsg = function (type, callback) {
         switch (type) {
             case QtpConstant.MSG_TYPE_ALERT_TYPE:
-                Qtp.getInstance().send(type, {reqno:1, msgtype: type});
+                Qtp.getInstance().send(type, { reqno: 1, msgtype: type });
                 Qtp.getInstance().addListener(type, callback);
                 break;
             case QtpConstant.MSG_TYPE_TOPLIST:
-                Qtp.getInstance().send(type, {reqno:2, msgtype: type});
+                Qtp.getInstance().send(type, { reqno: 2, msgtype: type });
                 Qtp.getInstance().addListener(type, callback);
                 break;
             default:
@@ -146,6 +151,6 @@
                 break;
         }
     };
-    
-    
+
+
 }).call(this);
