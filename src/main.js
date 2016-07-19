@@ -48,3 +48,7 @@ app.on('disconnected', function () {
     }
   });
 })
+
+app.on('before-quit', function () {
+    application.SaveWindows();
+});

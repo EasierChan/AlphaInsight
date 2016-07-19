@@ -4,8 +4,11 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/semantic.css">
     <script src="../js/angular.js"></script>
-    <script type="text/javascript" src="../js/angular-tree-control.js"></script>
+    <script src="../js/semantic.js"></script>    
+    <script type="text/javascript" src="../js/contextMenu.js"></script>
+    <script type="text/javascript" src="../js/angular-tree-control.js"></script>    
     <!-- link for CSS when using the tree as a Dom element -->
     <link rel="stylesheet" type="text/css" href="../css/tree-control.css">
     <!-- link for CSS when using the tree as an attribute -->
@@ -16,14 +19,42 @@
 
 <body ng-app="app_alert" ng-strict-di>
     <div class="slides" ng-controller="c_parent">
-        <div id="tv_alert" ng-controller="c_treeview" class="slide current">
-            <button name="btn_ok" id="btn_ok" class="btn-alert-ok" ng-click="subAlerts()">订阅信号</button>
-            <treecontrol class="tree-light" selected-nodes="selectedNodes" tree-model="dataForTheTree" options="treeOptions" on-selection="showSelected(node)">
-                <input type="checkbox" ng-model="node.check" /> &nbsp; {{node.name}}
-            </treecontrol>
+        <div id="tv_alert" class="slide current">
+            <div class="slide current ui horizontal segments">
+                <div class="ui segment">
+                    <button name="btn_ok" id="btn_ok" class="btn-alert-ok" ng-click="subAlerts()">订阅信号</button>
+                    <treecontrol class="tree-light" selected-nodes="selectedNodes" tree-model="dataForTheTree" options="treeOptions" on-selection="showSelected(node)">
+                        <input type="checkbox" ng-model="node.check" /> &nbsp; {{node.name}}
+                    </treecontrol>
+                </div>
+                <div class="ui segment">
+                    <div>                        
+                        <table class="table table-bordered table-condensed table-hover">
+                            <thead>
+                              <tr style="background-color: lightblue;">
+                                   <th>
+                                      <input type="checkbox" ng-model="bAllSelect" ng-click="toggleAll()"></button>
+                                    </th>
+                                    <th ng-repeat="header in stockheaders">{{header}}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="content1">
+                                <tr ng-repeat="row in codes1">
+                                    <td>
+                                        <input type="checkbox" ng-model="row.checked" ng-change="toggle(row)"></button>
+                                    </td>
+                                    <td ng-repeat="col in row">
+                                        {{col}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="tb_alert" class="slide future" ng-controller="c_alert">
-            <table class="table table-condensed">
+        <div id="tb_alert" class="slide future">
+            <table class="table table-condensed" context-menu="menuOptions">
                 <thead id="header">
                     <tr style="background-color: lightblue;">
                         <th ng-repeat="header in headers">{{header}}</th>

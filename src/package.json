@@ -1,5 +1,8 @@
 {
-    "name": "alphainsight",
-    "version": "1.0.0",
-    "main": "main.js"
+  "name": "alphainsight",
+  "version": "1.0.0",
+  "main": "main.js",
+  "dependencies": {
+    "angular-bootstrap-contextmenu": "^0.9.7"
+  }
 }

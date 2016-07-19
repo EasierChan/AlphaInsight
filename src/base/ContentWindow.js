@@ -1,5 +1,5 @@
 /**
- * to show a 
+ * to show a
  */
 
 (function () {
@@ -42,11 +42,11 @@
       realthis.win = null;
     });
 
-    this.win.webContents.on('did-finish-load', function () {
+    this.win.webContents.on('did-finish-load', function () {      
       realthis.win.webContents.send('backend_change'
         , {
           bEnable: global.Configuration.enableFavourites,
-          codes: global.UserStock.codes
+          codes: global.UserStock
         });
     });
 
@@ -59,7 +59,7 @@
       realthis.win.webContents.send('backend_change'
         , {
           bEnable: global.Configuration.enableFavourites,
-          codes: global.UserStock.codes
+          codes: global.UserStock
         });
       //myEmmiter.emit('favour-toggle');
     });
@@ -89,7 +89,7 @@
       realthis.isClosed = true;
     });
 
-    this.win.webContents.on('did-finish-load', function () {
+    this.win.webContents.on('did-finish-load', function () {      
       realthis.win.webContents.send('backend_change', {
         bEnable: global.Configuration.enableFavourites,
         codeDetail: global.UserStock.detail
@@ -98,7 +98,7 @@
   }
 
   UserStockWind.prototype.show = function () {
-    if (this.isClosed) {
+    if (this.isClosed) {      
       this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false });
       this.win.loadURL('file://' + __dirname + '/../views/userstock.html');
       var realthis = this;
@@ -109,7 +109,10 @@
 
 
       this.win.webContents.on('did-finish-load', function () {
-        realthis.win.webContents.send('backend_change', global.Configuration.enableFavourites);
+        realthis.win.webContents.send('backend_change', {
+        bEnable: global.Configuration.enableFavourites,
+        codeDetail: global.UserStock.detail
+      });
       });
     }
     this.win.show();
@@ -122,6 +125,10 @@
       this.win.hide();
     }
   };
+
+  UserStockWind.prototype.saveOptions = function(){
+    console.log(this.win);
+  }
 
   function ToplistWind() {
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });

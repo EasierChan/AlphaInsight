@@ -26,6 +26,7 @@ AIApplication.prototype.Start = function () {
   this.windows['main'] = this.mainWindow;
   this.windows['preference'] = new PreferenceWindow();
   this.mainWindow.show();
+  //setTimeout(function () {utility.loadlastWins()}, 5*500);
 }
 
 AIApplication.prototype.AddWindow = function (id, wind) {
@@ -46,5 +47,9 @@ AIApplication.prototype.SetWindow = function (windId) {
     console.error('illegal registered Window!');
   }
 };
+
+AIApplication.prototype.SaveWindows = function () {
+  console.log(this.mainWindow);  
+}
 
 module.exports = AIApplication;
