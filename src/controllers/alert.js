@@ -1,10 +1,15 @@
 /**
  * controller for toplist
  */
-'use strict';
 
 //const { QtpConstant, QtpMessageClient } = require('../services/qtpmessage');
 //const Qtp = require('../services/qtpmessage');
+jQuery = $ = require('../js/jquery.js');
+
+require("../js/angular.js")
+require("../js/semantic.js")
+require("../js/contextMenu.js")
+require("../js/angular-tree-control.js")
 const QtpConstant = require('../models/qtpmodel').QtpConstant;
 const IPCMSG = require('../models/qtpmodel').IPCMSG;
 const electron = require('electron');
@@ -28,14 +33,13 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             })
         });
 
-        $scope.toggleAll = function () {            
-            var items = document.getElementById('content1').querySelectorAll("input[type='checkbox']");
-            for (var i = 0; i < items.length; ++i) {               
-                items[i].checked = $scope.bAllSelect;
-            }
+        $scope.toggleAll = function () {                        
+            for (var i = 0; i < $scope.codes1.length; ++i) {               
+                $scope.codes1[i].checked = $scope.bAllSelect;
+            }            
         };
 
-        $scope.toggle = function(item) {
+        $scope.toggle = function(item) {       
             if(!item.checked){
                 $scope.bAllSelect = false;            
             }
