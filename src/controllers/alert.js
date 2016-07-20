@@ -4,7 +4,7 @@
 
 //const { QtpConstant, QtpMessageClient } = require('../services/qtpmessage');
 //const Qtp = require('../services/qtpmessage');
-jQuery = $ = require('../js/jquery.js');
+jQuery = $ = require('../js/jquery.min.js');
 
 require("../js/angular.js")
 require("../js/semantic.js")
@@ -19,48 +19,42 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         // $scope.$on("alert_change", function (e, alerts, formats) {
         //     $scope.$broadcast("alert_pub", alerts, formats);
         // });
-   // }])
-    //.controller('c_treeview', ['$scope', '$interval', function ($scope, $interval) {
-        $scope.stockheaders = ['股票代码','股票名称'];
+        // }])
+        //.controller('c_treeview', ['$scope', '$interval', function ($scope, $interval) {
+        $scope.stockheaders = ['股票代码', '股票名称'];
+        $scope.codes1 = [];
         $scope.bAllSelect = false;
 
-        electron.ipcRenderer.on('backend_change', function (e, obj) {                          
-            $scope.$apply(function () {                
-                $scope.codes1 = obj.codes.detail;
-                for(var i=0; i < $scope.codes1.length; ++i){
-                    $scope.codes1[i]["checked"] = false;
-                }                
-            })
-        });
-
-        $scope.toggleAll = function () {                        
-            for (var i = 0; i < $scope.codes1.length; ++i) {               
+        $scope.toggleAll = function () {
+            for (var i = 0; i < $scope.codes1.length; ++i) {
                 $scope.codes1[i].checked = $scope.bAllSelect;
-            }            
+            }
         };
 
-        $scope.toggle = function(item) {       
-            if(!item.checked){
-                $scope.bAllSelect = false;            
+        $scope.toggle = function (item) {
+            if (!item.checked) {
+                $scope.bAllSelect = false;
             }
-            else{
+            else {
                 var allSelected = true;
-                for(var i = 0; i < $scope.codes1.length; i++){
+                for (var i = 0; i < $scope.codes1.length; i++) {
                     if (!$scope.codes1[i].checked) {
                         allSelected = false;
                         break;
                     }
                 }
                 $scope.bAllSelect = allSelected;
-            }            
+            }
         };
+
+        var frontListenerObj = null;
 
         $scope.menuOptions = [
             ['返回', function ($itemScope) {
-            angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
-            angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
-            $scope.$apply();
-            }],            
+                angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
+                angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
+                electron.ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
+            }],
         ];
 
         var reqobj = {
@@ -145,7 +139,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             // if(inode < 0){
             //     return;
             // }
-            
+
             // node = $scope.dataForTheTree[inode];
             if (node.children.length > 0) { // 目前只支持二级菜单
                 for (var idx in node.children) {
@@ -167,13 +161,13 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     }
                 }
             }
-            
+
             //console.log(angular.element(document.getElementById("tv_alert")));
             if (alertset.length == 0) {
                 alert("未订阅信号！");
                 return;
             }
-            
+
             //alert(alertset.join());
             //$scope.$emit("alert_change", alertset, formatset);
             alert_pub(alertset, formatset);
@@ -188,8 +182,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
         //     $scope.dataForTheTree = temp;
         // }, 1000);
-    //}])
-    //.controller('c_alert', ['$scope', '$interval', function ($scope, $interval) {
+        //}])
+        //.controller('c_alert', ['$scope', '$interval', function ($scope, $interval) {
         var bigBuyAlert = {
             reqno: 1,
             msgtype: QtpConstant.MSG_TYPE_ALERT_SUB,
@@ -198,27 +192,50 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
         var temparg = undefined;
         electron.ipcRenderer.on('backend_change', function (e, arg) {
+
+            $scope.$apply(function () {
+                for (var i = 0; i < $scope.codes1.length; ++i) {
+                    for (var j = 0; j < arg.codes.detail.length; ++j) {
+                        if ($scope.codes1[i][0] == arg.codes.detail[j][0])
+                            arg.codes.detail[j]['checked'] = $scope.codes1[i].checked;
+                    }
+                }
+
+                $scope.codes1 = arg.codes.detail;
+            })
+
             console.log(arg);
             temparg = arg;
-        });        
+        });
 
-        $scope.headers = ['时间', '信号类型', '股票代码', '股票名称', '数量'];
+        $scope.headers = ['时间', '股票代码', '股票名称', '信号类型', '数量'];
         var codes = [];
         // alert(qtpclient.alertset);
         // var qtpMsgClt = new QtpMessageClient();
         // qtpMsgClt.connectTo('172.24.10.35', '9005');
         //$scope.$on("alert_pub", function (e, alerts, formats) {
-        var alert_pub = function(alerts, formats){
+        var alert_pub = function (alerts, formats) {
 
             angular.element(document.getElementById("tv_alert")).removeClass("current").addClass("future");
             angular.element(document.getElementById("tb_alert")).removeClass("future").addClass("current");
-            
+
             bigBuyAlert.alertset = alerts;
+
+            if (frontListenerObj == null) {
+                frontListenerObj = new frontListener(alerts, formats);
+                electron.ipcRenderer.send(IPCMSG.BackendPoint, bigBuyAlert);
+            }
 
             //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_SUB, bigBuyAlert);
             //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_ANSWER, function (res) {
-            electron.ipcRenderer.send(IPCMSG.BackendPoint, bigBuyAlert);
-            electron.ipcRenderer.on(IPCMSG.FrontendPoint, function (event, res) {
+
+            electron.ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
+        };
+
+        var frontListener = function (alerts, formats) {
+
+            return function (event, res) {
+                //console.log(res);
                 if (res == undefined || res == null || res.code == undefined) {
                     console.log('invalid alert!');
                     return;
@@ -229,30 +246,32 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     return;
                 }
 
-                if (temparg.bEnable && temparg.codes.indexOf(res.code) < 0) {
+                if (temparg.bEnable && temparg.codes.codes.indexOf(res.code) < 0) {
                     console.log(res);
                     console.log('a unsubscribed stock code, %s!', res.code);
                     return;
                 }
 
-                var isCodeSelected = false;
-                for(var i=0; i < $scope.codes1.length; ++i){                    
-                    if(res.code == $scope.codes1[i][0]){
-                        isCodeSelected = $scope.codes1[i].checked;
-                        break;
+                if (temparg.bEnable) {
+                    var isCodeSelected = false;
+                    for (var i = 0; i < $scope.codes1.length; ++i) {
+                        if (res.code == $scope.codes1[i][0]) {
+                            isCodeSelected = $scope.codes1[i].checked;
+                            break;
+                        }
                     }
-                }
 
-                if(!isCodeSelected)
-                    return;
+                    if (!isCodeSelected)
+                        return;
+                }
 
                 var codeinfo = new Object();
                 var raisetime = res.time.toString();
                 codeinfo.raisetime = raisetime.length < 9 ? '0' + raisetime : raisetime;
                 codeinfo.raisetime = codeinfo.raisetime.slice(0, 2) + ':' + codeinfo.raisetime.slice(2, 4) + ':' + codeinfo.raisetime.slice(4, 6);
-                codeinfo.alertname = res.alertname;
                 codeinfo.codeid = res.code;
                 codeinfo.codename = res.cnname;
+                codeinfo.alertname = res.alertname;
                 switch (formats[idx]) {
                     case 1000:
                         codeinfo.quantity = res.quantity;
@@ -286,6 +305,6 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 $scope.$apply(function () {
                     $scope.codes = codes;
                 });
-            });
-        };
+            };
+        }
     }]);

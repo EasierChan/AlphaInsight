@@ -8,6 +8,6 @@
   "hearbeatInterval": "10000",
   "environment": "production",
   "windowSetting": {
-     "alwaysOnTop": false
+    "alwaysOnTop": false
   }
 }

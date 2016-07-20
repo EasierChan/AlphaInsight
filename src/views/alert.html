@@ -53,8 +53,8 @@
                 </div>
             </div>
         </div>
-        <div id="tb_alert" class="slide future">
-            <table class="table table-condensed" context-menu="menuOptions">
+        <div id="tb_alert" class="slide future" context-menu="menuOptions">
+            <table class="table table-condensed">
                 <thead id="header">
                     <tr style="background-color: lightblue;">
                         <th ng-repeat="header in headers">{{header}}</th>
@@ -66,13 +66,13 @@
                             {{codeinfo.raisetime}}
                         </td>
                         <td>
-                            {{codeinfo.alertname}}
-                        </td>
-                        <td>
                             {{codeinfo.codeid}}
                         </td>
                         <td>
                             {{codeinfo.codename}}
+                        </td>
+                        <td>
+                            {{codeinfo.alertname}}
                         </td>
                         <td>
                             {{codeinfo.quantity}}

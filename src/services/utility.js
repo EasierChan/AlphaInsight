@@ -54,16 +54,6 @@
         });
     }
 
-    // this.loadlastWins = function () {
-    //     console.log('loadlastWins');
-    // }
-
-    // this.saveWindows = function () {        
-    //     extension.windowsMap.forEach(function (obj) {
-    //         console.log(obj);
-    //     });
-    // }
-
     this.loadConfig = function () {
         console.log('start loading configuration.');
         loadDefaultSetting();

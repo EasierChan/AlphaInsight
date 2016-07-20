@@ -9,11 +9,11 @@
   const extension = require('../services/extension');
   const EventEmitter = require('events');
   const msgServ = require('./message');
-  //class MyEmitter extends EventEmitter { }
-
+  //class MyEmitter extends EventEmitter { }  
   //const myEmmiter = new EventEmitter();
 
   function ChartWindow() {
+    this.config = {};
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: false, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/chart.html');
     var realthis = this;
@@ -27,6 +27,7 @@
       this.win = new ChartWindow();
     }
     this.win.show();
+    return this;
   };
 
   ChartWindow.prototype.hide = function () {
@@ -34,7 +35,17 @@
       this.win.hide();
   };
 
+  ChartWindow.prototype.getConfig = function () {
+    if (this.win == null)
+      return;
+
+    var bounds = this.win.getBounds();
+    this.config.bounds = bounds;
+    return this.config;
+  }
+
   function TableWindow() {
+    this.config = {};
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/alert.html');
     var realthis = this;
@@ -76,9 +87,19 @@
         this.win.setAlwaysOnTop(true);
       }
     }
+    return this;
   };
 
+  TableWindow.prototype.getConfig = function () {
+    if (this.win == null)
+      return null;
+    var bounds = this.win.getBounds();
+    this.config.bounds = bounds;
+    return this.config;
+  }
+
   function UserStockWind() {
+    this.config = {};
     this.isClosed = false;
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/userstock.html');
@@ -118,6 +139,7 @@
     }
     this.win.show();
     this.isClosed = false;
+    return this;
     //this.win.openDevTools();
   };
 
@@ -127,11 +149,18 @@
     }
   };
 
-  UserStockWind.prototype.saveOptions = function () {
-    console.log(this.win);
+  UserStockWind.prototype.getConfig = function () {
+    if (this.win == null)
+      return null;
+
+    var bounds = this.win.getBounds();
+    
+    this.config.bounds = bounds;    
+    return this.config;
   }
 
   function ToplistWind() {
+    this.config = {};
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
     var realthis = this;
@@ -151,7 +180,18 @@
 
   ToplistWind.prototype.show = function () {
     this.win.show();
+    return this;
   };
+
+    ToplistWind.prototype.getConfig = function () {
+    if (this.win == null)
+      return null;
+
+    var bounds = this.win.getBounds();    
+    this.config.bounds = bounds;
+    
+    return this.config;
+  }
 
   extension.registerWindow('UserStockWind', function () { return new UserStockWind() }, [], '自选股', true);
   extension.registerWindow('TableWindow', function () { return new TableWindow() }, [0], '新建', false);
