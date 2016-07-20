@@ -11,12 +11,14 @@ angular.module('app_userstock', [])
     .controller('c_userstock', ['$scope', function ($scope) {
         $scope.headers = ['股票代码', '股票名称'];
         $scope.bAllSelect = false;
+        $scope.codes = [];
         var pattern = /^[0-9]{6}\.s[zh]$/;
         //const fs = require('fs');
         //read from conf/user-stock.json
         //console.log(__dirname);
         function saveToFile() {
             electron.ipcRenderer.send('save-user-stock', $scope.codes);
+            electron.ipcRenderer.send('userstock_change', $scope.bEnable);
         }
 
         $scope.addCode = function () {
@@ -30,7 +32,9 @@ angular.module('app_userstock', [])
                     return;
                 }
             }
-            $scope.codes.push([$scope.newcode, ""]);
+            var newCodes = [$scope.newcode, ""];
+            newCodes.checked = $scope.bAllSelect;
+            $scope.codes.push(newCodes);
             saveToFile();
         };
 
@@ -89,14 +93,24 @@ angular.module('app_userstock', [])
 
         $scope.toggleAll = function () {
             //alert($scope.bAllSelect);
-            var items = document.getElementById('content').querySelectorAll("input[type='checkbox']");
-            for (var i = 0; i < items.length; ++i) {
-                items[i].checked = $scope.bAllSelect;
+            for (var i = 0; i < $scope.codes.length; ++i) {
+                $scope.codes[i].checked = $scope.bAllSelect;
             }
         };
 
-        $scope.toggle = function (idx) {
-            //var items = document.getElementById('content').querySelectorAll("input[type='checkbox']");
-            //alert(items[idx].checked);
+        $scope.toggle = function (item) {
+            if (!item.checked) {
+                $scope.bAllSelect = false;
+            }
+            else {
+                var allSelected = true;
+                for (var i = 0; i < $scope.codes.length; i++) {
+                    if (!$scope.codes[i].checked) {
+                        allSelected = false;
+                        break;
+                    }
+                }
+                $scope.bAllSelect = allSelected;
+            }
         };
     }]);

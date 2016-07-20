@@ -44,14 +44,14 @@ AIApplication.prototype.SetWindow = function (windId, config) {
   }
 
   if (typeof (this.windows[windId]) == 'object') {
-    var wind = this.windows[windId].show();
+    var wind = this.windows[windId].show(windId + this.windows[windId].apps.length);
     if (typeof config != 'undefined') {
       wind.win.setBounds(config.bounds);
     }
 
     this.windows[windId].apps.push(wind);
   } else if (typeof (this.windows[windId]) == 'function') {
-    var fwind = (this.windows[windId])().show();
+    var fwind = (this.windows[windId])().show(windId + this.windows[windId].apps.length);
     if (typeof config != 'undefined') {
       fwind.win.setBounds(config.bounds);
     }
@@ -71,7 +71,9 @@ AIApplication.prototype.SaveWindows = function () {
     winsConfig[windId] = [];
 
     for (var i = 0; i < this.windows[windId].apps.length; ++i) {
-
+      if(this.windows[windId].apps[i] == null)
+        continue;
+      
       var config = this.windows[windId].apps[i].getConfig();
       if (config == null)
         continue;

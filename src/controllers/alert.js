@@ -24,11 +24,17 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         $scope.stockheaders = ['股票代码', '股票名称'];
         $scope.codes1 = [];
         $scope.bAllSelect = false;
+        $scope.dataForTheTree = {};
+        var configContent = {node:{}};
+
+        configContent.codes = $scope.codes1;
+        configContent.node = $scope.dataForTheTree;
 
         $scope.toggleAll = function () {
             for (var i = 0; i < $scope.codes1.length; ++i) {
                 $scope.codes1[i].checked = $scope.bAllSelect;
             }
+            saveConfig(); 
         };
 
         $scope.toggle = function (item) {
@@ -45,6 +51,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 }
                 $scope.bAllSelect = allSelected;
             }
+
+            saveConfig();
         };
 
         var frontListenerObj = null;
@@ -61,6 +69,12 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             reqno: 1,
             msgtype: QtpConstant.MSG_TYPE_ALERT_TYPE
         };
+        
+        var configFileName = null;
+        electron.ipcRenderer.on('configFile', function(event, arg) {
+            console.log(arg);
+            configFileName = arg.name;
+        });
 
         //qtpclient.connectTo('172.24.10.35', 9005);
         //qtpclient.send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
@@ -145,12 +159,15 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 for (var idx in node.children) {
                     node.children[idx].check = node.check;
                 }
-            }
-            //console.log($scope.dataForTheTree);
-        };
 
+                saveConfig();
+            }
+            //console.log($scope.dataForTheTree);            
+        };
+        
         var alertset = new Array();
         var formatset = new Array();
+
         $scope.subAlerts = function () {
             //alertset.length = 0;
             for (var i in $scope.dataForTheTree) {
@@ -196,10 +213,11 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             $scope.$apply(function () {
                 for (var i = 0; i < $scope.codes1.length; ++i) {
                     for (var j = 0; j < arg.codes.detail.length; ++j) {
-                        if ($scope.codes1[i][0] == arg.codes.detail[j][0])
+                        if ($scope.codes1[i][0] == arg.codes.detail[j][0]){
                             arg.codes.detail[j]['checked'] = $scope.codes1[i].checked;
+                        }
                     }
-                }
+        	    }
 
                 $scope.codes1 = arg.codes.detail;
             })
@@ -232,6 +250,14 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             electron.ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
         };
 
+        var saveConfig = function () {
+            require('fs').writeFile(configFileName, JSON.stringify(configContent), function(err){
+                if (err){
+                    console.log(err);
+                }        
+            });
+        };
+
         var frontListener = function (alerts, formats) {
 
             return function (event, res) {
@@ -261,8 +287,9 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                         }
                     }
 
-                    if (!isCodeSelected)
+                    if (!isCodeSelected){
                         return;
+                    }                        
                 }
 
                 var codeinfo = new Object();

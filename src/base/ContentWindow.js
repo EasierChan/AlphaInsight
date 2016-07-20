@@ -9,6 +9,7 @@
   const extension = require('../services/extension');
   const EventEmitter = require('events');
   const msgServ = require('./message');
+  const IPCMSG = require('../models/qtpmodel').IPCMSG;
   //class MyEmitter extends EventEmitter { }  
   //const myEmmiter = new EventEmitter();
 
@@ -49,6 +50,7 @@
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/alert.html');
     var realthis = this;
+    this.name = null;
     this.win.on('close', function (event) {
       realthis.win = null;
     });
@@ -59,6 +61,9 @@
           bEnable: global.Configuration.enableFavourites,
           codes: global.UserStock
         });
+
+      realthis.win.webContents.send('configFile'
+        , { name: realthis.name });
     });
 
     electron.ipcMain.on('userstock_change', function (e, arg) {
@@ -80,8 +85,11 @@
     }
   }
 
-  TableWindow.prototype.show = function () {
+  TableWindow.prototype.show = function (name) {
+
+    this.name = name + ".json";    
     this.win.show();
+
     if (global.Configuration.windowSetting) {
       if (global.Configuration.windowSetting.alwaysOnTop) {
         this.win.setAlwaysOnTop(true);
@@ -135,7 +143,7 @@
           codeDetail: global.UserStock.detail
         });
       });
-      
+
     }
     this.win.show();
     this.isClosed = false;
@@ -150,12 +158,12 @@
   };
 
   UserStockWind.prototype.getConfig = function () {
-    if (this.win == null)
+    if (this.win == null || this.isClosed)
       return null;
 
     var bounds = this.win.getBounds();
-    
-    this.config.bounds = bounds;    
+    this.config.bounds = bounds;
+
     return this.config;
   }
 
@@ -183,13 +191,13 @@
     return this;
   };
 
-    ToplistWind.prototype.getConfig = function () {
+  ToplistWind.prototype.getConfig = function () {
     if (this.win == null)
       return null;
 
-    var bounds = this.win.getBounds();    
+    var bounds = this.win.getBounds();
     this.config.bounds = bounds;
-    
+
     return this.config;
   }
 

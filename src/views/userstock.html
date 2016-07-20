@@ -31,7 +31,7 @@
             <tbody id="content">
                 <tr ng-repeat="row in codes">
                     <td>
-                        <input type="checkbox" ng-click="toggle($index)"></button>
+                        <input type="checkbox" ng-model="row.checked" ng-change="toggle(row)"></button>
                     </td>
                     <td ng-repeat="col in row">
                         {{col}}
