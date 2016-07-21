@@ -43,18 +43,16 @@ AIApplication.prototype.SetWindow = function (windId, config) {
     this.windows[windId].apps = [];
   }
 
-  if (typeof (this.windows[windId]) == 'object') {
-    var wind = this.windows[windId].show(windId + this.windows[windId].apps.length);
-    if (typeof config != 'undefined') {
-      wind.win.setBounds(config.bounds);
-    }
+  if (typeof config == 'undefined') {
+    config = {};    
+  }
 
-    this.windows[windId].apps.push(wind);
+  config.curName = windId + this.windows[windId].apps.length + '.json';
+
+  if (typeof (this.windows[windId]) == 'object') {
+    this.windows[windId].apps.push(this.windows[windId].show(config));
   } else if (typeof (this.windows[windId]) == 'function') {
-    var fwind = (this.windows[windId])().show(windId + this.windows[windId].apps.length);
-    if (typeof config != 'undefined') {
-      fwind.win.setBounds(config.bounds);
-    }
+    var fwind = (this.windows[windId])().show(config);    
     this.windows[windId].apps.push(fwind);
   } else {
     console.error('illegal registered Window!');
@@ -71,9 +69,9 @@ AIApplication.prototype.SaveWindows = function () {
     winsConfig[windId] = [];
 
     for (var i = 0; i < this.windows[windId].apps.length; ++i) {
-      if(this.windows[windId].apps[i] == null)
+      if (this.windows[windId].apps[i] == null)
         continue;
-      
+
       var config = this.windows[windId].apps[i].getConfig();
       if (config == null)
         continue;

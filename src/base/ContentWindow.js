@@ -10,8 +10,17 @@
   const EventEmitter = require('events');
   const msgServ = require('./message');
   const IPCMSG = require('../models/qtpmodel').IPCMSG;
+  const fs = require('fs');
   //class MyEmitter extends EventEmitter { }  
   //const myEmmiter = new EventEmitter();
+  var closeListener = function (realthis) {
+    return function (event) {
+      if (typeof realthis.config.lastName == 'undefined') {
+        fs.unlink('./winconfig/' + realthis.config.curName, function (e) { console.log(e, 'rm file', realthis.config.curName) });
+      }
+      realthis.win = null;
+    }
+  }
 
   function ChartWindow() {
     this.config = {};
@@ -42,6 +51,7 @@
 
     var bounds = this.win.getBounds();
     this.config.bounds = bounds;
+
     return this.config;
   }
 
@@ -50,20 +60,21 @@
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/alert.html');
     var realthis = this;
-    this.name = null;
-    this.win.on('close', function (event) {
-      realthis.win = null;
-    });
+
+    this.win.on('close', new closeListener(realthis));
 
     this.win.webContents.on('did-finish-load', function () {
+
+      realthis.win.webContents.send('config'
+        , realthis.config);
+
+      delete realthis.config.lastName;
+
       realthis.win.webContents.send('backend_change'
         , {
           bEnable: global.Configuration.enableFavourites,
           codes: global.UserStock
         });
-
-      realthis.win.webContents.send('configFile'
-        , { name: realthis.name });
     });
 
     electron.ipcMain.on('userstock_change', function (e, arg) {
@@ -85,10 +96,14 @@
     }
   }
 
-  TableWindow.prototype.show = function (name) {
+  TableWindow.prototype.show = function (config) {
 
-    this.name = name + ".json";    
+    this.config = config;
     this.win.show();
+
+    if (typeof config.bounds != 'undefined') {
+      this.win.setBounds(config.bounds);
+    }
 
     if (global.Configuration.windowSetting) {
       if (global.Configuration.windowSetting.alwaysOnTop) {
@@ -103,6 +118,7 @@
       return null;
     var bounds = this.win.getBounds();
     this.config.bounds = bounds;
+    this.config.lastName = this.config.curName;
     return this.config;
   }
 
@@ -114,11 +130,19 @@
     var realthis = this;
 
     this.win.on('close', function (event) {
+      // if (typeof realthis.config.lastName == 'undefined') {
+      //   fs.unlink('./winconfig/' + realthis.config.curName, function (e) { console.log(e, 'rm file', realthis.config.curName) });
+      // }
       //close;
       realthis.isClosed = true;
     });
 
     this.win.webContents.on('did-finish-load', function () {
+      // realthis.win.webContents.send('config'
+      //   , realthis.config);
+
+      // delete realthis.config.lastName;
+
       realthis.win.webContents.send('backend_change', {
         bEnable: global.Configuration.enableFavourites,
         codeDetail: global.UserStock.detail
@@ -126,18 +150,27 @@
     });
   }
 
-  UserStockWind.prototype.show = function () {
+  UserStockWind.prototype.show = function (config) {
     if (this.isClosed) {
+      this.config = {};
       this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false });
       this.win.loadURL('file://' + __dirname + '/../views/userstock.html');
       var realthis = this;
 
       this.win.on('close', function (event) {
+        // if (typeof realthis.config.lastName == 'undefined') {
+        //   fs.unlink('./winconfig/' + realthis.config.curName, function (e) { console.log(e, 'rm file', realthis.config.curName) });
+        // }
         realthis.isClosed = true;
       });
 
 
       this.win.webContents.on('did-finish-load', function () {
+        // realthis.win.webContents.send('config'
+        //   , realthis.config);
+
+        // delete realthis.config.lastName;
+
         realthis.win.webContents.send('backend_change', {
           bEnable: global.Configuration.enableFavourites,
           codeDetail: global.UserStock.detail
@@ -145,8 +178,14 @@
       });
 
     }
+    this.config = config;
     this.win.show();
     this.isClosed = false;
+
+    if (typeof config.bounds != 'undefined') {
+      this.win.setBounds(config.bounds);
+    }
+
     return this;
     //this.win.openDevTools();
   };
@@ -163,7 +202,7 @@
 
     var bounds = this.win.getBounds();
     this.config.bounds = bounds;
-
+    this.config.lastName = this.config.curName;
     return this.config;
   }
 
@@ -172,9 +211,7 @@
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
     var realthis = this;
-    this.win.on('close', function (event) {
-      realthis.win = null;
-    });
+    this.win.on('close', new closeListener(realthis));
 
     this.win.webContents.on('did-finish-load', function () {
       // TODO
@@ -186,8 +223,12 @@
     }
   }
 
-  ToplistWind.prototype.show = function () {
+  ToplistWind.prototype.show = function (config) {
     this.win.show();
+
+    if (typeof config.bounds != 'undefined') {
+      this.win.setBounds(config.bounds);
+    }
     return this;
   };
 

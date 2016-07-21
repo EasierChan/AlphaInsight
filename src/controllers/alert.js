@@ -13,6 +13,7 @@ require("../../resource/js/angular-tree-control.js")
 const QtpConstant = require('../models/qtpmodel').QtpConstant;
 const IPCMSG = require('../models/qtpmodel').IPCMSG;
 const electron = require('electron');
+const fs = require('fs');
 
 angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
     .controller('c_parent', ['$scope', function ($scope) {
@@ -25,16 +26,13 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         $scope.codes1 = [];
         $scope.bAllSelect = false;
         $scope.dataForTheTree = {};
-        var configContent = {node:{}};
-
-        configContent.codes = $scope.codes1;
-        configContent.node = $scope.dataForTheTree;
+        var configContent = null;
 
         $scope.toggleAll = function () {
             for (var i = 0; i < $scope.codes1.length; ++i) {
                 $scope.codes1[i].checked = $scope.bAllSelect;
             }
-            saveConfig(); 
+            saveConfig();
         };
 
         $scope.toggle = function (item) {
@@ -69,25 +67,56 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             reqno: 1,
             msgtype: QtpConstant.MSG_TYPE_ALERT_TYPE
         };
-        
+
         var configFileName = null;
-        electron.ipcRenderer.on('configFile', function(event, arg) {
+
+        electron.ipcRenderer.on('config', function (event, arg) {
             console.log(arg);
-            configFileName = arg.name;
+            configFileName = arg.curName;
+            if (typeof arg.lastName != 'undefined') {
+                try {
+                    configContent = require('../../winconfig/' + arg.lastName);
+                    fs.rename('./winconfig/' + arg.lastName, './winconfig/' + arg.curName, function (e) { console.log(e, 'rm oldfile') });
+                    $scope.codes1 = configContent.codes;
+
+                    for (var i = 0; i < $scope.codes1.length; ++i) {
+                        $scope.codes1[i].checked = configContent.codesCheck[i];
+                    }
+                } catch (e) {
+                    configContent = null;
+                }
+            }
+
+            electron.ipcRenderer.send(IPCMSG.BackendPoint, reqobj);
         });
+
+        var getTreeConfig = function (nodes, obj) {
+            for (var i in nodes) {
+                if (nodes[i].alertid == obj.alertid) {
+                    obj.check = nodes[i].check;
+                    break;
+                }
+
+                if (nodes[i].children && nodes[i].children.length != 0)
+                    getTreeConfig(nodes[i].children, obj);
+
+                if (typeof obj.check != 'undefined')
+                    break;
+            }
+        }
 
         //qtpclient.connectTo('172.24.10.35', 9005);
         //qtpclient.send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
         //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
         //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_TYPE_ANSER, function (data) {
-        electron.ipcRenderer.send(IPCMSG.BackendPoint, reqobj);
+
         electron.ipcRenderer.once(IPCMSG.FrontendPoint, function (event, data) {
             if (data == null) {
                 console.error('no data');
                 return;
             }
-            //console.log(data);
-            console.log(data.alerttype);
+
+            //console.log(data.alerttype, configContent);
             var dataForTheTree = new Object();
             var superType = new Array();
             var curalert = null;
@@ -96,9 +125,14 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 curalert = data.alerttype[idx];
                 if (superType.indexOf(curalert.format) < 0) { // not found
                     var superobj = new Object();
-                    superobj.check = false;
                     superobj.name = curalert.faname;
                     superobj.alertid = curalert.format;
+                    if (configContent != null)
+                        getTreeConfig(configContent.node, superobj);
+
+                    if (typeof superobj.check == 'undefined') {
+                        superobj.check = false;
+                    }
                     superobj.children = new Array();
                     dataForTheTree[curalert.format] = superobj;
                     superobj = null;
@@ -106,9 +140,14 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 }
 
                 var subObj = new Object();
-                subObj.check = false;
                 subObj.name = curalert.name;
                 subObj.alertid = curalert.alert;
+                if (configContent != null)
+                    getTreeConfig(configContent.node, subObj);
+
+                if (typeof subObj.check == 'undefined') {
+                    subObj.check = false;
+                }
                 subObj.children = new Array();
                 dataForTheTree[curalert.format].children.push(subObj);
             }
@@ -128,6 +167,10 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
             temp = null;
             dataForTheTree = null;
+
+            if(configContent != null && configContent.hasSub){
+                $scope.subAlerts();
+            }
         });
 
         $scope.treeOptions = {
@@ -159,12 +202,12 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 for (var idx in node.children) {
                     node.children[idx].check = node.check;
                 }
-
-                saveConfig();
             }
+
+            saveConfig();
             //console.log($scope.dataForTheTree);            
         };
-        
+
         var alertset = new Array();
         var formatset = new Array();
 
@@ -188,6 +231,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             //alert(alertset.join());
             //$scope.$emit("alert_change", alertset, formatset);
             alert_pub(alertset, formatset);
+            saveConfig();
         };
 
         // var temp = new Array();
@@ -213,13 +257,22 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             $scope.$apply(function () {
                 for (var i = 0; i < $scope.codes1.length; ++i) {
                     for (var j = 0; j < arg.codes.detail.length; ++j) {
-                        if ($scope.codes1[i][0] == arg.codes.detail[j][0]){
+                        if ($scope.codes1[i][0] == arg.codes.detail[j][0]) {
                             arg.codes.detail[j]['checked'] = $scope.codes1[i].checked;
+                            break;
                         }
                     }
-        	    }
+                }
 
                 $scope.codes1 = arg.codes.detail;
+
+                $scope.bAllSelect = true;
+                for (var i = 0; i < $scope.codes1.length; ++i) {
+                    if (!$scope.codes1[i].checked) {
+                        $scope.bAllSelect = false;
+                        break;
+                    }
+                }
             })
 
             console.log(arg);
@@ -251,10 +304,20 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         };
 
         var saveConfig = function () {
-            require('fs').writeFile(configFileName, JSON.stringify(configContent), function(err){
-                if (err){
+            if (configContent == null)
+                configContent = {};
+            configContent.codes = $scope.codes1;
+            configContent.codesCheck = [];
+            for (var i = 0; i < $scope.codes1.length; ++i) {
+                configContent.codesCheck.push($scope.codes1[i].checked);
+            }
+
+            configContent.node = $scope.dataForTheTree;
+            configContent.hasSub = angular.element(document.getElementById("tv_alert")).hasClass("future");
+            fs.writeFile("./winconfig/" + configFileName, JSON.stringify(configContent), function (err) {
+                if (err) {
                     console.log(err);
-                }        
+                }
             });
         };
 
@@ -287,9 +350,9 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                         }
                     }
 
-                    if (!isCodeSelected){
+                    if (!isCodeSelected) {
                         return;
-                    }                        
+                    }
                 }
 
                 var codeinfo = new Object();
