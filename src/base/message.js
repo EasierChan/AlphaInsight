@@ -75,7 +75,8 @@
     app.on('reset', function (e, arg) {
         Reset();
     });
-
+    
+    var g_reqno = 1;
     ipcMain.on(IPCMSG.BackendPoint, function (event, msg) {
         if (msg.msgtype == undefined) {
             console.error('invalid client request!');
@@ -88,12 +89,13 @@
         switch (msg.msgtype) {
             case QtpConstant.MSG_TYPE_ALERT_TYPE:
             case QtpConstant.MSG_TYPE_TOPLIST:
+                msg.reqno = g_reqno++; 
                 Qtp.getInstance().send(msg.msgtype, msg);
                 Qtp.getInstance().addListener(msg.msgtype, function (res) {
-                    if (!event.sender.isDestroyed()) {
+                    if (!event.sender.isDestroyed() && res.reqno == msg.reqno) {
                         event.sender.send(IPCMSG.FrontendPoint, res);
                         //console.log(res);
-                        return true;
+                        return false; //响应一次就取消
                     }
                     return false;
                 });
@@ -117,11 +119,12 @@
                 });
                 break;
             case QtpConstant.MSG_TYPE_TOPLIST_BASE:
+                msg.reqno = g_reqno++;
                 Qtp.getInstance().send(msg.msgtype, msg);
                 Qtp.getInstance().addListener(msg.msgtype, function (res) {
-                    if (!event.sender.isDestroyed()) {
+                    if (!event.sender.isDestroyed() && res.reqno == msg.reqno) {
                         event.sender.send(IPCMSG.FrontendPoint, res);
-                        return true;
+                        return false; //响应一次就取消
                     }
                     return false;
                 });

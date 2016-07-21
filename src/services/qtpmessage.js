@@ -20,7 +20,7 @@
         });
 
         this.sock_.on('error', function (err) {
-            console.error('connection error: ', err.message);
+            console.error('connection error: ', err);
         })
 
         this.sock_.on('data', function (data) {
@@ -35,9 +35,11 @@
         });
 
         this.sock_.on('end', function () {
-            console.log('disconnected from server: ' + parent.sock_.remoteAddress);
-            parent.bConnected = false;
-            parent.mresolver_.stop();
+            if (parent.sock_.remoteAddress) {
+                console.log('disconnected from server: ' + parent.sock_.remoteAddress);
+                parent.bConnected = false;
+                parent.mresolver_.stop();
+            }
         });
 
         this.sock_.on('close', function (had_error) {
@@ -103,7 +105,7 @@
         //         }
         //         return;
         //     }
-            
+
         //     if(realthis.recordNum == 0 && (realthis.inBufferEnd_ - realthis.inBufferBeg_) < 12){
         //         if (realthis.eventHandle_) {
         //             clearInterval(realthis.eventHandle_);
@@ -159,7 +161,7 @@
         }
 
         console.log(this.inBufferBeg_, this.inBufferEnd_);
-        while(this.resolve()){
+        while (this.resolve()) {
             ;
         } // add test
         return true;
@@ -322,8 +324,8 @@
                     ++k;
                 }
 
-                if (this.listeners_[idx].fnArr.length == 0) {
-                    this.send(QtpConstant.MSG_TYPE_ALERT_CANCEL, { reqno: 1, msgtype: QtpConstant.MSG_TYPE_ALERT_CANCEL, alertset:[] });
+                if (this.listeners_[idx].fnArr.length == 0 && header.type == QtpConstant.MSG_TYPE_ALERT_SUB) {
+                    this.send(QtpConstant.MSG_TYPE_ALERT_CANCEL, { reqno: 1, msgtype: QtpConstant.MSG_TYPE_ALERT_CANCEL, alertset: [] });
                 }
             }
         }

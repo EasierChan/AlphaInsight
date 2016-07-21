@@ -70,8 +70,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="row in rows">
-                        <td ng-repeat="col in row">{{col}}</td>
+                    <tr ng-repeat="row in rows track by $index">
+                        <td ng-repeat="col in row track by $index">{{col}}</td>
                     </tr>
                 </tbody>
             </table>
