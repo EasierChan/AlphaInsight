@@ -4,12 +4,12 @@
 
 //const { QtpConstant, QtpMessageClient } = require('../services/qtpmessage');
 //const Qtp = require('../services/qtpmessage');
-jQuery = $ = require('../js/jquery.min.js');
+jQuery = $ = require('../../resource/js/jquery.min.js');
 
-require("../js/angular.js")
-require("../js/semantic.js")
-require("../js/contextMenu.js")
-require("../js/angular-tree-control.js")
+require("../../resource/js/angular.js")
+require("../../resource/js/semantic.js")
+require("../../resource/js/contextMenu.js")
+require("../../resource/js/angular-tree-control.js")
 const QtpConstant = require('../models/qtpmodel').QtpConstant;
 const IPCMSG = require('../models/qtpmodel').IPCMSG;
 const electron = require('electron');
