@@ -168,7 +168,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             temp = null;
             dataForTheTree = null;
 
-            if(configContent != null && configContent.hasSub){
+            if (configContent != null && configContent.hasSub) {
                 $scope.subAlerts();
             }
         });
@@ -208,10 +208,9 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             //console.log($scope.dataForTheTree);            
         };
 
-        var alertset = new Array();
-        var formatset = new Array();
-
         $scope.subAlerts = function () {
+            var alertset = new Array();
+            var formatset = new Array();
             //alertset.length = 0;
             for (var i in $scope.dataForTheTree) {
                 for (var j in $scope.dataForTheTree[i].children) {
@@ -291,15 +290,17 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             angular.element(document.getElementById("tb_alert")).removeClass("future").addClass("current");
 
             bigBuyAlert.alertset = alerts;
+            bigBuyAlert.reqno = -1;
+            //console.log(alerts);
 
             if (frontListenerObj == null) {
                 frontListenerObj = new frontListener(alerts, formats);
-                electron.ipcRenderer.send(IPCMSG.BackendPoint, bigBuyAlert);
+                bigBuyAlert.reqno = 1;// 第一次send，=1；非第一次，=-1，防止主程序创建多个监听回调
             }
 
             //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_SUB, bigBuyAlert);
             //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_ANSWER, function (res) {
-
+            electron.ipcRenderer.send(IPCMSG.BackendPoint, bigBuyAlert);
             electron.ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
         };
 
@@ -331,12 +332,12 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 }
                 var idx = -1;
                 if ((idx = bigBuyAlert.alertset.indexOf(res.alertid)) < 0) {
-                    console.log(res);
+                    //console.log(res);
                     return;
                 }
 
                 if (temparg.bEnable && temparg.codes.codes.indexOf(res.code) < 0) {
-                    console.log(res);
+                    //console.log(res);
                     console.log('a unsubscribed stock code, %s!', res.code);
                     return;
                 }
