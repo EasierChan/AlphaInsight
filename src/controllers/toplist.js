@@ -12,7 +12,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         $scope.shareObject.columns = [];
         $scope.shareObject.rankMin = 1;
         $scope.shareObject.rankMax = 30;
-        
+
 
         $scope.oneAtATime = true;
         $scope.status = {
@@ -49,20 +49,20 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             column: [],
             filter: []
         };
-        
+
         ipcRenderer.once(IPCMSG.FrontendPoint, function (e, arg) {
             console.log(arg);
             reqObj.column.push(arg.toplisttype[0].option[0].fieldname);
             reqObj.column.push(arg.toplisttype[0].option[1].fieldname);
             $scope.shareObject.header.push(arg.toplisttype[0].option[0].columnname);
             $scope.shareObject.header.push(arg.toplisttype[0].option[1].columnname);
-            arg.toplisttype[0].option.splice(0,2);
+            arg.toplisttype[0].option.splice(0, 2);
             $scope.topArr = arg.toplisttype;
         });
-        
+
         var minInterval = null;
         $scope.reqToplist = function () {
-            minInterval = intervals.sort(function(a,b){
+            minInterval = intervals.sort(function (a, b) {
                 return parseInt(a) - parseInt(b);
             })[0];
             console.log(minInterval);
@@ -89,7 +89,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     if (reqObj.column.indexOf(colID) < 0) {
                         reqObj.column.push(colID);
                         $scope.shareObject.header.push(text);
-                        if(p_interval > 0 && intervals.indexOf(p_interval) < 0){
+                        if (p_interval > 0 && intervals.indexOf(p_interval) < 0) {
                             intervals.push(p_interval);
                         }
 
@@ -98,7 +98,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     if ((idx = reqObj.column.indexOf(colID)) >= 0) {
                         reqObj.column.splice(idx, 1);
                         $scope.shareObject.header.splice(idx, 1);
-                        if((idx = intervals.indexOf(p_interval)) >= 0){
+                        if ((idx = intervals.indexOf(p_interval)) >= 0) {
                             intervals.splice(idx, 1);
                         }
                     }
@@ -137,7 +137,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                 for (var col in $scope.shareObject.columns) {
                     $scope.rows[index].push(eval("obj." + $scope.shareObject.columns[col]));
                 }
-                
+
                 // for(var prop in obj){
                 //     if($scope.shareObject.columns.indexOf(prop) > -1){
                 //         $scope.rows[index].push(obj[prop]);
@@ -146,26 +146,33 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             });
             console.log($scope.rows);
             $scope.$apply();
-            
+
             // setTimeout(function(){
             //     ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
             // }, minInterval*1000);
         })
-        
+
         var headerMap = new Object();
-        
-        $scope.setOption = function(colHeader, colIndex){
+
+        $scope.predicate = '';
+        $scope.reverse = false;
+
+        $scope.setOption = function (colHeader, colIndex) {
+
+            $scope.predicate = colHeader;
+            $scope.reverse = !$scope.reverse;
+
             var obj = new Object();
             var headerID = reqObj.column[colIndex];
             obj[headerID] = new Object();
-            if(!headerMap.hasOwnProperty(colHeader)){
+            if (!headerMap.hasOwnProperty(colHeader)) {
                 headerMap[colHeader] = false;
                 obj[headerID]["asc"] = "";
             } else {
                 headerMap[colHeader] = !(headerMap[colHeader]);
                 obj[headerID]["desc"] = "";
             }
-            
+
             reqObj.filter.push(obj);
             console.log(reqObj);
             ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
