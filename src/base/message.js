@@ -123,6 +123,7 @@
                 });
                 break;
             case QtpConstant.MSG_TYPE_TOPLIST_BASE:
+            case QtpConstant.MSG_TYPE_TOPLIST_RELATE:
                 msg.reqno = g_reqno++;
                 Qtp.getInstance().send(msg.msgtype, msg);
                 Qtp.getInstance().addListener(msg.msgtype, function (res) {

@@ -74,28 +74,29 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             arg.toplisttype[0].option.splice(0, 2);
             $scope.topArr = arg.toplisttype;
         });
-        
+
         $scope.curCode = '';
         var minInterval = null;
         $scope.reqToplist = function () {
             if ($scope.status.bopen) { //相关性排序
+                relateObj.codelist.length = 0;
                 relateObj.codelist.push($scope.curCode);
-                return;
+                ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
+            } else {
+                minInterval = intervals.sort(function (a, b) {
+                    return parseInt(a) - parseInt(b);
+                })[0];
+                console.log(minInterval);
+                //console.log(reqObj.column);
+                //console.log($scope.shareObject.header);
+                $scope.shareObject.columns = reqObj.column;
+                reqObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)];
+                reqObj.master = reqObj.column[0];
+                $scope.predicate = reqObj.master;
+                console.log(reqObj);
+                ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
             }
 
-            minInterval = intervals.sort(function (a, b) {
-                return parseInt(a) - parseInt(b);
-            })[0];
-            console.log(minInterval);
-            //console.log(reqObj.column);
-            //console.log($scope.shareObject.header);
-            $scope.shareObject.columns = reqObj.column;
-            reqObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)];
-            reqObj.master = reqObj.column[0];
-            $scope.predicate = reqObj.master;
-            console.log(reqObj);
-
-            ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
             angular.element(document.getElementById("toplist_config")).removeClass("current").addClass("future");
             angular.element(document.getElementById("toplist_content")).removeClass("future").addClass("current");
         };
