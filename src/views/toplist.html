@@ -50,7 +50,10 @@
             <table class="table table-condensed table-bordered">
                 <thead>
                     <tr>
-                        <th ng-repeat="hdr in shareObject.header track by $index" style="cursor: pointer" ng-click="setOption(hdr, $index)">{{hdr}}</th>
+                        <th ng-repeat="hdr in shareObject.header track by $index" style="cursor: pointer" ng-click="predicate = hdr; reverse = !reverse; setOption(hdr, $index)">
+                            {{hdr}}
+                            <span class="sortorder" ng-show="predicate === hdr" ng-class="{reverse:reverse}"></span>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>

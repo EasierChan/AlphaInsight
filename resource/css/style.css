@@ -1,4 +1,3 @@
-
 body {
     padding: 0;
     margin: 0;
@@ -43,7 +42,6 @@ div.future {
     /*margin-left: 0px;*/
 }
 
-
 .btn-alert-ok {
     z-index: 100;
     position: fixed;
@@ -54,17 +52,25 @@ treecontrol {
     top: 30px;
 }
 
-.red{
+.red {
     color: #ff3232;
 }
 
-.green{
+.green {
     color: #12fc12;
 }
 
-tbody#content>tr>td{
+tbody#content>tr>td {
     background-color: black;
     border-top: 0px solid black;
     font-size: 14px;
     padding: 2px;
+}
+
+.sortorder:after {
+    content: '\25b2';
+}
+
+.sortorder.reverse:after {
+    content: '\25bc';
 }

@@ -216,6 +216,10 @@
     this.win.webContents.on('did-finish-load', function () {
       // TODO
       //msgServ.requestMsg()
+      realthis.win.webContents.send('config'
+        , realthis.config);
+
+      delete realthis.config.lastName;
     });
 
     if (global.Configuration.environment === 'development') {
@@ -224,6 +228,7 @@
   }
 
   ToplistWind.prototype.show = function (config) {
+    this.config = config;
     this.win.show();
 
     if (typeof config.bounds != 'undefined') {
@@ -238,7 +243,7 @@
 
     var bounds = this.win.getBounds();
     this.config.bounds = bounds;
-
+    this.config.lastName = this.config.curName;
     return this.config;
   }
 

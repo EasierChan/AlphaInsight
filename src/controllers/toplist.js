@@ -6,12 +6,14 @@ const IPCMSG = require('../models/qtpmodel').IPCMSG;
 
 angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
     .controller('c_parent', ['$scope', function ($scope) {
+
         $scope.shareObject = new Object();
         $scope.shareObject.header = [];
         $scope.shareObject.columns = [];
         $scope.shareObject.rankMin = 1;
         $scope.shareObject.rankMax = 30;
         
+
         $scope.oneAtATime = true;
         $scope.status = {
             isFirstOpen: true,
@@ -19,6 +21,25 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             bopen: false,
             aopen: true
         };
+
+        var configContent = null;
+        var configFileName = null;
+
+        ipcRenderer.on('config', function (event, arg) {
+            //console.log(arg);
+            configFileName = arg.curName;
+            if (typeof arg.lastName != 'undefined') {
+                try {
+                    configContent = require('../../winconfig/' + arg.lastName);
+                    fs.rename('./winconfig/' + arg.lastName, './winconfig/' + arg.curName, function (e) { console.log(e, 'rm oldfile') });
+
+                } catch (e) {
+                    configContent = null;
+                }
+            }
+
+            ipcRenderer.send(IPCMSG.BackendPoint, { reqno: 1, msgtype: QtpConstant.MSG_TYPE_TOPLIST });
+        });
 
 
         var reqObj = {
@@ -29,7 +50,6 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             filter: []
         };
         
-        ipcRenderer.send(IPCMSG.BackendPoint, { reqno: 1, msgtype: QtpConstant.MSG_TYPE_TOPLIST });
         ipcRenderer.once(IPCMSG.FrontendPoint, function (e, arg) {
             console.log(arg);
             reqObj.column.push(arg.toplisttype[0].option[0].fieldname);
@@ -51,14 +71,19 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             $scope.shareObject.columns = reqObj.column;
             reqObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)];
             console.log(reqObj);
+
             ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
             angular.element(document.getElementById("toplist_config")).removeClass("current").addClass("future");
             angular.element(document.getElementById("toplist_content")).removeClass("future").addClass("current");
         };
 
         var idx;
+
         var intervals = new Array();
         $scope.setColumn = function (colID, text, p_interval, bCheck) {
+
+            console.log(colID, text, p_interval, bCheck);
+
             if (bCheck != undefined) {
                 if (bCheck) {
                     if (reqObj.column.indexOf(colID) < 0) {
@@ -67,6 +92,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                         if(p_interval > 0 && intervals.indexOf(p_interval) < 0){
                             intervals.push(p_interval);
                         }
+
                     }
                 } else {
                     if ((idx = reqObj.column.indexOf(colID)) >= 0) {
@@ -79,9 +105,26 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                 }
             }
         };
-        
-        /////
-        ////////content
+
+        var saveConfig = function () {
+            if (configContent == null)
+                configContent = {};
+            configContent.topArr = $scope.topArr;
+            // configContent.codesCheck = [];
+            // for (var i = 0; i < $scope.codes1.length; ++i) {
+            //     configContent.codesCheck.push($scope.codes1[i].checked);
+            // }
+
+            //            configContent.hasSub = angular.element(document.getElementById("tv_alert")).hasClass("future");
+            fs.writeFile("./winconfig/" + configFileName, JSON.stringify(configContent), function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        };
+
+        // }])
+        // .controller('c_topcontent', ['$scope', function ($scope) {
         $scope.rows = [];
         ipcRenderer.on(IPCMSG.FrontendPoint, function (e, res) {
             if (res.msgtype != QtpConstant.MSG_TYPE_TOPLIST_BASE) {
