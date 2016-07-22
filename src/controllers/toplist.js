@@ -46,22 +46,43 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             reqno: 1,
             msgtype: QtpConstant.MSG_TYPE_TOPLIST_BASE,
             ranke: [$scope.shareObject.rankMin, $scope.shareObject.rankMax],
+            master: '',
+            sort: 1,
             column: [],
             filter: []
         };
 
+        var relateObj = {
+            reqno: 1,
+            msgtype: QtpConstant.MSG_TYPE_TOPLIST_RELATE,
+            ranke: [1, 10],
+            master: '',
+            codelist: [],
+            column: ['szWindCode', 'szCNName', 'nMatch', 'nChgAmpl', 'nSpeed']
+        };
+
+
+        var formats = new Array();
         ipcRenderer.once(IPCMSG.FrontendPoint, function (e, arg) {
             console.log(arg);
             reqObj.column.push(arg.toplisttype[0].option[0].fieldname);
             reqObj.column.push(arg.toplisttype[0].option[1].fieldname);
+            formats.push(1000); //代码
+            formats.push(1000); //名称
             $scope.shareObject.header.push(arg.toplisttype[0].option[0].columnname);
             $scope.shareObject.header.push(arg.toplisttype[0].option[1].columnname);
             arg.toplisttype[0].option.splice(0, 2);
             $scope.topArr = arg.toplisttype;
         });
-
+        
+        $scope.curCode = '';
         var minInterval = null;
         $scope.reqToplist = function () {
+            if ($scope.status.bopen) { //相关性排序
+                relateObj.codelist.push($scope.curCode);
+                return;
+            }
+
             minInterval = intervals.sort(function (a, b) {
                 return parseInt(a) - parseInt(b);
             })[0];
@@ -70,6 +91,8 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             //console.log($scope.shareObject.header);
             $scope.shareObject.columns = reqObj.column;
             reqObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)];
+            reqObj.master = reqObj.column[0];
+            $scope.predicate = reqObj.master;
             console.log(reqObj);
 
             ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
@@ -80,7 +103,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         var idx;
 
         var intervals = new Array();
-        $scope.setColumn = function (colID, text, p_interval, bCheck) {
+        $scope.setColumn = function (colID, text, p_interval, format, bCheck) {
 
             console.log(colID, text, p_interval, bCheck);
 
@@ -88,6 +111,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                 if (bCheck) {
                     if (reqObj.column.indexOf(colID) < 0) {
                         reqObj.column.push(colID);
+                        formats.push(format);
                         $scope.shareObject.header.push(text);
                         if (p_interval > 0 && intervals.indexOf(p_interval) < 0) {
                             intervals.push(p_interval);
@@ -97,6 +121,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                 } else {
                     if ((idx = reqObj.column.indexOf(colID)) >= 0) {
                         reqObj.column.splice(idx, 1);
+                        formats.splice(idx, 1);
                         $scope.shareObject.header.splice(idx, 1);
                         if ((idx = intervals.indexOf(p_interval)) >= 0) {
                             intervals.splice(idx, 1);
@@ -123,33 +148,42 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             });
         };
 
-        // }])
-        // .controller('c_topcontent', ['$scope', function ($scope) {
         $scope.rows = [];
         ipcRenderer.on(IPCMSG.FrontendPoint, function (e, res) {
-            if (res.msgtype != QtpConstant.MSG_TYPE_TOPLIST_BASE) {
-                return;
+            if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_BASE) {
+                //console.log(res.data);
+                res.data.forEach(function (obj, index) {
+                    //console.log(obj);
+                    $scope.rows[index] = new Array();
+                    for (var col in $scope.shareObject.columns) {
+                        //$scope.rows[index].push(eval("obj." + $scope.shareObject.columns[col]));
+                        if (formats[col] == 1001) {
+                            $scope.rows[index].push(obj[$scope.shareObject.columns[col]] + '%');
+                            continue;
+                        }
+                        if (formats[col] == 1002) {
+                            $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 10000);
+                            continue;
+                        }
+                        $scope.rows[index].push(obj[$scope.shareObject.columns[col]]);
+                    }
+
+                    // for(var prop in obj){
+                    //     if($scope.shareObject.columns.indexOf(prop) > -1){
+                    //         $scope.rows[index].push(obj[prop]);
+                    //     }
+                    // }
+                });
+                console.log($scope.rows);
+                $scope.$apply();
+
+                // setTimeout(function(){
+                //     ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
+                // }, minInterval*1000);
+            } else if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_RELATE) {
+
+
             }
-            //console.log(res.data);
-            res.data.forEach(function (obj, index) {
-                //console.log(obj);
-                $scope.rows[index] = new Array();
-                for (var col in $scope.shareObject.columns) {
-                    $scope.rows[index].push(eval("obj." + $scope.shareObject.columns[col]));
-                }
-
-                // for(var prop in obj){
-                //     if($scope.shareObject.columns.indexOf(prop) > -1){
-                //         $scope.rows[index].push(obj[prop]);
-                //     }
-                // }
-            });
-            console.log($scope.rows);
-            $scope.$apply();
-
-            // setTimeout(function(){
-            //     ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
-            // }, minInterval*1000);
         })
 
         var headerMap = new Object();
@@ -161,21 +195,13 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
 
             $scope.predicate = colHeader;
             $scope.reverse = !$scope.reverse;
-
-            var obj = new Object();
+            // var obj = new Object();
             var headerID = reqObj.column[colIndex];
-            obj[headerID] = new Object();
-            if (!headerMap.hasOwnProperty(colHeader)) {
-                headerMap[colHeader] = false;
-                obj[headerID]["asc"] = "";
-            } else {
-                headerMap[colHeader] = !(headerMap[colHeader]);
-                obj[headerID]["desc"] = "";
-            }
 
-            reqObj.filter.push(obj);
+            reqObj.master = headerID;
+            reqObj.sort = $scope.reverse ? -1 : 1;
             console.log(reqObj);
             ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
-            obj = null;
+            //obj = null;
         }
     }]);

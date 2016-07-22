@@ -31,7 +31,7 @@
                         <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.isFirstOpen, 'glyphicon-chevron-right': !status.isFirstOpen}"></i>
                     </uib-accordion-heading>
                     <div class="checkbox">
-                        <label style="width:25%" ng-repeat="item in topArr[0].option" ng-click="setColumn(item.fieldname, item.columnname, item.interval, bCheck)"><input type="checkbox" ng-model="bCheck">{{item.columnname}}</label>
+                        <label style="width:25%" ng-repeat="item in topArr[0].option" ng-click="setColumn(item.fieldname, item.columnname, item.interval, item.format, bCheck)"><input type="checkbox" ng-model="bCheck">{{item.columnname}}</label>
                     </div>
                 </uib-accordion-group>
                 
@@ -41,12 +41,12 @@
                     </uib-accordion-heading>
                     <div ng-repeat="item in topArr[1].option">
                         <label><input type="checkbox"> {{item.columnname}}</label>
-                        <input type="text" placeholder="{{item.example}}">
+                        <input type="text" placeholder="{{item.example}}" ng-model="curCode">
                     </div>
                 </uib-accordion-group>
             </uib-accordion>
         </div>
-        <div id="toplist_content" class="slide future">
+        <div id="toplist_content" class="slide future" style="overflow: auto">
             <table class="table table-condensed table-bordered">
                 <thead>
                     <tr>

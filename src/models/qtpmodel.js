@@ -14,6 +14,7 @@
         MSG_TYPE_ALERT_CANCEL: 14,
         MSG_TYPE_TOPLIST: 20,
         MSG_TYPE_TOPLIST_BASE: 21,
+        MSG_TYPE_TOPLIST_RELATE: 22,
         MSG_TYPE_NONE: -1
     };
 

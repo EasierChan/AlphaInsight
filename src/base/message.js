@@ -109,7 +109,11 @@
                 }
                 msg.alertset = alerts;
                 Qtp.getInstance().send(msg.msgtype, msg);
-
+                if(msg.reqno == -1){ //only send msg, avoid addListener for the Same Window
+                    msg.reqno = 1;
+                    break;
+                }
+                
                 Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT, function (res) {
                     if (!event.sender.isDestroyed()) {
                         event.sender.send(IPCMSG.FrontendPoint, res);
