@@ -17,40 +17,24 @@
 <body ng-app="app_toplist" ng-strict-di>
     <div class="slides" ng-controller="c_parent">
         <!--<uib-pager total-items="totalItems" ng-model="currentPage" data-ng-change="pageChange()"></uib-pager>-->
-        <div id="toplist_config" ng-controller="c_config" class="slide current">
+        <div id="toplist_config" class="slide current">
             <div>
                 <button style="width:100%" class="btn btn-primary" ng-click="reqToplist()">提交</button>
+            </div>
+            <div>
+                查询排名：<input class="input-s" type="text" ng-model="shareObject.rankMin"> 至 <input class="input-s" type="text" ng-model="shareObject.rankMax">
             </div>
             <uib-accordion close-others="oneAtATime">
                 <uib-accordion-group is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
                     <uib-accordion-heading>
-                        {{topArr[0].top}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.isFirstOpen, 'glyphicon-chevron-right': !status.isFirstOpen}"></i>
+                        {{topArr[0].top}}
+                        <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.isFirstOpen, 'glyphicon-chevron-right': !status.isFirstOpen}"></i>
                     </uib-accordion-heading>
                     <div class="checkbox">
-                        <label style="width:25%" ng-repeat="item in topArr[0].option" ng-click="setColumn(item.fieldname, item.columnname, bCheck)"><input type="checkbox" ng-model="bCheck">{{item.columnname}}</label>
+                        <label style="width:25%" ng-repeat="item in topArr[0].option" ng-click="setColumn(item.fieldname, item.columnname, item.interval, bCheck)"><input type="checkbox" ng-model="bCheck">{{item.columnname}}</label>
                     </div>
                 </uib-accordion-group>
-                <!--<uib-accordion-group heading="{{group.title}}" ng-repeat="group in groups">
-                    {{group.content}}
-                </uib-accordion-group>
-                <uib-accordion-group heading="Dynamic Body Content">
-                    <p>The body of the uib-accordion group grows to fit the contents</p>
-                    <button type="button" class="btn btn-default btn-sm" ng-click="addItem()">Add Item</button>
-                    <div ng-repeat="item in items">{{item}}</div>
-                </uib-accordion-group>
-                <uib-accordion-group heading="Custom template" template-url="group-template.html">
-                    Hello
-                </uib-accordion-group>
-                <uib-accordion-group is-open="status.isCustomHeaderOpen" template-url="group-template.html">
-                    <uib-accordion-heading>
-                        Custom template with custom header template <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.isCustomHeaderOpen, 'glyphicon-chevron-right': !status.isCustomHeaderOpen}"></i>
-                    </uib-accordion-heading>
-                    World
-                </uib-accordion-group>
-                <uib-accordion-group heading="Delete account" panel-class="panel-danger">
-                    <p>Please, to delete your account, click the button below</p>
-                    <button class="btn btn-danger">Delete</button>
-                </uib-accordion-group>-->
+                
                 <uib-accordion-group is-open="status.bopen">
                     <uib-accordion-heading>
                         {{topArr[1].top}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.bopen, 'glyphicon-chevron-right': !status.bopen}"></i>
@@ -62,11 +46,11 @@
                 </uib-accordion-group>
             </uib-accordion>
         </div>
-        <div id="toplist_content" ng-controller="c_topcontent" class="slide future">
+        <div id="toplist_content" class="slide future">
             <table class="table table-condensed table-bordered">
                 <thead>
                     <tr>
-                        <th ng-repeat="hdr in shareObject.header">{{hdr}}</th>
+                        <th ng-repeat="hdr in shareObject.header track by $index" style="cursor: pointer" ng-click="setOption(hdr, $index)">{{hdr}}</th>
                     </tr>
                 </thead>
                 <tbody>
