@@ -80,7 +80,8 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         $scope.reqToplist = function () {
             if ($scope.status.bopen) { //相关性排序
                 $scope.shareObject.header = ['代码','名称', '现价', '涨幅','涨速'];
-                formats = [1000, 1000, 1001, 1002, 1002];
+                $scope.shareObject.columns = relateObj.column;
+                formats = [1000, 1000, 1002, 1001, 1001];
                 //relateObj.codelist.length = 0;
                 //console.log($scope.shareObject.curCode);
                 relateObj.codelist.push($scope.shareObject.curCode);
@@ -155,7 +156,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
 
         $scope.rows = [];
         ipcRenderer.on(IPCMSG.FrontendPoint, function (e, res) {
-            if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_BASE || res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_RELATE) {
+            if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_BASE ) {
                 //console.log(res.data);
                 res.data.forEach(function (obj, index) {
                     //console.log(obj);
@@ -186,8 +187,25 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                 //     ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
                 // }, minInterval*1000);
             } else if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_RELATE) {
-
-
+                res.data.forEach(function (obj, index) {
+                    console.log(obj);
+                    $scope.rows[index] = new Array();
+                    for (var col in $scope.shareObject.columns) {
+                        
+                        if (formats[col] == 1001) {
+                            $scope.rows[index].push(obj[$scope.shareObject.columns[col]] + '%');
+                            continue;
+                        }
+                        if (formats[col] == 1002) {
+                            $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 10000);
+                            continue;
+                        }
+                        $scope.rows[index].push(obj[$scope.shareObject.columns[col]]);
+                    }
+                });
+                    
+                console.log($scope.rows);
+                $scope.$apply();
             }
         })
 
