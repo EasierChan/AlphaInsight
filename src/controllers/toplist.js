@@ -12,7 +12,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         $scope.shareObject.columns = [];
         $scope.shareObject.rankMin = 1;
         $scope.shareObject.rankMax = 30;
-
+        $scope.shareObject.curCode = "000001.sz";
 
         $scope.oneAtATime = true;
         $scope.status = {
@@ -55,7 +55,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         var relateObj = {
             reqno: 1,
             msgtype: QtpConstant.MSG_TYPE_TOPLIST_RELATE,
-            ranke: [1, 10],
+            ranke: [$scope.shareObject.rankMin, $scope.shareObject.rankMax],
             master: '',
             codelist: [],
             column: ['szWindCode', 'szCNName', 'nMatch', 'nChgAmpl', 'nSpeed']
@@ -75,12 +75,16 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             $scope.topArr = arg.toplisttype;
         });
 
-        $scope.curCode = '';
+        //$scope.curCode = "000001.sz";
         var minInterval = null;
         $scope.reqToplist = function () {
             if ($scope.status.bopen) { //相关性排序
-                relateObj.codelist.length = 0;
-                relateObj.codelist.push($scope.curCode);
+                $scope.shareObject.header = ['代码','名称', '现价', '涨幅','涨速'];
+                formats = [1000, 1000, 1001, 1002, 1002];
+                //relateObj.codelist.length = 0;
+                //console.log($scope.shareObject.curCode);
+                relateObj.codelist.push($scope.shareObject.curCode);
+                console.log(relateObj);
                 ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
             } else {
                 minInterval = intervals.sort(function (a, b) {
@@ -151,7 +155,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
 
         $scope.rows = [];
         ipcRenderer.on(IPCMSG.FrontendPoint, function (e, res) {
-            if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_BASE) {
+            if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_BASE || res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_RELATE) {
                 //console.log(res.data);
                 res.data.forEach(function (obj, index) {
                     //console.log(obj);

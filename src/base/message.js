@@ -14,13 +14,13 @@
         console.log('start connect to server.');
         Qtp.getInstance().connectTo(global.Configuration.FeedHandler.ip
             , global.Configuration.FeedHandler.port);
-        Qtp.getInstance().watchDisconnection(function () {
+        Qtp.getInstance().onDisconnected(function () {
             app.emit('disconnected');
             app.emit('heartbeat', global.Configuration.hearbeatInterval);
         });
 
         var istart = 0, iend = 900;
-        setInterval(function () {
+        setInterval(function heartBeat() {
             if (iend < istart) {
                 app.emit('heartbeat', global.Configuration.hearbeatInterval);
             }
@@ -31,6 +31,10 @@
         Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_HEARTBEAT, function () {
             iend = Date.now();
             app.emit('heartbeat', iend - istart);
+        });
+
+        Qtp.getInstance().onConnected(function () {
+            heartBeat();
         });
     }
 
@@ -75,7 +79,7 @@
     app.on('reset', function (e, arg) {
         Reset();
     });
-    
+
     var g_reqno = 1;
     ipcMain.on(IPCMSG.BackendPoint, function (event, msg) {
         if (msg.msgtype == undefined) {
@@ -89,7 +93,7 @@
         switch (msg.msgtype) {
             case QtpConstant.MSG_TYPE_ALERT_TYPE:
             case QtpConstant.MSG_TYPE_TOPLIST:
-                msg.reqno = g_reqno++; 
+                msg.reqno = g_reqno++;
                 Qtp.getInstance().send(msg.msgtype, msg);
                 Qtp.getInstance().addListener(msg.msgtype, function (res) {
                     if (!event.sender.isDestroyed() && res.reqno == msg.reqno) {
@@ -109,11 +113,11 @@
                 }
                 msg.alertset = alerts;
                 Qtp.getInstance().send(msg.msgtype, msg);
-                if(msg.reqno == -1){ //only send msg, avoid addListener for the Same Window
+                if (msg.reqno == -1) { //only send msg, avoid addListener for the Same Window
                     msg.reqno = 1;
                     break;
                 }
-                
+
                 Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT, function (res) {
                     if (!event.sender.isDestroyed()) {
                         event.sender.send(IPCMSG.FrontendPoint, res);
@@ -143,7 +147,7 @@
         global.UserStock.detail = data;
         global.UserStock.save();
     });
-    
+
     this.requestMsg = function (type, callback) {
         switch (type) {
             case QtpConstant.MSG_TYPE_ALERT_TYPE:

@@ -41,7 +41,7 @@
                     </uib-accordion-heading>
                     <div ng-repeat="item in topArr[1].option">
                         <label><input type="checkbox"> {{item.columnname}}</label>
-                        <input type="text" placeholder="{{item.example}}" ng-model="curCode">
+                        <input type="text" class="input-s" placeholder="{{item.example}}" ng-model="shareObject.curCode" />
                     </div>
                 </uib-accordion-group>
             </uib-accordion>
