@@ -67,6 +67,10 @@ tbody#content>tr>td {
     padding: 2px;
 }
 
+td, th{
+    min-width: 50px;
+}
+
 .sortorder:after {
     content: '\25b2';
 }
