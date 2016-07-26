@@ -135,7 +135,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
             relateObj.reqno = -1;
             reqObj.reqno = -1;
-
+            relateObj.codelist=[];
             //shareObject_bak = angular.copy($scope.shareObject);
 
             if (frontListenerObj == null) {
