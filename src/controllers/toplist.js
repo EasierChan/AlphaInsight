@@ -239,7 +239,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                         for (var col in $scope.shareObject.columns) {
                             //$scope.rows[index].push(eval("obj." + $scope.shareObject.columns[col]));
                             if (formats[col] == 1001) {
-                                $scope.rows[index].push(obj[$scope.shareObject.columns[col]] + '%');
+                                $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]])/ 100 + '%');
                                 continue;
                             }
                             if (formats[col] == 1002) {
@@ -268,7 +268,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                         for (var col in $scope.shareObject.columns) {
 
                             if (formats[col] == 1001) {
-                                $scope.rows[index].push(obj[$scope.shareObject.columns[col]] + '%');
+                                $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]])/ 100 + '%');
                                 continue;
                             }
                             if (formats[col] == 1002) {
