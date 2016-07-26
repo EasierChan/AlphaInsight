@@ -164,7 +164,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     for (var col in $scope.shareObject.columns) {
                         //$scope.rows[index].push(eval("obj." + $scope.shareObject.columns[col]));
                         if (formats[col] == 1001) {
-                            $scope.rows[index].push(obj[$scope.shareObject.columns[col]] + '%');
+                            $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 100+ '%');
                             continue;
                         }
                         if (formats[col] == 1002) {
@@ -193,7 +193,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     for (var col in $scope.shareObject.columns) {
                         
                         if (formats[col] == 1001) {
-                            $scope.rows[index].push(obj[$scope.shareObject.columns[col]] + '%');
+                            $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) /100+ '%');
                             continue;
                         }
                         if (formats[col] == 1002) {
@@ -216,15 +216,21 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
 
         $scope.setOption = function (colHeader, colIndex) {
 
-            $scope.predicate = colHeader;
-            $scope.reverse = !$scope.reverse;
-            // var obj = new Object();
-            var headerID = reqObj.column[colIndex];
 
-            reqObj.master = headerID;
-            reqObj.sort = $scope.reverse ? -1 : 1;
-            console.log(reqObj);
-            ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
-            //obj = null;
+            if($scope.status.bopen){
+                
+            } else {
+                $scope.predicate = colHeader;
+                $scope.reverse = !$scope.reverse;
+                // var obj = new Object();
+                var headerID = reqObj.column[colIndex];
+
+                reqObj.master = headerID;
+                reqObj.sort = $scope.reverse ? -1 : 1;
+                
+                console.log(reqObj);
+                ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
+                //obj = null;
+            }
         }
     }]);
