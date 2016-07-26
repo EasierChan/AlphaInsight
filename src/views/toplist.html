@@ -22,7 +22,7 @@
                 <button style="width:100%" class="btn btn-primary" ng-click="reqToplist()">提交</button>
             </div>
             <div>
-                查询排名：<input class="input-s" type="text" ng-model="shareObject.rankMin"> 至 <input class="input-s" type="text" ng-model="shareObject.rankMax">
+                查询排名：<input class="input-s" type="text" ng-change="saveConfig()" ng-model="shareObject.rankMin"> 至 <input class="input-s" type="text" ng-change="saveConfig()" ng-model="shareObject.rankMax">
             </div>
             <uib-accordion close-others="oneAtATime">
                 <uib-accordion-group is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
@@ -31,7 +31,7 @@
                         <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.isFirstOpen, 'glyphicon-chevron-right': !status.isFirstOpen}"></i>
                     </uib-accordion-heading>
                     <div class="checkbox">
-                        <label style="width:25%" ng-repeat="item in topArr[0].option" ng-click="setColumn(item.fieldname, item.columnname, item.interval, item.format, bCheck)"><input type="checkbox" ng-model="bCheck">{{item.columnname}}</label>
+                        <label style="width:25%" ng-repeat="item in topArr[0].option" ng-click="setColumn(item.fieldname, item.columnname, item.interval, item.format, item.bCheck)"><input type="checkbox" ng-model="item.bCheck">{{item.columnname}}</label>
                     </div>
                 </uib-accordion-group>
                 
@@ -40,13 +40,13 @@
                         {{topArr[1].top}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.bopen, 'glyphicon-chevron-right': !status.bopen}"></i>
                     </uib-accordion-heading>
                     <div ng-repeat="item in topArr[1].option">
-                        <label><input type="checkbox"> {{item.columnname}}</label>
-                        <input type="text" class="input-s" placeholder="{{item.example}}" ng-model="shareObject.curCode" />
+                        <label><input type="checkbox" ng-change="saveConfig(1)" ng-model="shareObject.bCurCheck">{{item.columnname}}</label>
+                        <input type="text" class="input-s" placeholder="{{item.example}}" ng-change="saveConfig(2)" ng-model="shareObject.curCode"/>
                     </div>
                 </uib-accordion-group>
             </uib-accordion>
         </div>
-        <div id="toplist_content" class="slide future" style="overflow: auto">
+        <div id="toplist_content" class="slide future" style="overflow: auto" context-menu="menuOptions">
             <table class="table table-condensed table-bordered">
                 <thead>
                     <tr>

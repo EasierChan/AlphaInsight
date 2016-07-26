@@ -60,6 +60,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
                 angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
                 electron.ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
+                saveConfig();
             }],
         ];
 
