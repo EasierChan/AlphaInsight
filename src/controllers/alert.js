@@ -285,6 +285,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         // var qtpMsgClt = new QtpMessageClient();
         // qtpMsgClt.connectTo('172.24.10.35', '9005');
         //$scope.$on("alert_pub", function (e, alerts, formats) {
+
+        var bSelectedCode = [];
         var alert_pub = function (alerts, formats) {
 
             angular.element(document.getElementById("tv_alert")).removeClass("current").addClass("future");
@@ -293,6 +295,12 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             bigBuyAlert.alertset = alerts;
             bigBuyAlert.reqno = -1;
             //console.log(alerts);
+            bSelectedCode = [];
+            for (var i = 0; i < $scope.codes1.length; ++i) {
+                if ($scope.codes1[i].checked) {
+                    bSelectedCode.push($scope.codes1[i]);
+                }
+            }
 
             if (frontListenerObj == null) {
                 frontListenerObj = new frontListener(alerts, formats);
@@ -343,18 +351,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     return;
                 }
 
-                if (temparg.bEnable) {
-                    var isCodeSelected = false;
-                    for (var i = 0; i < $scope.codes1.length; ++i) {
-                        if (res.code == $scope.codes1[i][0]) {
-                            isCodeSelected = $scope.codes1[i].checked;
-                            break;
-                        }
-                    }
-
-                    if (!isCodeSelected) {
-                        return;
-                    }
+                if (bSelectedCode.length > 0 && bSelectedCode.indexOf(res.code) < 0) {
+                    return;
                 }
 
                 var codeinfo = new Object();
