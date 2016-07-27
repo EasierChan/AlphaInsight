@@ -145,7 +145,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
             }
 
             if ($scope.status.bopen) { //相关性排序
-                $scope.shareObject.header = ['代码', '名称', '现价', '涨幅', '涨速'];
+                $scope.shareObject.header = ['相关系数','代码', '名称', '现价', '涨幅', '涨速'];
                 $scope.shareObject.columns = relateObj.column;
                 formats = [1000, 1000, 1002, 1001, 1001];
                 //relateObj.codelist.length = 0;
@@ -262,9 +262,12 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                     //     ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
                     // }, minInterval*1000);
                 } else if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_RELATE) {
+                    //console.log(res);
                     res.data.forEach(function (obj, index) {
-                        console.log(obj);
                         $scope.rows[index] = new Array();
+                        //相关性系数列
+                        $scope.rows[index].push(res.relevance[index]);
+                        //
                         for (var col in $scope.shareObject.columns) {
 
                             if (formats[col] == 1001) {
@@ -277,9 +280,10 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                             }
                             $scope.rows[index].push(obj[$scope.shareObject.columns[col]]);
                         }
+
                     });
 
-                    console.log($scope.rows);
+                    //console.log($scope.rows);
                     $scope.$apply();
                 }
             }
