@@ -19,6 +19,9 @@
         fs.unlink('./winconfig/' + realthis.config.curName, function (e) { console.log(e, 'rm file', realthis.config.curName) });
       }
       realthis.win = null;
+      if(1 > --global.Subscriber.alerts){
+          msgServ.CancelSub(0);
+      }
     }
   }
 

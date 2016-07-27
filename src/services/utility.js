@@ -58,6 +58,9 @@
         console.log('start loading configuration.');
         loadDefaultSetting();
         loadUserStock();
+        //计数器
+        global.Subscriber = new Object();
+        global.Subscriber.alerts = 0;
     }
 
     function loadDefaultSetting() {

@@ -117,7 +117,8 @@
                     msg.reqno = 1;
                     break;
                 }
-
+                
+                global.Subscriber.alerts += 1;
                 Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT, function (res) {
                     if (!event.sender.isDestroyed()) {
                         event.sender.send(IPCMSG.FrontendPoint, res);
@@ -148,15 +149,10 @@
         global.UserStock.save();
     });
 
-    this.requestMsg = function (type, callback) {
+    this.CancelSub = function (type) {
         switch (type) {
-            case QtpConstant.MSG_TYPE_ALERT_TYPE:
-                Qtp.getInstance().send(type, { reqno: 1, msgtype: type });
-                Qtp.getInstance().addListener(type, callback);
-                break;
-            case QtpConstant.MSG_TYPE_TOPLIST:
-                Qtp.getInstance().send(type, { reqno: 2, msgtype: type });
-                Qtp.getInstance().addListener(type, callback);
+            case 0: //cancel alert:
+                Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_CANCEL, { reqno: 1, msgtype: QtpConstant.MSG_TYPE_ALERT_CANCEL, alertset: [] });
                 break;
             default:
                 console.error('wrong type: %d', type);
