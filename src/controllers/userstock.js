@@ -63,12 +63,16 @@ angular.module('app_userstock', [])
                 if (filename) {
                     //console.log(filename);
                     fs.readFile(filename[0], function (err, data) {
-                        if (err) throw err;
+                        if (err) {
+                            console.error(err);
+                            throw err;
+                        }
                         const decoder = new StringDecoder('utf8');
                         const rows = decoder.write(data).split(require('os').EOL);
                         const rl = require('readline');
                         $scope.codes.length = 0;
                         rows.forEach(function (row) {
+                            if(row.indexOf(',') < 0) return;
                             $scope.codes.push(row.split(','));
                         });
 

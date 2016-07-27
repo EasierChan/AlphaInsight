@@ -16,7 +16,8 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
         $scope.shareObject.rankMax = 30;
         $scope.shareObject.curCode = "000001.sz";
         $scope.shareObject.bCurCheck = false;
-        //var shareObject_bak = {};
+        $scope.shareObject.normalTimer = null;
+        $scope.shareObject.relateTimer = null;
 
         $scope.oneAtATime = true;
         $scope.status = {
@@ -51,6 +52,8 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                 angular.element(document.getElementById("toplist_content")).removeClass("current").addClass("future");
                 ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
                 $scope.rows = [];
+                clearTimeout($scope.shareObject.normalTimer);
+                clearTimeout($scope.shareObject.relateTimer);
                 //$scope.shareObject = angular.copy(shareObject_bak);
                 $scope.saveConfig();
             }],
@@ -230,7 +233,12 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
         $scope.rows = [];
         var frontListener = function () {
+
+            $scope.rows = [];
+
             return function (e, res) {
+
+                //console.log(res);
                 if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_BASE) {
                     //console.log(res.data);
                     res.data.forEach(function (obj, index) {
@@ -258,11 +266,10 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                     //console.log($scope.rows);
                     $scope.$apply();
 
-                    // setTimeout(function(){
-                    //     ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
-                    // }, minInterval*1000);
+                    $scope.shareObject.normalTimer = setTimeout(function(){
+                         ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
+                     }, minInterval*1000);
                 } else if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_RELATE) {
-                    //console.log(res);
                     res.data.forEach(function (obj, index) {
                         $scope.rows[index] = new Array();
                         //相关性系数列
@@ -285,6 +292,9 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
                     //console.log($scope.rows);
                     $scope.$apply();
+                    $scope.shareObject.relateTimer = setTimeout(function(){
+                         ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
+                     },  3 * 1000);
                 }
             }
         };
