@@ -105,8 +105,8 @@
         var realthis = this;
         return this.clientSock_.connectTo(ip, port, function () {
             realthis.connState = 2;
-            if(typeof(cb_connect_) == 'function'){
-                realthis.cb_connect_();
+            if(typeof(realthis.cb_connect_) == 'function'){
+                (realthis.cb_connect_)();
             }
         });
     };
@@ -253,6 +253,9 @@
         switch (header.type) {
             case QtpConstant.MSG_TYPE_LOGIN:
                 console.info("Received MSG_TYPE_LOGIN ,type: %d", header.type);
+                break;
+            case QtpConstant.MSG_TYPE_CODETABLE:
+                console.log("Received MSG_TYPE_CODETABLE, type: %d", header.type);
                 break;
             case QtpConstant.MSG_TYPE_ALERT_TYPE:
                 console.info("Received MSG_TYPE_ALERT_TYPE, type: %d", header.type);

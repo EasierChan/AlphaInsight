@@ -20,13 +20,14 @@
         });
 
         var istart = 0, iend = 900;
-        setInterval(function heartBeat() {
+        function heartBeat() {
             if (iend < istart) {
                 app.emit('heartbeat', global.Configuration.hearbeatInterval);
             }
             Qtp.getInstance().send(QtpConstant.MSG_TYPE_HEARTBEAT);
             istart = Date.now();
-        }, global.Configuration.hearbeatInterval);
+        }
+        setInterval(heartBeat, global.Configuration.hearbeatInterval);
 
         Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_HEARTBEAT, function () {
             iend = Date.now();
@@ -34,7 +35,21 @@
         });
 
         Qtp.getInstance().onConnected(function () {
+            console.log("send first heartbeat!");
             heartBeat();
+            //TODO 请求代码表
+            Qtp.getInstance().send(QtpConstant.MSG_TYPE_CODETABLE, 
+                {reqno: 1, msgtype: QtpConstant.MSG_TYPE_CODETABLE, codelist: []});
+            Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_CODETABLE, function(res){
+                console.log(res);
+                if(typeof(res.codetable) == "Array" ){
+                    res.codetable.forEach(row){
+                        global.codeTable.push({code: row.szWindCode, name: row.szCNName});
+                    };
+                } else {
+                    console.error("code table error!");
+                }
+            });
         });
     }
 

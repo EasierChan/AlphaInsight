@@ -12,7 +12,8 @@ angular.module('app_userstock', [])
         $scope.headers = ['股票代码', '股票名称'];
         $scope.bAllSelect = false;
         $scope.codes = [];
-        var pattern = /^[0-9]{6}\.s[zh]$/;
+        //var pattern = /^[0-9]{6}\.s[zh]$/;
+        var pattern =  /^[0-9]{6}$/;
         //const fs = require('fs');
         //read from conf/user-stock.json
         //console.log(__dirname);

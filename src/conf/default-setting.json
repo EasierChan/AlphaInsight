@@ -1,7 +1,7 @@
 {
   "FeedHandler": {
     "ip": "172.24.10.35",
-    "port": "9005"
+    "port": "2015"
   },
   "enableFavourites": true,
   "recvfrequency": "100",

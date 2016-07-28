@@ -29,15 +29,17 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
         var configContent = null;
         var configFileName = null;
+        var winID = null;
 
         ipcRenderer.on('config', function (event, arg) {
             console.log(arg);
-            configFileName = arg.curName;
+            configFileName = arg.cfg.curName;
+            winID = arg.winID;
             if (typeof arg.lastName != 'undefined') {
                 try {
-                    configContent = require('../../winconfig/' + arg.lastName);
-                    console.log(configContent);
-                    fs.rename('./winconfig/' + arg.lastName, './winconfig/' + arg.curName, function (e) { console.log(e, 'rm oldfile') });
+                    configContent = require('../../winconfig/' + arg.cfg.lastName);
+                    //console.log(configContent);
+                    fs.rename('./winconfig/' + arg.cfg.lastName, './winconfig/' + arg.cfg.curName, function (e) { console.log(e, 'rm oldfile') });
                 } catch (e) {
                     configContent = null;
                 }
@@ -57,6 +59,10 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                 //$scope.shareObject = angular.copy(shareObject_bak);
                 $scope.saveConfig();
             }],
+            ['置顶', function($itemScope){
+                //alert(JSON.stringify(winID));
+                ipcRenderer.send('set-window-top' + winID,  true);
+            }]
         ];
 
         var reqObj = {

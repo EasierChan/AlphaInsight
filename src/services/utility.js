@@ -61,6 +61,8 @@
         //计数器
         global.Subscriber = new Object();
         global.Subscriber.alerts = 0;
+        //代码表
+        global.codeTable = [];
     }
 
     function loadDefaultSetting() {
@@ -96,7 +98,19 @@
         configObj = null;
     }
 
-    function loadUserStock() {
+    function loadUserStockFromJSON(){
+        var fstockpath = __dirname + "/../conf/user-stock.json";
+        global.UserStock = new Object();
+        global.UserStock.codes = JSON.parse(fs.readFileSync(fstockpath));
+        global.UserStock.detail = [];
+        global.UserStock.setCodeDetail = function(){
+            global.UserStock.codes.forEach(function(codeid){
+                global.UserStock.detail.push(codeid, )
+            });
+        }
+    }
+    // 加载自选股
+    function loadUserStockFromCSV() {
         var fstockpath = __dirname + "/../conf/user-stock.csv";
         global.UserStock = new Object();
         global.UserStock.detail = new Array();

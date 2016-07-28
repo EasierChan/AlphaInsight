@@ -12,7 +12,7 @@ require("../../resource/js/contextMenu.js")
 require("../../resource/js/angular-tree-control.js")
 const QtpConstant = require('../models/qtpmodel').QtpConstant;
 const IPCMSG = require('../models/qtpmodel').IPCMSG;
-const electron = require('electron');
+const ipcRenderer = require('electron').ipcRenderer;
 const fs = require('fs');
 
 angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
@@ -54,14 +54,18 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         };
 
         var frontListenerObj = null;
+        var temparg = null;
 
         $scope.menuOptions = [
             ['返回', function ($itemScope) {
                 angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
                 angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
-                electron.ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
+                ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
                 saveConfig();
             }],
+            ['置顶', function($itemScope){
+                ipcRenderer.send('set-window-top' + temparg.winID,  true);
+            }]
         ];
 
         var reqobj = {
@@ -71,7 +75,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
         var configFileName = null;
 
-        electron.ipcRenderer.on('config', function (event, arg) {
+        ipcRenderer.on('config', function (event, arg) {
             console.log(arg);
             configFileName = arg.curName;
             if (typeof arg.lastName != 'undefined') {
@@ -88,7 +92,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 }
             }
 
-            electron.ipcRenderer.send(IPCMSG.BackendPoint, reqobj);
+            ipcRenderer.send(IPCMSG.BackendPoint, reqobj);
         });
 
         var getTreeConfig = function (nodes, obj) {
@@ -111,7 +115,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
         //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_TYPE_ANSER, function (data) {
 
-        electron.ipcRenderer.once(IPCMSG.FrontendPoint, function (event, data) {
+        ipcRenderer.once(IPCMSG.FrontendPoint, function (event, data) {
             if (data == null) {
                 console.error('no data');
                 return;
@@ -251,8 +255,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             filter: []
         };
 
-        var temparg = undefined;
-        electron.ipcRenderer.on('backend_change', function (e, arg) {
+        ipcRenderer.on('backend_change', function (e, arg) {
 
             $scope.$apply(function () {
                 for (var i = 0; i < $scope.codes1.length; ++i) {
@@ -275,7 +278,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 }
             })
 
-            console.log(arg);
+            //console.log(arg);
             temparg = arg;
         });
 
@@ -309,8 +312,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
             //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_SUB, bigBuyAlert);
             //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_ANSWER, function (res) {
-            electron.ipcRenderer.send(IPCMSG.BackendPoint, bigBuyAlert);
-            electron.ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
+            ipcRenderer.send(IPCMSG.BackendPoint, bigBuyAlert);
+            ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
         };
 
         var saveConfig = function () {

@@ -129,6 +129,7 @@
 
     MenuWindow.prototype.show = function () {
         this.win.show();
+        this.win.setAlwaysOnTop(true);
         
         if(global.Configuration.windowSetting){
             if(global.Configuration.windowSetting.alwaysOnTop){
