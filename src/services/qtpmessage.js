@@ -81,7 +81,7 @@
     function QtpMessageClient(cb_connect, cb_disconnect) {
         this.connState = 0;
         this.clientSock_ = new TcpClient(this);
-        this.maxLen_ = 1024 * 1024;
+        this.maxLen_ = 5 * 1024 * 1024;
         this.headerLen_ = 12;
         this.chunkLen_ = 4 * 1024;
         this.inBuffer_ = Buffer.alloc(this.chunkLen_, 0);
@@ -105,7 +105,7 @@
         var realthis = this;
         return this.clientSock_.connectTo(ip, port, function () {
             realthis.connState = 2;
-            if(typeof(realthis.cb_connect_) == 'function'){
+            if (typeof (realthis.cb_connect_) == 'function') {
                 (realthis.cb_connect_)();
             }
         });
@@ -370,8 +370,8 @@
     QtpMessageClient.prototype.onDisconnected = function (cb_disconnect) {
         this.cb_disconnect_ = cb_disconnect;
     }
-    
-    QtpMessageClient.prototype.onConnected = function(cb_connect){
+
+    QtpMessageClient.prototype.onConnected = function (cb_connect) {
         this.cb_connect_ = cb_connect;
     };
 

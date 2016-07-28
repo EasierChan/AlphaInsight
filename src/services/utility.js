@@ -57,7 +57,7 @@
     this.loadConfig = function () {
         console.log('start loading configuration.');
         loadDefaultSetting();
-        loadUserStock();
+        loadUserStockFromJSON();
         //计数器
         global.Subscriber = new Object();
         global.Subscriber.alerts = 0;
@@ -98,16 +98,34 @@
         configObj = null;
     }
 
-    function loadUserStockFromJSON(){
+    function loadUserStockFromJSON() {
         var fstockpath = __dirname + "/../conf/user-stock.json";
         global.UserStock = new Object();
         global.UserStock.codes = JSON.parse(fs.readFileSync(fstockpath));
         global.UserStock.detail = [];
-        global.UserStock.setCodeDetail = function(){
-            global.UserStock.codes.forEach(function(codeid){
-                global.UserStock.detail.push(codeid, )
+        global.UserStock.setDetail = function () {
+            var count = global.UserStock.codes.length;
+            var idx = 0;
+            global.codeTable.forEach(function (item) {
+                if(count == 0)return;
+                if ((idx = global.UserStock.codes.indexOf(item.code)) >= 0) {
+                    var arr = new Array();
+                    arr.push(global.UserStock.codes[idx]);
+                    arr.push(item.name);
+                    global.UserStock.detail.push(arr);
+                    --count;
+                }
             });
+            //console.log(global.UserStock.detail);
+            //console.log(global.codeTable[0]);
         }
+        
+        global.UserStock.save = function () {
+            fs.writeFile(fstockpath, JSON.stringify(global.UserStock.codes), function (err) {
+                if (err) throw err;
+                console.log("stock file saved succesfully!");
+            });
+        };
     }
     // 加载自选股
     function loadUserStockFromCSV() {
@@ -127,8 +145,8 @@
         });
 
         global.UserStock.save = function () {
-            fs.writeFile(fstockpath, global.UserStock.detail.join(os.EOL), function(err) {
-                if(err) throw err;
+            fs.writeFile(fstockpath, global.UserStock.detail.join(os.EOL), function (err) {
+                if (err) throw err;
                 console.log("stock file saved succesfully!");
             });
         };

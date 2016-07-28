@@ -3,7 +3,7 @@
  */
 'use strict';
 
-const electron = require('electron');
+const ipcRenderer = require('electron').ipcRenderer;
 const fs = require('fs');
 const StringDecoder = require('string_decoder').StringDecoder;
 
@@ -13,13 +13,13 @@ angular.module('app_userstock', [])
         $scope.bAllSelect = false;
         $scope.codes = [];
         //var pattern = /^[0-9]{6}\.s[zh]$/;
-        var pattern =  /^[0-9]{6}$/;
+        var pattern = /^[0-9]{6}$/;
         //const fs = require('fs');
         //read from conf/user-stock.json
         //console.log(__dirname);
         function saveToFile() {
-            electron.ipcRenderer.send('save-user-stock', $scope.codes);
-            electron.ipcRenderer.send('userstock_change', $scope.bEnable);
+            ipcRenderer.send('save-user-stock', $scope.codes);
+            ipcRenderer.send('userstock_change', $scope.bEnable);
         }
 
         $scope.addCode = function () {
@@ -29,11 +29,17 @@ angular.module('app_userstock', [])
             }
 
             for (var idx in $scope.codes) {
-                if ($scope.codes[idx] === $scope.newcode) {
+                if ($scope.codes[idx][0] === $scope.newcode) {
                     return;
                 }
             }
-            var newCodes = [$scope.newcode, ""];
+
+            var ret = ipcRenderer.sendSync('get-code-name', $scope.newcode);
+            if(ret == -1){
+                alert("股票代码不存在!");
+                return;
+            }
+            var newCodes = [$scope.newcode, ret];
             newCodes.checked = $scope.bAllSelect;
             $scope.codes.push(newCodes);
             saveToFile();
@@ -69,12 +75,19 @@ angular.module('app_userstock', [])
                             throw err;
                         }
                         const decoder = new StringDecoder('utf8');
-                        const rows = decoder.write(data).split(require('os').EOL);
-                        const rl = require('readline');
-                        $scope.codes.length = 0;
-                        rows.forEach(function (row) {
-                            if(row.indexOf(',') < 0) return;
-                            $scope.codes.push(row.split(','));
+                        const codeArr = decoder.write(data).split(require('os').EOL);
+
+                        codeArr.forEach(function (item) {
+                            for (var i = 0; i < $scope.codes.length; ++i) {
+                                if ($scope.codes[i][0] == item) {
+                                    break;
+                                }
+                            }
+
+                            if (i == $scope.codes.length) {
+                                var ret = ipcRenderer.sendSync('get-code-name', $scope.newcode);
+                                $scope.codes.push([item, ret]);
+                            }
                         });
 
                         $scope.$apply();
@@ -84,7 +97,7 @@ angular.module('app_userstock', [])
             });
         }
 
-        electron.ipcRenderer.on('backend_change', function (e, obj) {
+        ipcRenderer.on('backend_change', function (e, obj) {
             //console.log(bFavour);
             $scope.$apply(function () {
                 $scope.bEnable = obj.bEnable;
@@ -93,7 +106,7 @@ angular.module('app_userstock', [])
         });
 
         $scope.enableThis = function () {
-            electron.ipcRenderer.send('userstock_change', $scope.bEnable);
+            ipcRenderer.send('userstock_change', $scope.bEnable);
         }
 
         $scope.toggleAll = function () {
@@ -119,3 +132,10 @@ angular.module('app_userstock', [])
             }
         };
     }]);
+
+document.onkeydown = function (event) {
+    if (event.keyCode == 13) {
+        document.getElementById("enter").click();
+        return false;
+    }
+}

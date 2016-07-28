@@ -41,13 +41,14 @@
             Qtp.getInstance().send(QtpConstant.MSG_TYPE_CODETABLE, 
                 {reqno: 1, msgtype: QtpConstant.MSG_TYPE_CODETABLE, codelist: []});
             Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_CODETABLE, function(res){
-                console.log(res);
-                if(typeof(res.codetable) == "Array" ){
-                    res.codetable.forEach(row){
+                //console.log(res);
+                if(res.codetable instanceof Array ){
+                    res.codetable.forEach(function(row){
                         global.codeTable.push({code: row.szWindCode, name: row.szCNName});
-                    };
+                    });
+                    global.UserStock.setDetail();
                 } else {
-                    console.error("code table error!");
+                    console.error("code table error! %s", typeof(res.codetable));
                 }
             });
         });
@@ -161,6 +162,11 @@
 
     ipcMain.on('save-user-stock', function (e, data) {
         global.UserStock.detail = data;
+        global.UserStock.codes = null;
+        global.UserStock.codes = [];
+        global.UserStock.detail.forEach(function(item){
+           global.UserStock.codes.push(item[0]);
+        });
         global.UserStock.save();
     });
 
