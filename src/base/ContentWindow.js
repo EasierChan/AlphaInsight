@@ -27,38 +27,11 @@
       }
     }
   }
-
-  function ChartWindow() {
-    this.config = {};
-    this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: false, show: false });
-    this.win.loadURL('file://' + __dirname + '/../views/chart.html');
-    var realthis = this;
-    this.win.on('close', function (event) {
-      realthis.win = null;
+  
+  function registerWindowTopListener(winref){
+    electron.ipcMain.on('set-window-top' + winref.win.id, function (e, arg) {
+      winref.win.setAlwaysOnTop(arg);
     });
-  }
-
-  ChartWindow.prototype.show = function () {
-    if (this.win == null) {
-      this.win = new ChartWindow();
-    }
-    this.win.show();
-    return this;
-  };
-
-  ChartWindow.prototype.hide = function () {
-    if (this.win != null)
-      this.win.hide();
-  };
-
-  ChartWindow.prototype.getConfig = function () {
-    if (this.win == null)
-      return;
-
-    var bounds = this.win.getBounds();
-    this.config.bounds = bounds;
-
-    return this.config;
   }
 
   function TableWindow() {
@@ -66,10 +39,8 @@
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/alert.html');
     var realthis = this;
-
-    electron.ipcMain.on('set-window-top' + this.win.id, function (e, arg) {
-      realthis.win.setAlwaysOnTop(true);
-    });
+    
+    registerWindowTopListener(realthis);
 
     this.win.on('close', closeListener(realthis, 'alert'));
 
@@ -228,9 +199,7 @@
     this.win.loadURL('file://' + __dirname + '/../views/toplist.html');
     var realthis = this;
 
-    electron.ipcMain.on('set-window-top' + this.win.id, function (e, arg) {
-      realthis.win.setAlwaysOnTop(true);
-    });
+    registerWindowTopListener(realthis);
 
     this.win.on('close', closeListener(realthis));
 

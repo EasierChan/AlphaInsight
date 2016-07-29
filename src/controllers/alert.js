@@ -55,8 +55,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
         var frontListenerObj = null;
         var temparg = null;
-
-        function setContextMenu(){
+        var isTop = false;
+        function setContextMenu() {
             $scope.menuOptions = [
                 ['返回', function ($itemScope) {
                     angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
@@ -64,8 +64,17 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
                     saveConfig();
                 }],
-                ['置顶', function ($itemScope) {
-                    ipcRenderer.send('set-window-top' + temparg.winID, true);
+                ['置顶', function () {
+                    isTop = !isTop;
+                    ipcRenderer.send('set-window-top' + temparg.winID, isTop);
+                }, function () {
+                    return !isTop;
+                }],
+                ['取消置顶', function () {
+                    isTop = !isTop;
+                    ipcRenderer.send('set-window-top' + temparg.winID, isTop);
+                }, function () {
+                    return isTop;
                 }]
             ];
         }
@@ -93,7 +102,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     configContent = null;
                 }
             }
-            
+
             ipcRenderer.send(IPCMSG.BackendPoint, reqobj);
         });
 
@@ -302,7 +311,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 if ($scope.codes1[i].checked) {
                     bSelectedCode.push($scope.codes1[i][0]);
                 }
-            }            
+            }
 
             if (frontListenerObj == null) {
                 frontListenerObj = new frontListener(alerts, formats);

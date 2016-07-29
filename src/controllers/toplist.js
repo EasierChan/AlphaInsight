@@ -48,6 +48,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
             ipcRenderer.send(IPCMSG.BackendPoint, { reqno: 1, msgtype: QtpConstant.MSG_TYPE_TOPLIST });
         });
 
+        var isTop = false;
         $scope.menuOptions = [
             ['返回', function ($itemScope) {
                 angular.element(document.getElementById("toplist_config")).removeClass("future").addClass("current");
@@ -59,9 +60,17 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                 //$scope.shareObject = angular.copy(shareObject_bak);
                 $scope.saveConfig();
             }],
-            ['置顶', function($itemScope){
-                //alert(JSON.stringify(winID));
-                ipcRenderer.send('set-window-top' + winID,  true);
+            ['置顶', function () {
+                isTop = !isTop;
+                ipcRenderer.send('set-window-top' + winID, isTop);
+            }, function () {
+                return !isTop;
+            }],
+            ['取消置顶', function () {
+                isTop = !isTop;
+                ipcRenderer.send('set-window-top' + winID, isTop);
+            }, function () {
+                return isTop;
             }]
         ];
 
@@ -129,10 +138,10 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                 if (configContent.bCurCheck)
                     $scope.shareObject.bCurCheck = configContent.bCurCheck;
 
-                
+
                 $scope.status = configContent.status;
                 $scope.$apply();
-                
+
                 if (configContent.hasSub) {
                     $scope.reqToplist();
                 }
@@ -146,7 +155,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
             relateObj.reqno = -1;
             reqObj.reqno = -1;
-            relateObj.codelist=[];
+            relateObj.codelist = [];
             //shareObject_bak = angular.copy($scope.shareObject);
 
             if (frontListenerObj == null) {
@@ -156,7 +165,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
             }
 
             if ($scope.status.bopen) { //相关性排序
-                $scope.shareObject.header = ['相关系数','代码', '名称', '现价', '涨幅', '涨速'];
+                $scope.shareObject.header = ['相关系数', '代码', '名称', '现价', '涨幅', '涨速'];
                 $scope.shareObject.columns = relateObj.column;
                 formats = [1000, 1000, 1002, 1001, 1001];
                 //relateObj.codelist.length = 0;
@@ -198,7 +207,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                 if (bCheck) {
                     if (reqObj.column.indexOf(colID) < 0) {
                         reqObj.column.push(colID);
-                        formats.push(format);                        
+                        formats.push(format);
                         baseHeader.push(text);
                         if (p_interval > 0 && intervals.indexOf(p_interval) < 0) {
                             intervals.push(p_interval);
@@ -208,7 +217,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                 } else {
                     if ((idx = reqObj.column.indexOf(colID)) >= 0) {
                         reqObj.column.splice(idx, 1);
-                        formats.splice(idx, 1);                        
+                        formats.splice(idx, 1);
                         baseHeader.splice(idx, 1);
                         if ((idx = intervals.indexOf(p_interval)) >= 0) {
                             intervals.splice(idx, 1);
@@ -255,7 +264,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                         for (var col in $scope.shareObject.columns) {
                             //$scope.rows[index].push(eval("obj." + $scope.shareObject.columns[col]));
                             if (formats[col] == 1001) {
-                                $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]])/ 100 + '%');
+                                $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 100 + '%');
                                 continue;
                             }
                             if (formats[col] == 1002) {
@@ -274,9 +283,9 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                     //console.log($scope.rows);
                     $scope.$apply();
 
-                    $scope.shareObject.normalTimer = setTimeout(function(){
-                         ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
-                     }, minInterval*1000);
+                    $scope.shareObject.normalTimer = setTimeout(function () {
+                        ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
+                    }, minInterval * 1000);
                 } else if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_RELATE) {
                     res.data.forEach(function (obj, index) {
                         $scope.rows[index] = new Array();
@@ -286,7 +295,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                         for (var col in $scope.shareObject.columns) {
 
                             if (formats[col] == 1001) {
-                                $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]])/ 100 + '%');
+                                $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 100 + '%');
                                 continue;
                             }
                             if (formats[col] == 1002) {
@@ -300,9 +309,9 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
                     //console.log($scope.rows);
                     $scope.$apply();
-                    $scope.shareObject.relateTimer = setTimeout(function(){
-                         ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
-                     },  3 * 1000);
+                    $scope.shareObject.relateTimer = setTimeout(function () {
+                        ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
+                    }, 3 * 1000);
                 }
             }
         };
@@ -315,8 +324,8 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
         $scope.setOption = function (colHeader, colIndex) {
 
 
-            if($scope.status.bopen){
-                
+            if ($scope.status.bopen) {
+
             } else {
                 $scope.predicate = colHeader;
                 $scope.reverse = !$scope.reverse;
@@ -325,7 +334,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
                 reqObj.master = headerID;
                 reqObj.sort = $scope.reverse ? -1 : 1;
-                
+
                 console.log(reqObj);
                 ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
                 //obj = null;

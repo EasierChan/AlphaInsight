@@ -106,7 +106,7 @@
         option.maxHeight = 30;
         option.useContentSize = true;
         option.maximizable = false;
-        option.width = ssize.width - 200;//parseInt(ssize.width * 0.9);
+        option.width = 300;//ssize.width - 200;//parseInt(ssize.width * 0.9);
         option.height = 30;
         option.x = (ssize.width - option.width) / 2;
         option.y = 0;
