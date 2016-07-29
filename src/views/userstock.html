@@ -13,17 +13,17 @@
     <div id="tb_stock" ng-controller="c_userstock">
         <div class="input-prepend" style="padding-left: 10px;">
             <!--<span class="add-on">股票代码</span>-->
+            <input type="checkbox" ng-model="bEnable" ng-click="enableThis()">启用过滤</button>
             <input class="span2" type="text" placeholder="股票代码: 600446.sh" ng-model="newcode">
             <button id="enter" class="btn btn-default" ng-click="addCode()" title="add code">添加自选</button>
-            <button class="btn btn-default" ng-click="delCode()">删除</button>
+            <!--<button class="btn btn-default" ng-click="delCode()">删除</button>-->
             <button class="btn btn-default" ng-click="importFromFile()">导入</button>
-            <input type="checkbox" ng-model="bEnable" ng-click="enableThis()">启用过滤</button>
         </div>
         <table class="table table-bordered table-condensed table-hover">
             <thead id="header">
                 <tr style="background-color: lightblue;">
                     <th>
-                        <input type="checkbox" ng-model="bAllSelect" ng-click="toggleAll()"></button>
+                        <!--<input type="checkbox" ng-model="bAllSelect" ng-click="toggleAll()"></button>-->
                     </th>
                     <th ng-repeat="header in headers">{{header}}</th>
                 </tr>
@@ -31,7 +31,10 @@
             <tbody id="content">
                 <tr ng-repeat="row in codes">
                     <td>
-                        <input type="checkbox" ng-model="row.checked" ng-change="toggle(row)"></button>
+                        <!--<input type="checkbox" ng-model="row.checked" ng-change="toggle(row)"></button>-->
+                        <button type="button" class="btn btn-sm btn-default" aria-label="remove" ng-click="remove(row)">
+                            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                        </button>
                     </td>
                     <td ng-repeat="col in row">
                         {{col}}

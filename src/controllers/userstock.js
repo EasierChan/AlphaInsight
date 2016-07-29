@@ -45,20 +45,20 @@ angular.module('app_userstock', [])
             $scope.codes.push(newCodes);
             saveToFile();
         };
+        // 删除按钮
+        // $scope.delCode = function () {
+        //     //scan the selected checkboxs. and delete them;
+        //     var items = document.getElementById('content').querySelectorAll("input[type='checkbox']");
+        //     var codes = new Array();
+        //     for (var i = 0; i < items.length; ++i) {
+        //         if (!items[i].checked) {
+        //             codes.push($scope.codes[i]);
+        //         }
+        //     }
 
-        $scope.delCode = function () {
-            //scan the selected checkboxs. and delete them;
-            var items = document.getElementById('content').querySelectorAll("input[type='checkbox']");
-            var codes = new Array();
-            for (var i = 0; i < items.length; ++i) {
-                if (!items[i].checked) {
-                    codes.push($scope.codes[i]);
-                }
-            }
-
-            $scope.codes = codes;
-            saveToFile();
-        };
+        //     $scope.codes = codes;
+        //     saveToFile();
+        // };
         // import csv file
         $scope.importFromFile = function () {
             remote.dialog.showOpenDialog({
@@ -75,9 +75,12 @@ angular.module('app_userstock', [])
                             console.error(err);
                             throw err;
                         }
+
                         const decoder = new StringDecoder('utf8');
-                        // csv 文件处有一个utf8字节文件头
-                        const codeArr = decoder.write(data).substr(1).split(require('os').EOL);
+                        const codeArr = decoder.write(data).split(require('os').EOL);
+                        if (codeArr[0].length == 7) {
+                            codeArr[0] = codeArr[0].substr(1);
+                        }
                         var errCode = [];
                         var ret = null, ncode = null; //returnVal, code value
                         codeArr.forEach(function (item) {
@@ -99,7 +102,7 @@ angular.module('app_userstock', [])
                                 }
                             }
                         });
-                        
+
                         if (errCode.length > 0) {
                             alert('股票代码不存在: ' + errCode.join(','));
                             errCode = null;
@@ -121,30 +124,47 @@ angular.module('app_userstock', [])
 
         $scope.enableThis = function () {
             ipcRenderer.send('userstock_change', $scope.bEnable);
-        }
+        };
 
-        $scope.toggleAll = function () {
-            //alert($scope.bAllSelect);
+        $scope.remove = function (row) {
+            // 找到相同元素索引
             for (var i = 0; i < $scope.codes.length; ++i) {
-                $scope.codes[i].checked = $scope.bAllSelect;
+                if($scope.codes[i][0] == row[0]){
+                    break;
+                }
             }
+            // 把后面的元素往前move
+            for(var k = i+1; k < $scope.codes.length; ++k){
+                $scope.codes[k - 1] = $scope.codes[k];
+            }
+            $scope.codes[k-1] = null;
+            $scope.codes.length = k-1;
+            saveToFile(); 
         };
 
-        $scope.toggle = function (item) {
-            if (!item.checked) {
-                $scope.bAllSelect = false;
-            }
-            else {
-                var allSelected = true;
-                for (var i = 0; i < $scope.codes.length; i++) {
-                    if (!$scope.codes[i].checked) {
-                        allSelected = false;
-                        break;
-                    }
-                }
-                $scope.bAllSelect = allSelected;
-            }
-        };
+        // // 全选 全不选
+        // $scope.toggleAll = function () {
+        //     //alert($scope.bAllSelect);
+        //     for (var i = 0; i < $scope.codes.length; ++i) {
+        //         $scope.codes[i].checked = $scope.bAllSelect;
+        //     }
+        // };
+        // // 切换
+        // $scope.toggle = function (item) {
+        //     if (!item.checked) {
+        //         $scope.bAllSelect = false;
+        //     }
+        //     else {
+        //         var allSelected = true;
+        //         for (var i = 0; i < $scope.codes.length; i++) {
+        //             if (!$scope.codes[i].checked) {
+        //                 allSelected = false;
+        //                 break;
+        //             }
+        //         }
+        //         $scope.bAllSelect = allSelected;
+        //     }
+        // };
     }]);
 
 document.onkeydown = function (event) {
