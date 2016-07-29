@@ -92,7 +92,7 @@ AIApplication.prototype.loadlastWins = function () {
 
     var wins = require('../wins.json');
 
-    var intervals = 300;
+    var intervals = 500;
     
     var rthis = this;
     function tmCreatWind(windId, wIndex) {
