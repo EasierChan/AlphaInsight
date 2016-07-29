@@ -44,7 +44,7 @@ AIApplication.prototype.SetWindow = function (windId, config) {
   }
 
   if (typeof config == 'undefined') {
-    config = {};    
+    config = {};
   }
 
   config.curName = windId + this.windows[windId].apps.length + '.json';
@@ -52,7 +52,7 @@ AIApplication.prototype.SetWindow = function (windId, config) {
   if (typeof (this.windows[windId]) == 'object') {
     this.windows[windId].apps.push(this.windows[windId].show(config));
   } else if (typeof (this.windows[windId]) == 'function') {
-    var fwind = (this.windows[windId])().show(config);    
+    var fwind = (this.windows[windId])().show(config);
     this.windows[windId].apps.push(fwind);
   } else {
     console.error('illegal registered Window!');
@@ -92,11 +92,22 @@ AIApplication.prototype.loadlastWins = function () {
 
     var wins = require('../wins.json');
 
-    for (var windId in wins) {
-      for (var i = 0; i < wins[windId].length; ++i) {
-        this.SetWindow(windId, wins[windId][i]);
+    var intervals = 300;
+    
+    var rthis = this;
+    function tmCreatWind(windId, wIndex) {
+      if (wIndex < wins[windId].length) {
+        rthis.SetWindow(windId, wins[windId][wIndex]);
+        wIndex++;
+        setTimeout(function(){tmCreatWind(windId, wIndex);}, intervals);
       }
     }
+
+    for (var windId in wins) {
+      tmCreatWind(windId, 0);
+    }
+
+
 
   } catch (e) {
     console.log(e);

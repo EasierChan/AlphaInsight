@@ -35,10 +35,10 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
             console.log(arg);
             configFileName = arg.cfg.curName;
             winID = arg.winID;
-            if (typeof arg.lastName != 'undefined') {
+            if (typeof arg.cfg.lastName != 'undefined') {
                 try {
                     configContent = require('../../winconfig/' + arg.cfg.lastName);
-                    //console.log(configContent);
+                    console.log(configContent);
                     fs.rename('./winconfig/' + arg.cfg.lastName, './winconfig/' + arg.cfg.curName, function (e) { console.log(e, 'rm oldfile') });
                 } catch (e) {
                     configContent = null;
@@ -87,7 +87,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
         var baseHeader = [];
         var formats = new Array();
         ipcRenderer.once(IPCMSG.FrontendPoint, function (e, arg) {
-            console.log(arg);
+            console.log(arg, configContent);
             reqObj.column.push(arg.toplisttype[0].option[0].fieldname);
             reqObj.column.push(arg.toplisttype[0].option[1].fieldname);
             formats.push(1000); //代码
