@@ -63,8 +63,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
                 saveConfig();
             }],
-            ['置顶', function($itemScope){
-                ipcRenderer.send('set-window-top' + temparg.winID,  true);
+            ['置顶', function ($itemScope) {
+                ipcRenderer.send('set-window-top' + temparg.winID, true);
             }]
         ];
 
@@ -91,7 +91,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     configContent = null;
                 }
             }
-
+            
             ipcRenderer.send(IPCMSG.BackendPoint, reqobj);
         });
 
@@ -121,7 +121,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 return;
             }
 
-            //console.log(data.alerttype, configContent);
+            console.log(data, configContent);
             var dataForTheTree = new Object();
             var superType = new Array();
             var curalert = null;
@@ -258,8 +258,9 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         ipcRenderer.on('backend_change', function (e, arg) {
 
             $scope.$apply(function () {
-                for (var i = 0; i < $scope.codes1.length; ++i) {
-                    for (var j = 0; j < arg.codes.detail.length; ++j) {
+                for (var j = 0; j < arg.codes.detail.length; ++j) {
+                    arg.codes.detail[j]['checked'] = false;
+                    for (var i = 0; i < $scope.codes1.length; ++i) {
                         if ($scope.codes1[i][0] == arg.codes.detail[j][0]) {
                             arg.codes.detail[j]['checked'] = $scope.codes1[i].checked;
                             break;
@@ -301,9 +302,9 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             bSelectedCode = [];
             for (var i = 0; i < $scope.codes1.length; ++i) {
                 if ($scope.codes1[i].checked) {
-                    bSelectedCode.push($scope.codes1[i]);
+                    bSelectedCode.push($scope.codes1[i][0]);
                 }
-            }
+            }            
 
             if (frontListenerObj == null) {
                 frontListenerObj = new frontListener(alerts, formats);
@@ -350,11 +351,12 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
                 if (temparg.bEnable && temparg.codes.codes.indexOf(res.code) < 0) {
                     //console.log(res);
-                    console.log('a unsubscribed stock code, %s!', res.code);
+                    //console.log('a unsubscribed stock code, %s!', res.code);
                     return;
                 }
 
                 if (bSelectedCode.length > 0 && bSelectedCode.indexOf(res.code) < 0) {
+                    console.log('a unselected stock code, %s!', res.code);
                     return;
                 }
 
