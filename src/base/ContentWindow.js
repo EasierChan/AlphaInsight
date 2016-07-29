@@ -8,19 +8,22 @@
   const electron = require('electron');
   const extension = require('../services/extension');
   const EventEmitter = require('events');
-  //const msgServ = require('./message');
+  const msgServ = require('./message');
   const IPCMSG = require('../models/qtpmodel').IPCMSG;
   const fs = require('fs');
   //class MyEmitter extends EventEmitter { }  
   //const myEmmiter = new EventEmitter();
-  var closeListener = function (realthis) {
+   function closeListener(realthis, sign) {
     return function (event) {
       if (typeof realthis.config.lastName == 'undefined') {
         fs.unlink('./winconfig/' + realthis.config.curName, function (e) { /*console.log(e, 'rm file', realthis.config.curName)*/ });
       }
       realthis.win = null;
-      if (1 > --global.Subscriber.alerts) {
-        msgServ.CancelSub(0);
+      
+      if(sign && sign == 'alert'){
+        if (1 > --global.Subscriber.alerts) {
+          msgServ.CancelSub(0);
+        }
       }
     }
   }
@@ -68,13 +71,11 @@
       realthis.win.setAlwaysOnTop(true);
     });
 
-    this.win.on('close', new closeListener(realthis));
+    this.win.on('close', closeListener(realthis, 'alert'));
 
     this.win.webContents.on('did-finish-load', function () {
-
       realthis.win.webContents.send('config'
         , realthis.config);
-
       delete realthis.config.lastName;
 
       realthis.win.webContents.send('backend_change'
@@ -96,7 +97,6 @@
           bEnable: global.Configuration.enableFavourites,
           codes: global.UserStock
         });
-      //myEmmiter.emit('favour-toggle');
     });
 
     if (global.Configuration.environment === 'development') {
@@ -150,13 +150,15 @@
     });
   }
   
-  
+  // used to the code name with codeid
   electron.ipcMain.on('get-code-name', function (event, arg) {
-    for (var index = 0; index < global.codeTable.length; ++index) {
+    var index = 0;
+    for (; index < global.codeTable.length; ++index) {
       if (global.codeTable[index].code == arg) {
         break;
       }
     }
+    
     if(index < global.codeTable.length)
       event.returnValue = global.codeTable[index].name;
     else
@@ -230,7 +232,7 @@
       realthis.win.setAlwaysOnTop(true);
     });
 
-    this.win.on('close', new closeListener(realthis));
+    this.win.on('close', closeListener(realthis));
 
     this.win.webContents.on('did-finish-load', function () {
       // TODO

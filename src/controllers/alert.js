@@ -56,17 +56,19 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         var frontListenerObj = null;
         var temparg = null;
 
-        $scope.menuOptions = [
-            ['返回', function ($itemScope) {
-                angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
-                angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
-                ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
-                saveConfig();
-            }],
-            ['置顶', function($itemScope){
-                ipcRenderer.send('set-window-top' + temparg.winID,  true);
-            }]
-        ];
+        function setContextMenu(){
+            $scope.menuOptions = [
+                ['返回', function ($itemScope) {
+                    angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
+                    angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
+                    ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
+                    saveConfig();
+                }],
+                ['置顶', function ($itemScope) {
+                    ipcRenderer.send('set-window-top' + temparg.winID, true);
+                }]
+            ];
+        }
 
         var reqobj = {
             reqno: 1,
@@ -109,11 +111,6 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     break;
             }
         }
-
-        //qtpclient.connectTo('172.24.10.35', 9005);
-        //qtpclient.send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
-        //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_TYPE, reqobj);
-        //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_TYPE_ANSER, function (data) {
 
         ipcRenderer.once(IPCMSG.FrontendPoint, function (event, data) {
             if (data == null) {
@@ -235,6 +232,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             //alert(alertset.join());
             //$scope.$emit("alert_change", alertset, formatset);
             alert_pub(alertset, formatset);
+            setContextMenu();
             saveConfig();
         };
 
@@ -301,7 +299,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             bSelectedCode = [];
             for (var i = 0; i < $scope.codes1.length; ++i) {
                 if ($scope.codes1[i].checked) {
-                    bSelectedCode.push($scope.codes1[i]);
+                    bSelectedCode.push($scope.codes1[i][0]);
                 }
             }
 

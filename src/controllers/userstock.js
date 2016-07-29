@@ -4,6 +4,7 @@
 'use strict';
 
 const ipcRenderer = require('electron').ipcRenderer;
+const remote = require('electron').remote;
 const fs = require('fs');
 const StringDecoder = require('string_decoder').StringDecoder;
 
@@ -35,7 +36,7 @@ angular.module('app_userstock', [])
             }
 
             var ret = ipcRenderer.sendSync('get-code-name', $scope.newcode);
-            if(ret == -1){
+            if (ret == -1) {
                 alert("股票代码不存在!");
                 return;
             }
@@ -60,7 +61,7 @@ angular.module('app_userstock', [])
         };
         // import csv file
         $scope.importFromFile = function () {
-            electron.remote.dialog.showOpenDialog({
+            remote.dialog.showOpenDialog({
                 title: '选择文件',
                 filters: [
                     { name: '*.csv 文件', extensions: ['csv'] }
@@ -75,21 +76,34 @@ angular.module('app_userstock', [])
                             throw err;
                         }
                         const decoder = new StringDecoder('utf8');
-                        const codeArr = decoder.write(data).split(require('os').EOL);
-
+                        // csv 文件处有一个utf8字节文件头
+                        const codeArr = decoder.write(data).substr(1).split(require('os').EOL);
+                        var errCode = [];
+                        var ret = null, ncode = null; //returnVal, code value
                         codeArr.forEach(function (item) {
-                            for (var i = 0; i < $scope.codes.length; ++i) {
-                                if ($scope.codes[i][0] == item) {
-                                    break;
+                            ncode = item;
+                            if (item.length > 5) {
+                                for (var i = 0; i < $scope.codes.length; ++i) {
+                                    if ($scope.codes[i][0] == ncode) {
+                                        break;
+                                    }
+                                }
+
+                                if (i == $scope.codes.length) {
+                                    ret = ipcRenderer.sendSync('get-code-name', ncode);
+                                    if (ret != -1) {
+                                        $scope.codes.push([ncode, ret]);
+                                    } else {
+                                        errCode.push(ncode);
+                                    }
                                 }
                             }
-
-                            if (i == $scope.codes.length) {
-                                var ret = ipcRenderer.sendSync('get-code-name', $scope.newcode);
-                                $scope.codes.push([item, ret]);
-                            }
                         });
-
+                        
+                        if (errCode.length > 0) {
+                            alert('股票代码不存在: ' + errCode.join(','));
+                            errCode = null;
+                        }
                         $scope.$apply();
                         saveToFile();
                     });

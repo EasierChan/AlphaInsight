@@ -100,6 +100,10 @@
 
     function loadUserStockFromJSON() {
         var fstockpath = __dirname + "/../conf/user-stock.json";
+        const stat = fs.statSync(fstockpath);
+        if(!stat.isFile()){
+            console.error("自选股文件不存在!");
+        }
         global.UserStock = new Object();
         global.UserStock.codes = JSON.parse(fs.readFileSync(fstockpath));
         global.UserStock.detail = [];
