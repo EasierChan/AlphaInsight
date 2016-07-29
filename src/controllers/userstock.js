@@ -10,6 +10,7 @@ const StringDecoder = require('string_decoder').StringDecoder;
 
 angular.module('app_userstock', [])
     .controller('c_userstock', ['$scope', function ($scope) {
+        var eventSender = null; //后来断点
         $scope.headers = ['股票代码', '股票名称'];
         $scope.bAllSelect = false;
         $scope.codes = [];
@@ -25,7 +26,7 @@ angular.module('app_userstock', [])
 
         $scope.addCode = function () {
             if (!pattern.test($scope.newcode)) {
-                alert('unvalid stock code!');
+                alert('股票代码格式不合法!');
                 return;
             }
 
@@ -42,7 +43,7 @@ angular.module('app_userstock', [])
             }
             var newCodes = [$scope.newcode, ret];
             newCodes.checked = $scope.bAllSelect;
-            $scope.codes.push(newCodes);
+            $scope.codes.unshift(newCodes);
             saveToFile();
         };
         // 删除按钮
@@ -115,7 +116,7 @@ angular.module('app_userstock', [])
         }
 
         ipcRenderer.on('backend_change', function (e, obj) {
-            //console.log(bFavour);
+            eventSender = e.sender;
             $scope.$apply(function () {
                 $scope.bEnable = obj.bEnable;
                 $scope.codes = obj.codeDetail;
@@ -124,6 +125,7 @@ angular.module('app_userstock', [])
 
         $scope.enableThis = function () {
             ipcRenderer.send('userstock_change', $scope.bEnable);
+            eventSender.send('filter-toggle', $scope.bEnable);
         };
 
         $scope.remove = function (row) {

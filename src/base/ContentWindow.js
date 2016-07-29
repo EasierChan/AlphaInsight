@@ -13,33 +13,53 @@
   const fs = require('fs');
   //class MyEmitter extends EventEmitter { }  
   //const myEmmiter = new EventEmitter();
-   function closeListener(realthis, sign) {
+  function closeListener(realthis, sign) {
     return function (event) {
       if (typeof realthis.config.lastName == 'undefined') {
         fs.unlink('./winconfig/' + realthis.config.curName, function (e) { /*console.log(e, 'rm file', realthis.config.curName)*/ });
       }
       realthis.win = null;
-      
-      if(sign && sign == 'alert'){
+
+      if (sign && sign == 'alert') {
         if (1 > --global.Subscriber.alerts) {
           msgServ.CancelSub(0);
         }
       }
     }
   }
-  
-  function registerWindowTopListener(winref){
+
+  function registerWindowTopListener(winref) {
     electron.ipcMain.on('set-window-top' + winref.win.id, function (e, arg) {
       winref.win.setAlwaysOnTop(arg);
     });
   }
+
+  var userStockListener = [];
+  function registerUserStockListener(winref) {
+    userStockListener.push(winref);
+  }
+
+  electron.ipcMain.on('userstock_change', function (e, arg) {
+    global.Configuration.enableFavourites = arg;
+
+    userStockListener.forEach(function (winref) {
+      winref.win.webContents.send('backend_change'
+        , {
+          bEnable: global.Configuration.enableFavourites,
+          codes: global.UserStock
+        }
+      )
+    });
+  });
+
+
 
   function TableWindow() {
     this.config = {};
     this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/alert.html');
     var realthis = this;
-    
+
     registerWindowTopListener(realthis);
 
     this.win.on('close', closeListener(realthis, 'alert'));
@@ -57,18 +77,7 @@
         });
     });
 
-    electron.ipcMain.on('userstock_change', function (e, arg) {
-      //console.log("toggle favourites feature. current is %s", arg);
-      global.Configuration.enableFavourites = arg;
-      if (realthis.win == null) {
-        return;
-      }
-      realthis.win.webContents.send('backend_change'
-        , {
-          bEnable: global.Configuration.enableFavourites,
-          codes: global.UserStock
-        });
-    });
+    registerUserStockListener(realthis);
 
     if (global.Configuration.environment === 'development') {
       this.win.openDevTools();
@@ -110,17 +119,22 @@
 
     this.win.on('close', function (event) {
       realthis.isClosed = true;
+      realthis.win = null;
     });
 
     this.win.webContents.on('did-finish-load', function () {
-
       realthis.win.webContents.send('backend_change', {
         bEnable: global.Configuration.enableFavourites,
         codeDetail: global.UserStock.detail
       });
     });
+
+
+    this.win.webContents.on('filter-toggle', function (e, arg) {
+      global.Configuration.enableFavourites = arg;
+    });
   }
-  
+
   // used to the code name with codeid
   electron.ipcMain.on('get-code-name', function (event, arg) {
     var index = 0;
@@ -129,8 +143,8 @@
         break;
       }
     }
-    
-    if(index < global.codeTable.length)
+
+    if (index < global.codeTable.length)
       event.returnValue = global.codeTable[index].name;
     else
       event.returnValue = -1;
@@ -144,26 +158,21 @@
       var realthis = this;
 
       this.win.on('close', function (event) {
-        // if (typeof realthis.config.lastName == 'undefined') {
-        //   fs.unlink('./winconfig/' + realthis.config.curName, function (e) { console.log(e, 'rm file', realthis.config.curName) });
-        // }
         realthis.isClosed = true;
+        realthis.win = null;
       });
 
-      
-
       this.win.webContents.on('did-finish-load', function () {
-        // realthis.win.webContents.send('config'
-        //   , realthis.config);
-
-        // delete realthis.config.lastName;
-
+        console.log(global.Configuration.enableFavourites);
         realthis.win.webContents.send('backend_change', {
           bEnable: global.Configuration.enableFavourites,
           codeDetail: global.UserStock.detail
         });
       });
 
+      this.win.webContents.on('filter-toggle', function (e, arg) {
+        global.Configuration.enableFavourites = arg;
+      });
     }
     this.config = config;
     this.win.show();
