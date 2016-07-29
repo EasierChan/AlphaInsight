@@ -48,7 +48,7 @@
                     });
                     global.UserStock.setDetail();
                     // 异步保存到文件
-                    // global.codeTable.save();
+                    global.saveCodeTable();
                 } else {
                     console.error("code table error! %s", typeof(res.codetable));
                 }
