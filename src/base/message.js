@@ -47,9 +47,12 @@
                         global.codeTable.push({code: row.szWindCode, name: row.szCNName});
                     });
                     global.UserStock.setDetail();
+                    // 异步保存到文件
+                    // global.codeTable.save();
                 } else {
                     console.error("code table error! %s", typeof(res.codetable));
                 }
+                return false;
             });
         });
     }
