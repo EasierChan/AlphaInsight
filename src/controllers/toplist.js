@@ -49,30 +49,32 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
         });
 
         var isTop = false;
-        $scope.menuOptions = [
-            ['返回', function ($itemScope) {
-                angular.element(document.getElementById("toplist_config")).removeClass("future").addClass("current");
-                angular.element(document.getElementById("toplist_content")).removeClass("current").addClass("future");
-                ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
-                $scope.rows = [];
-                clearTimeout($scope.shareObject.normalTimer);
-                clearTimeout($scope.shareObject.relateTimer);
-                //$scope.shareObject = angular.copy(shareObject_bak);
-                $scope.saveConfig();
-            }],
-            ['置顶', function () {
-                isTop = !isTop;
-                ipcRenderer.send('set-window-top' + winID, isTop);
-            }, function () {
-                return !isTop;
-            }],
-            ['取消置顶', function () {
-                isTop = !isTop;
-                ipcRenderer.send('set-window-top' + winID, isTop);
-            }, function () {
-                return isTop;
-            }]
-        ];
+        function setContextMenu() {
+            $scope.menuOptions = [
+                ['返回', function ($itemScope) {
+                    angular.element(document.getElementById("toplist_config")).removeClass("future").addClass("current");
+                    angular.element(document.getElementById("toplist_content")).removeClass("current").addClass("future");
+                    ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
+                    $scope.rows = [];
+                    clearTimeout($scope.shareObject.normalTimer);
+                    clearTimeout($scope.shareObject.relateTimer);
+                    //$scope.shareObject = angular.copy(shareObject_bak);
+                    $scope.saveConfig();
+                }],
+                ['置顶', function () {
+                    isTop = !isTop;
+                    ipcRenderer.send('set-window-top' + winID, isTop);
+                }, function () {
+                    return !isTop;
+                }],
+                ['取消置顶', function () {
+                    isTop = !isTop;
+                    ipcRenderer.send('set-window-top' + winID, isTop);
+                }, function () {
+                    return isTop;
+                }]
+            ];
+        }
 
         var reqObj = {
             reqno: 1,
@@ -195,6 +197,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
             ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
             $scope.saveConfig();
+            setContextMenu();
         };
 
         var idx;
