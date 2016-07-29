@@ -17,24 +17,20 @@ const fs = require('fs');
 
 angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
     .controller('c_parent', ['$scope', function ($scope) {
-        // $scope.$on("alert_change", function (e, alerts, formats) {
-        //     $scope.$broadcast("alert_pub", alerts, formats);
-        // });
-        // }])
-        //.controller('c_treeview', ['$scope', '$interval', function ($scope, $interval) {
+        
         $scope.stockheaders = ['股票代码', '股票名称'];
         $scope.codes1 = [];
         $scope.bAllSelect = false;
         $scope.dataForTheTree = {};
         var configContent = null;
-
+        // 切换全选, 非全选
         $scope.toggleAll = function () {
             for (var i = 0; i < $scope.codes1.length; ++i) {
                 $scope.codes1[i].checked = $scope.bAllSelect;
             }
             saveConfig();
         };
-
+        // 切换选中
         $scope.toggle = function (item) {
             if (!item.checked) {
                 $scope.bAllSelect = false;
@@ -245,17 +241,6 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             saveConfig();
         };
 
-        // var temp = new Array();
-        // $interval(function () {
-        //     temp.length = 0;
-        //     for (var prop in dataForTheTree) {
-        //         temp.push(dataForTheTree[prop]);
-        //     }
-
-        //     $scope.dataForTheTree = temp;
-        // }, 1000);
-        //}])
-        //.controller('c_alert', ['$scope', '$interval', function ($scope, $interval) {
         var bigBuyAlert = {
             reqno: 1,
             msgtype: QtpConstant.MSG_TYPE_ALERT_SUB,
@@ -292,11 +277,6 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
         $scope.headers = ['时间', '股票代码', '股票名称', '信号类型', '数量'];
         var codes = [];
-        // alert(qtpclient.alertset);
-        // var qtpMsgClt = new QtpMessageClient();
-        // qtpMsgClt.connectTo('172.24.10.35', '9005');
-        //$scope.$on("alert_pub", function (e, alerts, formats) {
-
         var bSelectedCode = [];
         var alert_pub = function (alerts, formats) {
 
@@ -305,8 +285,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
             bigBuyAlert.alertset = alerts;
             bigBuyAlert.reqno = -1;
-            //console.log(alerts);
             bSelectedCode = [];
+            
             for (var i = 0; i < $scope.codes1.length; ++i) {
                 if ($scope.codes1[i].checked) {
                     bSelectedCode.push($scope.codes1[i][0]);
@@ -388,7 +368,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                         codeinfo.quantity = res.quantity;
                         break;
                 }
-
+                // 颜色配置
                 switch (res.alertcolor) {
                     case 1:
                         codeinfo.color = 'red';
@@ -399,11 +379,12 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     default:
                         codeinfo.color = 'none';
                 }
+                // magic number 100, 目前实际上最多显示100条信号，采用的式先进先出。
                 if (codes.length == 100) {
                     codes.pop();
                 }
                 codes.unshift(codeinfo);
-                //
+                
                 $scope.$apply(function () {
                     $scope.codes = codes;
                 });
