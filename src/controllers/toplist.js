@@ -129,7 +129,9 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                 if (configContent.bCurCheck)
                     $scope.shareObject.bCurCheck = configContent.bCurCheck;
 
+                
                 $scope.status = configContent.status;
+                $scope.$apply();
                 
                 if (configContent.hasSub) {
                     $scope.reqToplist();
