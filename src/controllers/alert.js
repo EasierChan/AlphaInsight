@@ -268,14 +268,14 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             temparg = arg;
         });
 
-        $scope.headers = ['时间', '股票名称', '信号类型', '数量'];//'股票代码', 
+        $scope.headers = ['时间', '名称', '类型', '数量'];//'股票代码', 
         var codes = [];
         var bSelectedCode = [];
         var alert_pub = function (alerts, formats) {
 
             angular.element(document.getElementById("tv_alert")).removeClass("current").addClass("future");
             angular.element(document.getElementById("tb_alert")).removeClass("future").addClass("current");
-            alert(angular.element(document.getElementById("tb_alert")).scrollTo(0,1000));
+
             bigBuyAlert.alertset = alerts;
             bigBuyAlert.reqno = -1;
             bSelectedCode = [];
@@ -379,6 +379,9 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 $scope.$apply(function () {
                     $scope.codes = codes;
                 });
+                
+                var ele = document.getElementById("tb_alert");
+                ele.scrollTop = ele.scrollHeight;
             };
         }
     }]);

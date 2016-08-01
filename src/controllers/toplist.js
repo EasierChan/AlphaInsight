@@ -14,7 +14,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
         $scope.shareObject.columns = [];
         $scope.shareObject.rankMin = 1;
         $scope.shareObject.rankMax = 30;
-        $scope.shareObject.curCode = "000001.sz";
+        $scope.shareObject.curCode = "000001";
         $scope.shareObject.bCurCheck = false;
         $scope.shareObject.normalTimer = null;
         $scope.shareObject.relateTimer = null;

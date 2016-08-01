@@ -65,7 +65,7 @@
 
   function TableWindow() {
     this.config = {};
-    this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 300, width: 500, resizable: true, show: false });
+    this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: false, height: 500, width: 500, resizable: true, show: false });
     this.win.loadURL('file://' + __dirname + '/../views/alert.html');
     var realthis = this;
 
