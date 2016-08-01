@@ -64,14 +64,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                 ['置顶', function () {
                     isTop = !isTop;
                     ipcRenderer.send('set-window-top' + winID, isTop);
-                }, function () {
-                    return !isTop;
-                }],
-                ['取消置顶', function () {
-                    isTop = !isTop;
-                    ipcRenderer.send('set-window-top' + winID, isTop);
-                }, function () {
-                    return isTop;
+                    $scope.menuOptions[1][0] = isTop ? "取消置顶" : "置顶";
                 }]
             ];
         }

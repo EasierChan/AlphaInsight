@@ -63,14 +63,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 ['置顶', function () {
                     isTop = !isTop;
                     ipcRenderer.send('set-window-top' + temparg.winID, isTop);
-                }, function () {
-                    return !isTop;
-                }],
-                ['取消置顶', function () {
-                    isTop = !isTop;
-                    ipcRenderer.send('set-window-top' + temparg.winID, isTop);
-                }, function () {
-                    return isTop;
+                    $scope.menuOptions[1][0] = isTop ? "取消置顶" : "置顶";
                 }]
             ];
         }
@@ -282,7 +275,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
             angular.element(document.getElementById("tv_alert")).removeClass("current").addClass("future");
             angular.element(document.getElementById("tb_alert")).removeClass("future").addClass("current");
-
+            alert(angular.element(document.getElementById("tb_alert")).scrollTo(0,1000));
             bigBuyAlert.alertset = alerts;
             bigBuyAlert.reqno = -1;
             bSelectedCode = [];
@@ -297,9 +290,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 frontListenerObj = new frontListener(alerts, formats);
                 bigBuyAlert.reqno = 1;// 第一次send，=1；非第一次，=-1，防止主程序创建多个监听回调
             }
-
-            //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_SUB, bigBuyAlert);
-            //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_ANSWER, function (res) {
+            
             ipcRenderer.send(IPCMSG.BackendPoint, bigBuyAlert);
             ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
         };
@@ -381,9 +372,9 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 }
                 // magic number 100, 目前实际上最多显示100条信号，采用的式先进先出。
                 if (codes.length == 100) {
-                    codes.pop();
+                    codes.shift();
                 }
-                codes.unshift(codeinfo);
+                codes.push(codeinfo);
                 
                 $scope.$apply(function () {
                     $scope.codes = codes;
