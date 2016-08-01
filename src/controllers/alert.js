@@ -26,6 +26,13 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         $scope.codes1 = [];
         $scope.bAllSelect = false;
         $scope.dataForTheTree = {};
+        $scope.timeItemSel=true;
+        $scope.equitCodeItemSel=true;
+        $scope.equitNameItemSel=true;
+        $scope.signalTypeItemSel=true;
+        $scope.VolumeItemSel=true;
+        $scope.showSecond=true;
+
         var configContent = null;
 
         $scope.toggleAll = function () {
@@ -70,12 +77,35 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 }, function () {
                     return !isTop;
                 }],
-                ['取消置顶', function () {
-                    isTop = !isTop;
-                    ipcRenderer.send('set-window-top' + temparg.winID, isTop);
-                }, function () {
-                    return isTop;
-                }]
+                
+                ['表格项过滤...',[
+                   /*['时间',function($itemScope) {
+                       $itemScope.checked=!$itemScope.checked;
+                       $scope.timeItemSel = !$scope.timeItemSel;
+                       },[
+                            ['显示秒',function($itemScope) {
+                             $scope.showSecond = !$scope.showSecond;
+                            }]
+                          ]
+                   ],*/
+                   ['股票代码',function($itemScope) {
+                       $itemScope.checked=!$itemScope.checked;
+                       $scope.equitCodeItemSel = !$scope.equitCodeItemSel;
+                   }],
+                   ['股票名称',function($itemScope) {
+                      // $itemScope.item.check=!$itemScope.item.check;
+                       $itemScope.checked=!$itemScope.checked;
+                       $scope.equitNameItemSel = !$scope.equitNameItemSel;
+                   }],
+                   ['信号类型',function($itemScope) {
+                       $itemScope.checked=!$itemScope.checked;
+                       $scope.signalTypeItemSel = !$scope.signalTypeItemSel;
+                   }],
+                   ['数量',function($itemScope) {
+                       $itemScope.checked=!$itemScope.checked;
+                       $scope.VolumeItemSel = !$scope.VolumeItemSel;
+                   }]
+                ]]
             ];
         }
 
