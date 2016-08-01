@@ -38,18 +38,26 @@
             console.log("send first heartbeat!");
             heartBeat();
             //TODO 请求代码表
-            Qtp.getInstance().send(QtpConstant.MSG_TYPE_CODETABLE, 
-                {reqno: 1, msgtype: QtpConstant.MSG_TYPE_CODETABLE, codelist: []});
-            Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_CODETABLE, function(res){
-                //console.log(res);
-                if(res.codetable instanceof Array ){
-                    res.codetable.forEach(function(row){
-                        global.codeTable.push({code: row.szWindCode, name: row.szCNName});
-                    });
-                    global.UserStock.setDetail();
+            Qtp.getInstance().send(QtpConstant.MSG_TYPE_CODETABLE,
+                { reqno: 1, msgtype: QtpConstant.MSG_TYPE_CODETABLE, codelist: [] });
+            Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_CODETABLE, function (res) {
+                console.log("res.codetable.length: %d", res.codetable.length);
+                if (res.codetable instanceof Array && res.codetable.length > 0) {
+                    if (res.codetable.length > 0) {
+                        global.codeTable.length = 0;
+                        res.codetable.forEach(function (row) {
+                            global.codeTable.push({ code: row.szWindCode, name: row.szCNName });
+                        });
+                        global.UserStock.setDetail();
+                        // 异步保存到文件
+                        global.saveCodeTable();
+                    }
+                } else if(!(res.codetable instanceof Array)){
+                    console.error("res.codetable is not a array");
                 } else {
-                    console.error("code table error! %s", typeof(res.codetable));
+                    console.warn("res.codetable is an empty array!");
                 }
+                return false;
             });
         });
     }
@@ -133,7 +141,7 @@
                     msg.reqno = 1;
                     break;
                 }
-                
+
                 global.Subscriber.alerts += 1;
                 Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT, function (res) {
                     if (!event.sender.isDestroyed()) {
@@ -164,8 +172,8 @@
         global.UserStock.detail = data;
         global.UserStock.codes = null;
         global.UserStock.codes = [];
-        global.UserStock.detail.forEach(function(item){
-           global.UserStock.codes.push(item[0]);
+        global.UserStock.detail.forEach(function (item) {
+            global.UserStock.codes.push(item[0]);
         });
         global.UserStock.save();
     });

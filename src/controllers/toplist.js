@@ -14,7 +14,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
         $scope.shareObject.columns = [];
         $scope.shareObject.rankMin = 1;
         $scope.shareObject.rankMax = 30;
-        $scope.shareObject.curCode = "000001.sz";
+        $scope.shareObject.curCode = "000001";
         $scope.shareObject.bCurCheck = false;
         $scope.shareObject.normalTimer = null;
         $scope.shareObject.relateTimer = null;
@@ -64,14 +64,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                 ['置顶', function () {
                     isTop = !isTop;
                     ipcRenderer.send('set-window-top' + winID, isTop);
-                }, function () {
-                    return !isTop;
-                }],
-                ['取消置顶', function () {
-                    isTop = !isTop;
-                    ipcRenderer.send('set-window-top' + winID, isTop);
-                }, function () {
-                    return isTop;
+                    $scope.menuOptions[1][0] = isTop ? "取消置顶" : "置顶";
                 }]
             ];
         }
@@ -283,9 +276,9 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                         //     }
                         // }
                     });
-                    //console.log($scope.rows);
+                    
+                    // console.log("reqObj:", reqObj);
                     $scope.$apply();
-
                     $scope.shareObject.normalTimer = setTimeout(function () {
                         ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
                     }, minInterval * 1000);
@@ -310,7 +303,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
                     });
 
-                    //console.log($scope.rows);
+                    //console.log("relateObj:", relateObj);
                     $scope.$apply();
                     $scope.shareObject.relateTimer = setTimeout(function () {
                         ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
@@ -325,8 +318,6 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
         $scope.reverse = false;
 
         $scope.setOption = function (colHeader, colIndex) {
-
-
             if ($scope.status.bopen) {
 
             } else {

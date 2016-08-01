@@ -25,7 +25,7 @@ angular.module('app_userstock', [])
 
         $scope.addCode = function () {
             if (!pattern.test($scope.newcode)) {
-                alert('unvalid stock code!');
+                alert('股票代码格式不合法!');
                 return;
             }
 
@@ -42,7 +42,7 @@ angular.module('app_userstock', [])
             }
             var newCodes = [$scope.newcode, ret];
             newCodes.checked = $scope.bAllSelect;
-            $scope.codes.push(newCodes);
+            $scope.codes.unshift(newCodes);
             saveToFile();
         };
         // 删除按钮
@@ -115,7 +115,6 @@ angular.module('app_userstock', [])
         }
 
         ipcRenderer.on('backend_change', function (e, obj) {
-            //console.log(bFavour);
             $scope.$apply(function () {
                 $scope.bEnable = obj.bEnable;
                 $scope.codes = obj.codeDetail;

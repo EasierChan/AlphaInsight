@@ -17,11 +17,7 @@ const fs = require('fs');
 
 angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
     .controller('c_parent', ['$scope', function ($scope) {
-        // $scope.$on("alert_change", function (e, alerts, formats) {
-        //     $scope.$broadcast("alert_pub", alerts, formats);
-        // });
-        // }])
-        //.controller('c_treeview', ['$scope', '$interval', function ($scope, $interval) {
+        
         $scope.stockheaders = ['股票代码', '股票名称'];
         $scope.codes1 = [];
         $scope.bAllSelect = false;
@@ -34,14 +30,14 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         $scope.showSecond=true;
 
         var configContent = null;
-
+        // 切换全选, 非全选
         $scope.toggleAll = function () {
             for (var i = 0; i < $scope.codes1.length; ++i) {
                 $scope.codes1[i].checked = $scope.bAllSelect;
             }
             saveConfig();
         };
-
+        // 切换选中
         $scope.toggle = function (item) {
             if (!item.checked) {
                 $scope.bAllSelect = false;
@@ -65,7 +61,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         var isTop = false;
         function setContextMenu() {
             $scope.menuOptions = [
-                ['返回', function ($itemScope) {
+                 ['返回', function ($itemScope) {
                     angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
                     angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
                     ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
@@ -74,12 +70,11 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 ['置顶', function () {
                     isTop = !isTop;
                     ipcRenderer.send('set-window-top' + temparg.winID, isTop);
-                }, function () {
-                    return !isTop;
+                    $scope.menuOptions[1][0] = isTop ? "取消置顶" : "置顶";
                 }],
                 
                 ['表格项过滤...',[
-                   /*['时间',function($itemScope) {
+                   ['时间',function($itemScope) {
                        $itemScope.checked=!$itemScope.checked;
                        $scope.timeItemSel = !$scope.timeItemSel;
                        },[
@@ -87,7 +82,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                              $scope.showSecond = !$scope.showSecond;
                             }]
                           ]
-                   ],*/
+                   ],
                    ['股票代码',function($itemScope) {
                        $itemScope.checked=!$itemScope.checked;
                        $scope.equitCodeItemSel = !$scope.equitCodeItemSel;
@@ -275,17 +270,6 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             saveConfig();
         };
 
-        // var temp = new Array();
-        // $interval(function () {
-        //     temp.length = 0;
-        //     for (var prop in dataForTheTree) {
-        //         temp.push(dataForTheTree[prop]);
-        //     }
-
-        //     $scope.dataForTheTree = temp;
-        // }, 1000);
-        //}])
-        //.controller('c_alert', ['$scope', '$interval', function ($scope, $interval) {
         var bigBuyAlert = {
             reqno: 1,
             msgtype: QtpConstant.MSG_TYPE_ALERT_SUB,
@@ -320,13 +304,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             temparg = arg;
         });
 
-        $scope.headers = ['时间', '股票代码', '股票名称', '信号类型', '数量'];
+        $scope.headers = ['时间', '名称', '类型', '数量'];//'股票代码', 
         var codes = [];
-        // alert(qtpclient.alertset);
-        // var qtpMsgClt = new QtpMessageClient();
-        // qtpMsgClt.connectTo('172.24.10.35', '9005');
-        //$scope.$on("alert_pub", function (e, alerts, formats) {
-
         var bSelectedCode = [];
         var alert_pub = function (alerts, formats) {
 
@@ -335,8 +314,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
             bigBuyAlert.alertset = alerts;
             bigBuyAlert.reqno = -1;
-            //console.log(alerts);
             bSelectedCode = [];
+            
             for (var i = 0; i < $scope.codes1.length; ++i) {
                 if ($scope.codes1[i].checked) {
                     bSelectedCode.push($scope.codes1[i][0]);
@@ -347,9 +326,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 frontListenerObj = new frontListener(alerts, formats);
                 bigBuyAlert.reqno = 1;// 第一次send，=1；非第一次，=-1，防止主程序创建多个监听回调
             }
-
-            //Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_SUB, bigBuyAlert);
-            //Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT_ANSWER, function (res) {
+            
             ipcRenderer.send(IPCMSG.BackendPoint, bigBuyAlert);
             ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
         };
@@ -418,7 +395,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                         codeinfo.quantity = res.quantity;
                         break;
                 }
-
+                // 颜色配置
                 switch (res.alertcolor) {
                     case 1:
                         codeinfo.color = 'red';
@@ -429,14 +406,18 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     default:
                         codeinfo.color = 'none';
                 }
+                // magic number 100, 目前实际上最多显示100条信号，采用的式先进先出。
                 if (codes.length == 100) {
-                    codes.pop();
+                    codes.shift();
                 }
-                codes.unshift(codeinfo);
-                //
+                codes.push(codeinfo);
+                
                 $scope.$apply(function () {
                     $scope.codes = codes;
                 });
+                
+                var ele = document.getElementById("tb_alert");
+                ele.scrollTop = ele.scrollHeight;
             };
         }
     }]);
