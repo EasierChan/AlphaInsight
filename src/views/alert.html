@@ -56,31 +56,6 @@
 
         <div id="tb_alert" class="slide future" context-menu="menuOptions">
             
-             <!--div class="ui checkbox">
-              <input type="checkbox" id="time" name="chkTime" ng-model="timeItemSel"   >
-              <label for="time">时间</label>
-             </div>
-
-             <div class="ui checkbox">
-              <input type="checkbox" id="equitCode" name="chkEquitCode" ng-model="equitCodeItemSel"   >
-              <label for="equitCode">股票代码</label>
-             </div>
-
-             <div class="ui checkbox">
-              <input type="checkbox" id="equitName" name="chkEquitName" ng-model="equitNameItemSel"   >
-              <label for="equitName">股票名称</label>
-             </div>
-
-              <div class="ui checkbox">
-              <input type="checkbox" id="signalType" name="chksignalType" ng-model="signalTypeItemSel"   >
-              <label for="signalType">信号类型</label>
-             </div>
-
-             <div class="ui checkbox">
-              <input type="checkbox" id="Volume" name="chkVolume" ng-model="VolumeItemSel"   >
-              <label for="Volume">数量</label>
-             </div-->
-            
             <table class="table table-condensed">
                 <thead id="header">
                     <tr style="background-color: lightblue;">
@@ -119,9 +94,9 @@
                             {{codeinfo.raisetime}}
                         </td>
 
-                        <!--td ng-show="equitCodeItemSel">
+                        <td ng-show="equitCodeItemSel">
                             {{codeinfo.codeid}}
-                        </td-->
+                        </td>
                         <td ng-show="equitNameItemSel" >
                             {{codeinfo.codename}}
                         </td>

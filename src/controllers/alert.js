@@ -23,7 +23,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         $scope.bAllSelect = false;
         $scope.dataForTheTree = {};
         $scope.timeItemSel=true;
-        $scope.equitCodeItemSel=true;
+        $scope.equitCodeItemSel=false;
         $scope.equitNameItemSel=true;
         $scope.signalTypeItemSel=true;
         $scope.VolumeItemSel=true;
@@ -61,7 +61,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         var isTop = false;
         function setContextMenu() {
             $scope.menuOptions = [
-                 ['返回', function ($itemScope) {
+                 ['&#8730返回', function ($itemScope) {
                     angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
                     angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
                     ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
@@ -74,7 +74,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 }],
                 
                 ['表格项过滤...',[
-                   ['时间',function($itemScope) {
+                   ['&radic;时间',function($itemScope) {
                        $itemScope.checked=!$itemScope.checked;
                        $scope.timeItemSel = !$scope.timeItemSel;
                        },[
@@ -377,7 +377,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 var codeinfo = new Object();
                 var raisetime = res.time.toString();
                 codeinfo.raisetime = raisetime.length < 9 ? '0' + raisetime : raisetime;
-                codeinfo.raisetime = codeinfo.raisetime.slice(0, 2) + ':' + codeinfo.raisetime.slice(2, 4) + ':' + codeinfo.raisetime.slice(4, 6);
+                codeinfo.raisetime = codeinfo.raisetime.slice(0, 2) + ':' + codeinfo.raisetime.slice(2, 4) + ':' + ($scope.showSecond?codeinfo.raisetime.slice(4, 6):"");
                 codeinfo.codeid = res.code;
                 codeinfo.codename = res.cnname;
                 codeinfo.alertname = res.alertname;
