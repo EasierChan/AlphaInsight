@@ -50,7 +50,8 @@
 
   electron.ipcMain.on('userstock_change', function (e, arg) {
     global.Configuration.enableFavourites = arg;
-
+    global.Configuration.save();
+    
     userStockListener.forEach(function (winref) {
       winref.win.webContents.send('backend_change'
         , {
@@ -172,15 +173,11 @@
       });
 
       this.win.webContents.on('did-finish-load', function () {
-        console.log(global.Configuration.enableFavourites);
+        //console.log(global.Configuration.enableFavourites);
         realthis.win.webContents.send('backend_change', {
           bEnable: global.Configuration.enableFavourites,
           codeDetail: global.UserStock.detail
         });
-      });
-
-      this.win.webContents.on('filter-toggle', function (e, arg) {
-        global.Configuration.enableFavourites = arg;
       });
     }
     this.config = config;

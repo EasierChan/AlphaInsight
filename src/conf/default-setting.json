@@ -3,7 +3,7 @@
     "ip": "172.24.10.35",
     "port": "2015"
   },
-  "enableFavourites": true,
+  "enableFavourites": false,
   "recvfrequency": "100",
   "hearbeatInterval": "10000",
   "environment": "production",
