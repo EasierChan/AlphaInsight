@@ -58,10 +58,10 @@
         console.log('start loading configuration.');
         loadDefaultSetting();
         loadUserStockFromJSON();
-        loadCodeTable();
-        
         //代码表
         global.codeTable = [];
+        loadCodeTable();
+        
         //计数器
         global.Subscriber = new Object();
         global.Subscriber.alerts = 0;
@@ -148,6 +148,7 @@
         global.saveCodeTable = function(){
             fs.writeFile(fstockpath, JSON.stringify(global.codeTable), function (err) {
                 if ( err ) throw err;
+                console.log("global.codeTable length: %d", global.codeTable.length);
                 console.log("stock file saved succesfully!");
             });
         };

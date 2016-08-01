@@ -9,5 +9,15 @@
   "environment": "production",
   "windowSetting": {
     "alwaysOnTop": false
+  },
+  "log": {
+    "appenders": [
+      {
+        "type": "dateFile",
+        "filename": "alpha.log",
+        "pattern": "-yyyy-MM-dd",
+        "alwaysIncludePattern": false
+      }
+    ]
   }
 }

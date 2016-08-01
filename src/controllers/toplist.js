@@ -283,9 +283,9 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                         //     }
                         // }
                     });
-                    //console.log($scope.rows);
+                    
+                    // console.log("reqObj:", reqObj);
                     $scope.$apply();
-
                     $scope.shareObject.normalTimer = setTimeout(function () {
                         ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
                     }, minInterval * 1000);
@@ -310,7 +310,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
                     });
 
-                    //console.log($scope.rows);
+                    //console.log("relateObj:", relateObj);
                     $scope.$apply();
                     $scope.shareObject.relateTimer = setTimeout(function () {
                         ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
@@ -325,8 +325,6 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
         $scope.reverse = false;
 
         $scope.setOption = function (colHeader, colIndex) {
-
-
             if ($scope.status.bopen) {
 
             } else {

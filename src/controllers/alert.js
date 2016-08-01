@@ -275,7 +275,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             temparg = arg;
         });
 
-        $scope.headers = ['时间', '股票代码', '股票名称', '信号类型', '数量'];
+        $scope.headers = ['时间', '股票名称', '信号类型', '数量'];//'股票代码', 
         var codes = [];
         var bSelectedCode = [];
         var alert_pub = function (alerts, formats) {

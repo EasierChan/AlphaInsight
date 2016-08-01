@@ -18,6 +18,7 @@
       if (typeof realthis.config.lastName == 'undefined') {
         fs.unlink('./winconfig/' + realthis.config.curName, function (e) { /*console.log(e, 'rm file', realthis.config.curName)*/ });
       }
+      removeUserStockListener(realthis);
       realthis.win = null;
 
       if (sign && sign == 'alert') {
@@ -37,6 +38,14 @@
   var userStockListener = [];
   function registerUserStockListener(winref) {
     userStockListener.push(winref);
+  }
+  function removeUserStockListener(winref) {
+    for(var i = 0; i< userStockListener.length; ++i){
+      if(winref === userStockListener[i]){
+        userStockListener.splice(i,1);
+        break;
+      }
+    }
   }
 
   electron.ipcMain.on('userstock_change', function (e, arg) {

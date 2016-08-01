@@ -20,9 +20,9 @@
 <body ng-app="app_alert" ng-strict-di>
     <div class="slides" ng-controller="c_parent">
         <div id="tv_alert" class="slide current">
-            <div class="slide current ui horizontal segments">
+            <div class="ui horizontal segments" style="height: 100%;">
+                <button name="btn_ok" id="btn_ok" class="btn-alert-ok" ng-click="subAlerts()">订阅信号</button>
                 <div class="ui segment">
-                    <button name="btn_ok" id="btn_ok" class="btn-alert-ok" ng-click="subAlerts()">订阅信号</button>
                     <treecontrol class="tree-light" selected-nodes="selectedNodes" tree-model="dataForTheTree" options="treeOptions" on-selection="showSelected(node)">
                         <input type="checkbox" ng-model="node.check" /> &nbsp; {{node.name}}
                     </treecontrol>
@@ -65,9 +65,9 @@
                         <td>
                             {{codeinfo.raisetime}}
                         </td>
-                        <td>
+                        <!--<td>
                             {{codeinfo.codeid}}
-                        </td>
+                        </td>-->
                         <td>
                             {{codeinfo.codename}}
                         </td>
