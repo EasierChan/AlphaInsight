@@ -142,7 +142,6 @@
                     break;
                 }
 
-                global.Subscriber.alerts += 1;
                 Qtp.getInstance().addListener(QtpConstant.MSG_TYPE_ALERT, function (res) {
                     if (!event.sender.isDestroyed()) {
                         event.sender.send(IPCMSG.FrontendPoint, res);
