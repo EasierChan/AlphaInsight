@@ -136,7 +136,7 @@
     
     function loadCodeTable(){
         var fstockpath = __dirname + "/../conf/codetable.json";
-        fs.readFile(fstockpath, (err, data) => {
+        fs.readFile(fstockpath, function(err, data) {
             if (err && err.code == 'ENOENT'){
                 console.error("代码表文件不存在！");
                 return;
