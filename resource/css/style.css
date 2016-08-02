@@ -19,8 +19,7 @@ div.slides {
 div.slide {
     display: none;
     position: absolute;
-    overflow: hidden;
-    overflow-y: auto;
+    overflow: auto;
     width: 100%;
     height: 100%;
     /*left: 50%;
@@ -53,18 +52,32 @@ treecontrol {
 }
 
 .red {
-    color: #ff3232;
+    color: #ff5252;
 }
 
 .green {
-    color: #12fc12;
+    color: #52fc52;
+}
+
+.table {
+    margin-bottom: 0px;
+    min-width: 100px;
 }
 
 tbody#content>tr>td {
     background-color: black;
     border-top: 0px solid black;
+    padding: 1px;
+}
+
+.td-font-xs {
+    font-size: 10px;
+}
+.td-font-sm {
+    font-size: 12px;
+}
+.td-font-lg {
     font-size: 14px;
-    padding: 2px;
 }
 
 td, th{

@@ -17,17 +17,17 @@ const fs = require('fs');
 
 angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
     .controller('c_parent', ['$scope', function ($scope) {
-        
+
         $scope.stockheaders = ['股票代码', '股票名称'];
         $scope.codes1 = [];
         $scope.bAllSelect = false;
         $scope.dataForTheTree = {};
-        $scope.timeItemSel=true;
-        $scope.equitCodeItemSel=false;
-        $scope.equitNameItemSel=true;
-        $scope.signalTypeItemSel=true;
-        $scope.VolumeItemSel=true;
-        $scope.showSecond=true;
+        $scope.timeItemSel = true;
+        $scope.equitCodeItemSel = false;
+        $scope.equitNameItemSel = true;
+        $scope.signalTypeItemSel = true;
+        $scope.VolumeItemSel = true;
+        $scope.showSecond = true;
 
         var configContent = null;
         // 切换全选, 非全选
@@ -59,9 +59,11 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         var frontListenerObj = null;
         var temparg = null;
         var isTop = false;
+        $scope.fontsize = "td-font-sm";
+        
         function setContextMenu() {
             $scope.menuOptions = [
-                 ['&#8730返回', function ($itemScope) {
+                ['返回', function () {
                     angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
                     angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
                     ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
@@ -72,34 +74,44 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     ipcRenderer.send('set-window-top' + temparg.winID, isTop);
                     $scope.menuOptions[1][0] = isTop ? "取消置顶" : "置顶";
                 }],
-                
-                ['表格项过滤...',[
-                   ['&radic;时间',function($itemScope) {
-                       $itemScope.checked=!$itemScope.checked;
-                       $scope.timeItemSel = !$scope.timeItemSel;
-                       },[
-                            ['显示秒',function($itemScope) {
-                             $scope.showSecond = !$scope.showSecond;
+                ['字体', [
+                    ['小', function(){
+                        $scope.fontsize = "td-font-xs";
+                    }],
+                    ['中', function(){
+                        $scope.fontsize = "td-font-sm";
+                    }],
+                    ['大', function(){
+                        $scope.fontsize = "td-font-lg";
+                    }]
+                ]],
+                ['列显示', [
+                    ['时间', function ($itemScope) {
+                        $itemScope.checked = !$itemScope.checked;
+                        $scope.timeItemSel = !$scope.timeItemSel;
+                    }, [
+                            ['显示秒', function ($itemScope) {
+                                $scope.showSecond = !$scope.showSecond;
                             }]
-                          ]
-                   ],
-                   ['股票代码',function($itemScope) {
-                       $itemScope.checked=!$itemScope.checked;
-                       $scope.equitCodeItemSel = !$scope.equitCodeItemSel;
-                   }],
-                   ['股票名称',function($itemScope) {
-                      // $itemScope.item.check=!$itemScope.item.check;
-                       $itemScope.checked=!$itemScope.checked;
-                       $scope.equitNameItemSel = !$scope.equitNameItemSel;
-                   }],
-                   ['信号类型',function($itemScope) {
-                       $itemScope.checked=!$itemScope.checked;
-                       $scope.signalTypeItemSel = !$scope.signalTypeItemSel;
-                   }],
-                   ['数量',function($itemScope) {
-                       $itemScope.checked=!$itemScope.checked;
-                       $scope.VolumeItemSel = !$scope.VolumeItemSel;
-                   }]
+                        ]
+                    ],
+                    ['代码', function ($itemScope) {
+                        $itemScope.checked = !$itemScope.checked;
+                        $scope.equitCodeItemSel = !$scope.equitCodeItemSel;
+                    }],
+                    ['名称', function ($itemScope) {
+                        // $itemScope.item.check=!$itemScope.item.check;
+                        $itemScope.checked = !$itemScope.checked;
+                        $scope.equitNameItemSel = !$scope.equitNameItemSel;
+                    }],
+                    ['类型', function ($itemScope) {
+                        $itemScope.checked = !$itemScope.checked;
+                        $scope.signalTypeItemSel = !$scope.signalTypeItemSel;
+                    }],
+                    ['数量', function ($itemScope) {
+                        $itemScope.checked = !$itemScope.checked;
+                        $scope.VolumeItemSel = !$scope.VolumeItemSel;
+                    }]
                 ]]
             ];
         }
@@ -159,10 +171,11 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
             for (var idx in data.alerttype) {
                 curalert = data.alerttype[idx];
-                if (superType.indexOf(curalert.format) < 0) { // not found
+                if (superType.indexOf(curalert.category) < 0) { // not found
                     var superobj = new Object();
                     superobj.name = curalert.faname;
-                    superobj.alertid = curalert.format;
+                    superobj.alertid = curalert.category;
+                    superobj.format = 0;
                     if (configContent != null)
                         getTreeConfig(configContent.node, superobj);
 
@@ -170,24 +183,28 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                         superobj.check = false;
                     }
                     superobj.children = new Array();
-                    dataForTheTree[curalert.format] = superobj;
+                    dataForTheTree[curalert.category] = superobj;
+                    superType.push(curalert.category);
                     superobj = null;
-                    superType.push(curalert.format);
                 }
 
                 var subObj = new Object();
                 subObj.name = curalert.name;
                 subObj.alertid = curalert.alert;
+                subObj.format = curalert.format;
                 if (configContent != null)
                     getTreeConfig(configContent.node, subObj);
 
                 if (typeof subObj.check == 'undefined') {
                     subObj.check = false;
                 }
+
                 subObj.children = new Array();
-                dataForTheTree[curalert.format].children.push(subObj);
+                dataForTheTree[curalert.category].children.push(subObj);
+                subObj = null;
             }
 
+            console.log(dataForTheTree);
             superType = null; //unref
             curalert = null; //unref
 
@@ -226,14 +243,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         };
 
         $scope.selectedNodes = [];
-        //var inode = -1;
         $scope.showSelected = function (node, selected) {
-            // inode = $scope.dataForTheTree.indexOf(node);
-            // if(inode < 0){
-            //     return;
-            // }
-
-            // node = $scope.dataForTheTree[inode];
             if (node.children.length > 0) { // 目前只支持二级菜单
                 for (var idx in node.children) {
                     node.children[idx].check = node.check;
@@ -241,7 +251,6 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             }
 
             saveConfig();
-            //console.log($scope.dataForTheTree);            
         };
 
         $scope.subAlerts = function () {
@@ -252,7 +261,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 for (var j in $scope.dataForTheTree[i].children) {
                     if ($scope.dataForTheTree[i].children[j].check) {
                         alertset.push($scope.dataForTheTree[i].children[j].alertid);
-                        formatset.push($scope.dataForTheTree[i].alertid); //formats;
+                        formatset.push($scope.dataForTheTree[i].children[j].format); //formats;
                     }
                 }
             }
@@ -304,7 +313,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             temparg = arg;
         });
 
-        $scope.headers = ['时间', '名称', '类型', '数量'];//'股票代码', 
+        $scope.headers = ['时间', '名称', '类型', '数量'];//'代码', 
         var codes = [];
         var bSelectedCode = [];
         var alert_pub = function (alerts, formats) {
@@ -315,7 +324,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             bigBuyAlert.alertset = alerts;
             bigBuyAlert.reqno = -1;
             bSelectedCode = [];
-            
+
             for (var i = 0; i < $scope.codes1.length; ++i) {
                 if ($scope.codes1[i].checked) {
                     bSelectedCode.push($scope.codes1[i][0]);
@@ -326,7 +335,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 frontListenerObj = new frontListener(alerts, formats);
                 bigBuyAlert.reqno = 1;// 第一次send，=1；非第一次，=-1，防止主程序创建多个监听回调
             }
-            
+
             ipcRenderer.send(IPCMSG.BackendPoint, bigBuyAlert);
             ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
         };
@@ -377,24 +386,25 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 var codeinfo = new Object();
                 var raisetime = res.time.toString();
                 codeinfo.raisetime = raisetime.length < 9 ? '0' + raisetime : raisetime;
-                codeinfo.raisetime = codeinfo.raisetime.slice(0, 2) + ':' + codeinfo.raisetime.slice(2, 4) + ':' + ($scope.showSecond?codeinfo.raisetime.slice(4, 6):"");
+                codeinfo.raisetime = codeinfo.raisetime.slice(0, 2) + ':' + codeinfo.raisetime.slice(2, 4) + ':' + ($scope.showSecond ? codeinfo.raisetime.slice(4, 6) : "");
                 codeinfo.codeid = res.code;
                 codeinfo.codename = res.cnname;
                 codeinfo.alertname = res.alertname;
-                switch (formats[idx]) {
-                    case 1000:
-                        codeinfo.quantity = res.quantity;
-                        break;
-                    case 1001:
-                        codeinfo.quantity = (res.quantity / 100).toString() + '%';
-                        break;
-                    case 1002:
-                        codeinfo.quantity = res.quantity / 10000;
-                        break;
-                    default:
-                        codeinfo.quantity = res.quantity;
-                        break;
-                }
+                codeinfo.quantity = res.detailed;
+                // switch (formats[idx]) {
+                //     case 1000:
+                //         codeinfo.quantity = res.quantity;
+                //         break;
+                //     case 1001:
+                //         codeinfo.quantity = (res.quantity / 100).toString() + '%';
+                //         break;
+                //     case 1002:
+                //         codeinfo.quantity = res.quantity / 10000;
+                //         break;
+                //     default:
+                //         codeinfo.quantity = res.quantity;
+                //         break;
+                // }
                 // 颜色配置
                 switch (res.alertcolor) {
                     case 1:
@@ -411,11 +421,11 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                     codes.shift();
                 }
                 codes.push(codeinfo);
-                
+
                 $scope.$apply(function () {
                     $scope.codes = codes;
                 });
-                
+
                 var ele = document.getElementById("tb_alert");
                 ele.scrollTop = ele.scrollHeight;
             };
