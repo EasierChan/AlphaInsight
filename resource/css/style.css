@@ -68,6 +68,7 @@ tbody#content>tr>td {
     background-color: black;
     border-top: 0px solid black;
     padding: 1px;
+    word-break: keep-all;
 }
 
 .td-font-xs {
