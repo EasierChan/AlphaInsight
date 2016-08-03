@@ -20,14 +20,14 @@
 <body ng-app="app_alert" ng-strict-di>
     <div class="slides" ng-controller="c_parent">
         <div id="tv_alert" class="slide current">
-            <div class="ui horizontal segments" style="height: 100%;">
+            <div class="ui horizontal segments" style="height:100%;margin:0;">
                 <button name="btn_ok" id="btn_ok" class="btn-alert-ok" ng-click="subAlerts()">订阅信号</button>
-                <div class="ui segment">
+                <div class="ui segment" style="overflow: auto;">
                     <treecontrol class="tree-light" selected-nodes="selectedNodes" tree-model="dataForTheTree" options="treeOptions" on-selection="showSelected(node)">
                         <input type="checkbox" ng-model="node.check" /> &nbsp; {{node.name}}
                     </treecontrol>
                 </div>
-                <div class="ui segment">
+                <div class="ui segment" style="overflow: auto;">
                     <div>                        
                         <table class="table table-bordered table-condensed table-hover">
                             <thead>
@@ -65,18 +65,18 @@
                             </a> 
                          </th> 
                          <th ng-show="equitCodeItemSel">
-                            <a href=""  ng-click="predicate = 'codeid'; reverse = !reverse">股票代码
+                            <a href=""  ng-click="predicate = 'codeid'; reverse = !reverse">代码
                                <span class="sortorder" ng-show="predicate === 'codeid'" ng-class="{reverse:reverse}"></span>
                             </a> 
                          </th> 
                          <th ng-show="equitNameItemSel">
-                            <a href=""  ng-click="predicate = 'codename'; reverse = !reverse">股票名称
+                            <a href=""  ng-click="predicate = 'codename'; reverse = !reverse">名称
                                <span class="sortorder" ng-show="predicate === 'codename'" ng-class="{reverse:reverse}"></span>
                             </a> 
                          </th> 
 
                          <th ng-show="signalTypeItemSel">
-                            <a href=""  ng-click="predicate = 'alertname'; reverse = !reverse">信号类型
+                            <a href=""  ng-click="predicate = 'alertname'; reverse = !reverse">类型
                                <span class="sortorder" ng-show="predicate === 'alertname'" ng-class="{reverse:reverse}"></span>
                             </a> 
                          </th> 
@@ -90,20 +90,19 @@
                 </thead>
                 <tbody id="content">
                     <tr ng-repeat="codeinfo in codes" ng-class="codeinfo.color">
-                        <td ng-show="timeItemSel">
+                        <td ng-show="timeItemSel" class="td-font-sm">
                             {{codeinfo.raisetime}}
                         </td>
-
-                        <td ng-show="equitCodeItemSel">
+                        <td ng-show="equitCodeItemSel" ng-class="fontsize">
                             {{codeinfo.codeid}}
                         </td>
-                        <td ng-show="equitNameItemSel" >
+                        <td ng-show="equitNameItemSel"  ng-class="fontsize">
                             {{codeinfo.codename}}
                         </td>
-                        <td ng-show="signalTypeItemSel">
+                        <td ng-show="signalTypeItemSel" ng-class="fontsize">
                             {{codeinfo.alertname}}
                         </td>
-                        <td  ng-show="VolumeItemSel">
+                        <td  ng-show="VolumeItemSel" ng-class="fontsize">
                             {{codeinfo.quantity}}
                         </td>
                     </tr>
