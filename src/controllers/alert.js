@@ -61,7 +61,63 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         var frontListenerObj = null;
         var temparg = null;
         var isTop = false;
-        $scope.fontsize = "td-font-sm";
+
+        $scope.fontsize = "td-font-lg";
+        
+        function setContextMenu() {
+            $scope.menuOptions = [
+                ['返回', function () {
+                    angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
+                    angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
+                    ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
+                    saveConfig();
+                }],
+                ['置顶', function () {
+                    isTop = !isTop;
+                    ipcRenderer.send('set-window-top' + temparg.winID, isTop);
+                    $scope.menuOptions[1][0] = isTop ? "取消置顶" : "置顶";
+                }],
+                ['字体', [
+                    ['小', function(){
+                        $scope.fontsize = "td-font-xs";
+                    }],
+                    ['中', function(){
+                        $scope.fontsize = "td-font-sm";
+                    }],
+                    ['大', function(){
+                        $scope.fontsize = "td-font-lg";
+                    }]
+                ]],
+                ['列显示', [
+                    ['时间', function ($itemScope) {
+                        $itemScope.checked = !$itemScope.checked;
+                        $scope.timeItemSel = !$scope.timeItemSel;
+                    }, [
+                            ['显示秒', function ($itemScope) {
+                                $scope.showSecond = !$scope.showSecond;
+                            }]
+                        ]
+                    ],
+                    ['代码', function ($itemScope) {
+                        $itemScope.checked = !$itemScope.checked;
+                        $scope.equitCodeItemSel = !$scope.equitCodeItemSel;
+                    }],
+                    ['名称', function ($itemScope) {
+                        // $itemScope.item.check=!$itemScope.item.check;
+                        $itemScope.checked = !$itemScope.checked;
+                        $scope.equitNameItemSel = !$scope.equitNameItemSel;
+                    }],
+                    ['类型', function ($itemScope) {
+                        $itemScope.checked = !$itemScope.checked;
+                        $scope.signalTypeItemSel = !$scope.signalTypeItemSel;
+                    }],
+                    ['数量', function ($itemScope) {
+                        $itemScope.checked = !$itemScope.checked;
+                        $scope.VolumeItemSel = !$scope.VolumeItemSel;
+                    }]
+                ]]
+            ];
+        }
 
         var reqobj = {
             reqno: 1,
