@@ -57,11 +57,8 @@
     this.loadConfig = function () {
         console.log('start loading configuration.');
         loadDefaultSetting();
-        loadUserStockFromJSON();
-        //代码表
-        global.codeTable = [];
         loadCodeTable();
-        
+        loadUserStockFromJSON();
         //计数器
         global.Subscriber = new Object();
         global.Subscriber.alerts = 0;
@@ -103,17 +100,17 @@
     function loadUserStockFromJSON() {
         var fstockpath = __dirname + "/../conf/user-stock.json";
         const stat = fs.statSync(fstockpath);
-        if(!stat.isFile()){
+        if (!stat.isFile()) {
             console.error("自选股文件不存在!");
         }
         global.UserStock = new Object();
         global.UserStock.codes = JSON.parse(fs.readFileSync(fstockpath));
+        global.UserStock.detail = [];
         global.UserStock.setDetail = function () {
-            global.UserStock.detail = [];
             var count = global.UserStock.codes.length;
             var idx = 0;
             global.codeTable.forEach(function (item) {
-                if(count == 0)return;
+                if (count == 0) return;
                 if ((idx = global.UserStock.codes.indexOf(item.code)) >= 0) {
                     var arr = new Array();
                     arr.push(global.UserStock.codes[idx]);
@@ -123,7 +120,9 @@
                 }
             });
         }
-        
+        global.UserStock.setDetail();
+        console.log("local userstock is loaded.");
+
         global.UserStock.save = function () {
             fs.writeFile(fstockpath, JSON.stringify(global.UserStock.codes), function (err) {
                 if (err) throw err;
@@ -131,21 +130,27 @@
             });
         };
     }
-    
-    function loadCodeTable(){
+
+    function loadCodeTable() {
+        //代码表
+        global.codeTable = [];
         var fstockpath = __dirname + "/../conf/codetable.json";
-        fs.readFile(fstockpath, function(err, data) {
-            if (err && err.code == 'ENOENT'){
-                console.error("代码表文件不存在！");
-                return;
-            };
-            global.codeTable = JSON.parse(data);
-            //console.error(codeTable);
-        });
-        
-        global.saveCodeTable = function(){
+        global.codeTable = JSON.parse(fs.readFileSync(fstockpath));
+        console.log("local codetable is loaded.");
+        // fs.readFile(fstockpath, function (err, data) {
+        //     if (err && err.code == 'ENOENT') {
+        //         console.error("代码表文件不存在！");
+        //         return;
+        //     };
+
+        //     global.codeTable = JSON.parse(data);
+        //     global.UserStock.setDetail();
+        //     console.log("local codetable is loaded.");
+        // });
+
+        global.saveCodeTable = function () {
             fs.writeFile(fstockpath, JSON.stringify(global.codeTable), function (err) {
-                if ( err ) throw err;
+                if (err) throw err;
                 console.log("global.codeTable length: %d", global.codeTable.length);
                 console.log("stock file saved succesfully!");
             });

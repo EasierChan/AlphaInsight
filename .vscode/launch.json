@@ -10,7 +10,7 @@
 			"args": [],
 			"cwd": "${workspaceRoot}",
 			"preLaunchTask": null,
-			"runtimeExecutable": "${workspaceRoot}/../electron-v0.37.8/electron",
+			"runtimeExecutable": "${workspaceRoot}/../electron-v1.3.1-linux-x64/electron",
 			"runtimeArgs": [
 				"--nolazy"
 			],
