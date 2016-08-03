@@ -40,7 +40,8 @@
                         {{topArr[1].top}} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.bopen, 'glyphicon-chevron-right': !status.bopen}"></i>
                     </uib-accordion-heading>
                     <div ng-repeat="item in topArr[1].option">
-                        <label><input type="checkbox" ng-change="saveConfig(1)" ng-model="shareObject.bCurCheck">{{item.columnname}}</label>
+                        <!--<input type="checkbox" ng-change="saveConfig(1)" ng-model="shareObject.bCurCheck">-->
+                        <label>{{item.columnname}}</label>
                         <input type="text" class="input-s" placeholder="{{item.example}}" ng-change="saveConfig(2)" ng-model="shareObject.curCode"/>
                     </div>
                 </uib-accordion-group>

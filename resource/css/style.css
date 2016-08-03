@@ -24,8 +24,9 @@ div.slide {
     height: 100%;
     /*left: 50%;
     top: 50%;
-    margin-top: -150px;*/
-    background: -webkit-gradient(linear, left bottom, left top, from(#bbd), to(#fff));
+    margin-top: -150px;
+    background: -webkit-gradient(linear, left bottom, left top, from(#bbd), to(#fff));*/
+    background: black;
     -webkit-transition: margin 0.25s ease-in-out;
     transition: margin 0.25s ease-in-out;
     background-color: #eee;
@@ -69,6 +70,10 @@ tbody#content>tr>td {
     border-top: 0px solid black;
     padding: 1px;
     word-break: keep-all;
+}
+
+div#tb_alert {
+    background-color: black;
 }
 
 .td-font-xs {
