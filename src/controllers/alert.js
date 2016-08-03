@@ -59,7 +59,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         var frontListenerObj = null;
         var temparg = null;
         var isTop = false;
-        $scope.fontsize = "td-font-sm";
+        $scope.fontsize = "td-font-lg";
         
         function setContextMenu() {
             $scope.menuOptions = [
