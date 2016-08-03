@@ -61,7 +61,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         var isTop = false;
         function setContextMenu() {
             $scope.menuOptions = [
-                 ['&#8730返回', function ($itemScope) {
+                 ['返回', function ($itemScope) {
                     angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
                     angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
                     ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
@@ -74,7 +74,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 }],
                 
                 ['表格项过滤...',[
-                   ['&radic;时间',function($itemScope) {
+                   ['#8730;时间',function($itemScope) {
                        $itemScope.checked=!$itemScope.checked;
                        $scope.timeItemSel = !$scope.timeItemSel;
                        },[
