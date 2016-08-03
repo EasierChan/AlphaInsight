@@ -108,8 +108,8 @@
         }
         global.UserStock = new Object();
         global.UserStock.codes = JSON.parse(fs.readFileSync(fstockpath));
-        global.UserStock.detail = [];
         global.UserStock.setDetail = function () {
+            global.UserStock.detail = [];
             var count = global.UserStock.codes.length;
             var idx = 0;
             global.codeTable.forEach(function (item) {
@@ -122,8 +122,6 @@
                     --count;
                 }
             });
-            //console.log(global.UserStock.detail);
-            //console.log(global.codeTable[0]);
         }
         
         global.UserStock.save = function () {
