@@ -85,6 +85,8 @@
           codes: global.UserStock,
           winID: realthis.win.id
         });
+      
+      ++global.Subscriber.alerts;
     });
 
     registerUserStockListener(realthis);
