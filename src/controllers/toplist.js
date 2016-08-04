@@ -1,12 +1,12 @@
 'use strict';
 
-require("../../resource/js/contextMenu.js");
 const ipcRenderer = require('electron').ipcRenderer;
+const remote = require('electron').remote;
 const QtpConstant = require('../models/qtpmodel').QtpConstant;
 const IPCMSG = require('../models/qtpmodel').IPCMSG;
 const fs = require('fs');
 
-angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contextMenu'])
+angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
     .controller('c_parent', ['$scope', function ($scope) {
 
         $scope.shareObject = new Object();
@@ -48,10 +48,10 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
             ipcRenderer.send(IPCMSG.BackendPoint, { reqno: 1, msgtype: QtpConstant.MSG_TYPE_TOPLIST });
         });
 
-        var isTop = false;
-        function setContextMenu() {
-            $scope.menuOptions = [
-                ['返回', function ($itemScope) {
+        var template = [
+            {
+                label: '返回',
+                click: function(item, focusedWindow) {
                     angular.element(document.getElementById("toplist_config")).removeClass("future").addClass("current");
                     angular.element(document.getElementById("toplist_content")).removeClass("current").addClass("future");
                     ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
@@ -60,14 +60,25 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                     clearTimeout($scope.shareObject.relateTimer);
                     //$scope.shareObject = angular.copy(shareObject_bak);
                     $scope.saveConfig();
-                }],
-                ['置顶', function () {
-                    isTop = !isTop;
-                    ipcRenderer.send('set-window-top' + winID, isTop);
-                    $scope.menuOptions[1][0] = isTop ? "取消置顶" : "置顶";
-                }]
-            ];
-        }
+                }
+            },
+
+            {
+                label: '置顶',
+                type: 'checkbox',
+                click: function(item, focusedWindow) {
+                    focusedWindow.setAlwaysOnTop(item.checked);
+                }
+            }
+        ];
+        function setContextMenu() {
+            const menu = remote.Menu.buildFromTemplate(template);
+            window.addEventListener('contextmenu', function(e) {
+                     e.preventDefault();
+                     menu.popup(remote.getCurrentWindow());
+            }, false);
+        };
+        setContextMenu();
 
         var reqObj = {
             reqno: 1,
@@ -190,7 +201,6 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
 
             ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
             $scope.saveConfig();
-            setContextMenu();
         };
 
         var idx;
@@ -276,7 +286,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate', 'ui.bootstrap.contex
                         //     }
                         // }
                     });
-                    
+
                     // console.log("reqObj:", reqObj);
                     $scope.$apply();
                     $scope.shareObject.normalTimer = setTimeout(function () {
