@@ -73,7 +73,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         ];
         function setContextMenu() {
             const menu = remote.Menu.buildFromTemplate(template);
-            window.addEventListener('contextmenu', (e) => {
+            window.addEventListener('contextmenu', function(e) {
                      e.preventDefault();
                      menu.popup(remote.getCurrentWindow());
             }, false);

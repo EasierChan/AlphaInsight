@@ -22,7 +22,7 @@ angular.module('app_userstock', [])
         $scope.addCode = function () {
             if (!pattern.test($scope.newcode)) {
                 alert('股票代码格式不合法!');
-                $scope.newcode = null;
+                // $scope.newcode = null;
                 return;
             }
 
@@ -36,7 +36,7 @@ angular.module('app_userstock', [])
             var ret = ipcRenderer.sendSync('get-code-name', $scope.newcode);
             if (ret == -1) {
                 alert("股票代码不存在!");
-                $scope.newcode = null;
+                // $scope.newcode = null;
                 return;
             }
 
@@ -119,7 +119,7 @@ angular.module('app_userstock', [])
             for(var i = 0; i < $scope.codes.length; ++i){
                 codesCSV += $scope.codes[i][0] + require('os').EOL;
             }
-            alert(codesCSV);
+            //alert(codesCSV);
             remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
                 title: "自选股导出",
                 filters: [

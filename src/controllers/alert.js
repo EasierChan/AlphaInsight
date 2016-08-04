@@ -93,14 +93,14 @@ angular.module('app_alert', ['treeControl'])
                 {
                     label: '字体中',
                     type: 'radio',
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                         $scope.fontsize = "td-font-sm";
                     }         
                 },
                 {
                     label: '字体大',
                     type: 'radio',
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                         $scope.fontsize = "td-font-lg";
                     }         
                 },
@@ -164,7 +164,7 @@ angular.module('app_alert', ['treeControl'])
         ];
         function setContextMenu() {
             const menu = remote.Menu.buildFromTemplate(template);
-            window.addEventListener('contextmenu', (e) => {
+            window.addEventListener('contextmenu', function(e) {
                      e.preventDefault();
                      menu.popup(remote.getCurrentWindow());
             }, false);
