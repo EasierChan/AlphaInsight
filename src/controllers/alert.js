@@ -30,9 +30,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         $scope.equitNameItemSel = true;
         $scope.signalTypeItemSel = true;
         $scope.VolumeItemSel = true;
-        $scope.showSecond = true;
-        $scope.template =[];
 
+        var showSecond = true;
         var configContent = null;
         // 切换全选, 非全选
         $scope.toggleAll = function () {
@@ -62,20 +61,110 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
 
         var frontListenerObj = null;
         var temparg = null;
-        var isTop = false;
-
         $scope.fontsize = "td-font-lg";
-        
+        // contextmenu
+        var template = [
+                {
+                    label: '返回',
+                    click (item, focusedWindow) {
+                         angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
+                         angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
+                         ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
+                         saveConfig();
+                    }         
+                },
+                {
+                    label: '置顶',
+                    type: 'checkbox',
+                    click (item, focusedWindow) {
+                         ipcRenderer.send('set-window-top' + temparg.winID, item.checked);
+                    }         
+                },
+                {type: 'separator'},
+                {
+                    label: '字体小',
+                    type: 'radio',
+                    click (item, focusedWindow) {
+                          $scope.fontsize = "td-font-xs";
+                    }         
+                },
+                {
+                    label: '字体中',
+                    type: 'radio',
+                    click (item, focusedWindow) {
+                        $scope.fontsize = "td-font-sm";
+                    }         
+                },
+                {
+                    label: '字体大',
+                    type: 'radio',
+                    click (item, focusedWindow) {
+                        $scope.fontsize = "td-font-lg";
+                    }         
+                },
+                {type: 'separator'},
+                {
+                    label: '时间',
+                    type: 'checkbox',
+                    checked: true,
+                    click (item, focusedWindow) {
+                      $scope.timeItemSel = !$scope.timeItemSel;
+                    },
+                     
+                },
+                {
+                    label: '代码',
+                    type: 'checkbox',
+                    checked: false,
+                    click (item, focusedWindow) {
+                     $scope.equitCodeItemSel = !$scope.equitCodeItemSel;
+                    }         
+                },
+                {
+                    label: '名称',
+                    type: 'checkbox',
+                    checked: true,
+                    click (item, focusedWindow) {
+                      $scope.equitNameItemSel = !$scope.equitNameItemSel;
+                    }         
+                },
+                {
+                    label: '类型',
+                    type: 'checkbox',
+                    checked: true,
+                    click (item, focusedWindow) {
+                      $scope.signalTypeItemSel = !$scope.signalTypeItemSel;
+                    }         
+                },
+                {
+                    label: '数量',
+                    type: 'checkbox',
+                    checked: true,
+                    click (item, focusedWindow) {
+                      $scope.VolumeItemSel = !$scope.VolumeItemSel;
+                    }         
+                },
+                {type: 'separator'},
+                {
+                    label: '显示秒',
+                    type: 'checkbox',
+                    checked: true,
+                    click (item, focusedWindow) {
+                        showSecond = !showSecond;
+                    }
+                }
+        ];
         function setContextMenu() {
-            const menu = Menu.buildFromTemplate($scope.template);
+            const menu = Menu.buildFromTemplate(template);
             //Menu.setApplicationMenu(menu);
 
-            const alertwin = document.getElementById('tb_alert');
-            alertwin.addEventListener('contextmenu', (e) => {
+            //const alertwin = document.getElementById('tb_alert');
+            window.addEventListener('contextmenu', (e) => {
                      e.preventDefault();
                      menu.popup(remote.getCurrentWindow());
             }, false);
         };
+        setContextMenu();
 
         var reqobj = {
             reqno: 1,
@@ -227,16 +316,12 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 }
             }
 
-            //console.log(angular.element(document.getElementById("tv_alert")));
             if (alertset.length == 0) {
                 alert("未订阅信号！");
                 return;
             }
 
-            //alert(alertset.join());
-            //$scope.$emit("alert_change", alertset, formatset);
             alert_pub(alertset, formatset);
-            setContextMenu();
             saveConfig();
         };
 
@@ -274,7 +359,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             temparg = arg;
         });
 
-        $scope.headers = ['时间', '名称', '类型', '数量'];//'代码', 
+        //$scope.headers = ['时间', '名称', '类型', '数量'];//'代码', 
         var codes = [];
         var bSelectedCode = [];
         var alert_pub = function (alerts, formats) {
@@ -319,111 +404,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             });
         };
 
-         $scope.template = [
-                {
-                    label: '返回',
-                    click (item, focusedWindow) {
-                         angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
-                         angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
-                         ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
-                         saveConfig();
-                    }         
-                },
-
-                {
-                    label: '置顶',
-                    click (item, focusedWindow) {
-                         isTop = !isTop;
-                         ipcRenderer.send('set-window-top' + temparg.winID, isTop);
-                         $scope.menuOptions[1][0] = isTop ? "取消置顶" : "置顶";
-                    }         
-                },
-
-                {type: 'separator'},
-                {
-                    label: '字体小',
-                    type: 'radio',
-                    click (item, focusedWindow) {
-                          $scope.fontsize = "td-font-xs";
-                    }         
-                },
-
-                {
-                    label: '字体中',
-                    type: 'radio',
-                    click (item, focusedWindow) {
-                        $scope.fontsize = "td-font-sm";
-                    }         
-                },
-
-
-                {
-                    label: '字体大',
-                    type: 'radio',
-                    click (item, focusedWindow) {
-                        $scope.fontsize = "td-font-lg";
-                    }         
-                },
-
-                {type: 'separator'},
-                {
-                    label: '时间',
-                    type: 'checkbox',
-                    checked: true,
-                    click (item, focusedWindow) {
-                      $scope.timeItemSel = !$scope.timeItemSel;
-                    },
-                     
-                },
-
-                {
-                    label: '代码',
-                    type: 'checkbox',
-                    checked: false,
-                    click (item, focusedWindow) {
-                     $scope.equitCodeItemSel = !$scope.equitCodeItemSel;
-                    }         
-                },
-
-                {
-                    label: '名称',
-                    type: 'checkbox',
-                    checked: true,
-                    click (item, focusedWindow) {
-                      $scope.equitNameItemSel = !$scope.equitNameItemSel;
-                    }         
-                },
-
-                {
-                    label: '类型',
-                    type: 'checkbox',
-                    checked: true,
-                    click (item, focusedWindow) {
-                      $scope.signalTypeItemSel = !$scope.signalTypeItemSel;
-                    }         
-                },
-
-                {
-                    label: '数量',
-                    type: 'checkbox',
-                    checked: true,
-                    click (item, focusedWindow) {
-                      $scope.VolumeItemSel = !$scope.VolumeItemSel;
-                    }         
-                },
-                {type: 'separator'},
-
-                {
-                    label: '显示秒',
-                    type: 'checkbox',
-                    checked: true,
-                    click (item, focusedWindow) {
-                        $scope.showSecond = !$scope.showSecond;
-                    }
-                }
-        ];
-
-
+         
         var frontListener = function (alerts, formats) {
 
             return function (event, res) {
@@ -452,7 +433,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                 var codeinfo = new Object();
                 var raisetime = res.time.toString();
                 codeinfo.raisetime = raisetime.length < 9 ? '0' + raisetime : raisetime;
-                codeinfo.raisetime = codeinfo.raisetime.slice(0, 2) + ':' + codeinfo.raisetime.slice(2, 4)  + ($scope.showSecond ? ":"+codeinfo.raisetime.slice(4, 6) : "");
+                codeinfo.raisetime = codeinfo.raisetime.slice(0, 2) + ':' + codeinfo.raisetime.slice(2, 4)  + (showSecond ? ":"+codeinfo.raisetime.slice(4, 6) : "");
                 codeinfo.codeid = res.code;
                 codeinfo.codename = res.cnname;
                 codeinfo.alertname = res.alertname;
@@ -480,7 +461,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                         codeinfo.color = 'green';
                         break;
                     default:
-                        codeinfo.color = 'none';
+                        codeinfo.color = 'yellow';
                 }
                 // magic number 100, 目前实际上最多显示100条信号，采用的式先进先出。
                 if (codes.length == 100) {

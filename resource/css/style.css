@@ -60,6 +60,10 @@ treecontrol {
     color: #52fc52;
 }
 
+.yellow {
+    color: #d8d800;
+}
+
 .table {
     margin-bottom: 0px;
     min-width: 100px;
