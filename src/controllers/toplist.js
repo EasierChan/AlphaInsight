@@ -51,7 +51,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         var template = [
             {
                 label: '返回',
-                click(item, focusedWindow) {
+                click: function(item, focusedWindow) {
                     angular.element(document.getElementById("toplist_config")).removeClass("future").addClass("current");
                     angular.element(document.getElementById("toplist_content")).removeClass("current").addClass("future");
                     ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
@@ -66,7 +66,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             {
                 label: '置顶',
                 type: 'checkbox',
-                click(item, focusedWindow) {
+                click: function(item, focusedWindow) {
                     focusedWindow.setAlwaysOnTop(item.checked);
                 }
             }

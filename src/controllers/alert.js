@@ -6,9 +6,9 @@
 //const Qtp = require('../services/qtpmessage');
 jQuery = $ = require('../../resource/js/jquery.min.js');
 
-require("../../resource/js/angular.js")
-require("../../resource/js/semantic.js")
-require("../../resource/js/angular-tree-control.js")
+require("../../resource/js/angular.js");
+require("../../resource/js/semantic.js");
+require("../../resource/js/angular-tree-control.js");
 const QtpConstant = require('../models/qtpmodel').QtpConstant;
 const IPCMSG = require('../models/qtpmodel').IPCMSG;
 const remote = require('electron').remote;
@@ -64,7 +64,7 @@ angular.module('app_alert', ['treeControl'])
         var template = [
                 {
                     label: '返回',
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                          angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
                          angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
                          ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
@@ -75,7 +75,7 @@ angular.module('app_alert', ['treeControl'])
                 {
                     label: '置顶',
                     type: 'checkbox',
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                          //ipcRenderer.send('set-window-top' + temparg.winID, item.checked);
                          focusedWindow.setAlwaysOnTop(item.checked);
                     }         
@@ -85,7 +85,7 @@ angular.module('app_alert', ['treeControl'])
                 {
                     label: '字体小',
                     type: 'radio',
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                           $scope.fontsize = "td-font-xs";
                     }         
                 },
@@ -110,7 +110,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '时间',
                     type: 'checkbox',
                     checked: true,
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                       $scope.timeItemSel = !$scope.timeItemSel;
                     },
                      
@@ -120,7 +120,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '代码',
                     type: 'checkbox',
                     checked: false,
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                      $scope.equitCodeItemSel = !$scope.equitCodeItemSel;
                     }         
                 },
@@ -129,7 +129,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '名称',
                     type: 'checkbox',
                     checked: true,
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                       $scope.equitNameItemSel = !$scope.equitNameItemSel;
                     }         
                 },
@@ -138,7 +138,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '类型',
                     type: 'checkbox',
                     checked: true,
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                       $scope.signalTypeItemSel =!$scope.signalTypeItemSel;
                     }         
                 },
@@ -147,7 +147,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '数量',
                     type: 'checkbox',
                     checked: true,
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                       $scope.VolumeItemSel =!$scope.VolumeItemSel;
                     }         
                 },
@@ -157,7 +157,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '显示秒',
                     type: 'checkbox',
                     checked: true,
-                    click (item, focusedWindow) {
+                    click: function (item, focusedWindow) {
                         showSecond =!showSecond;
                     }
                 }
