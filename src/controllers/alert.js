@@ -14,6 +14,7 @@ const QtpConstant = require('../models/qtpmodel').QtpConstant;
 const IPCMSG = require('../models/qtpmodel').IPCMSG;
 //const {remote} = require('electron');
 const remote = require('electron').remote;
+const Menu = remote.Menu;
 const ipcRenderer = require('electron').ipcRenderer;
 const fs = require('fs');
 
@@ -30,6 +31,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         $scope.signalTypeItemSel = true;
         $scope.VolumeItemSel = true;
         $scope.showSecond = true;
+        $scope.template =[];
 
         var configContent = null;
         // 切换全选, 非全选
@@ -65,59 +67,15 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
         $scope.fontsize = "td-font-lg";
         
         function setContextMenu() {
-            $scope.menuOptions = [
-                ['返回', function () {
-                    angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
-                    angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
-                    ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
-                    saveConfig();
-                }],
-                ['置顶', function () {
-                    isTop = !isTop;
-                    ipcRenderer.send('set-window-top' + temparg.winID, isTop);
-                    $scope.menuOptions[1][0] = isTop ? "取消置顶" : "置顶";
-                }],
-                ['字体', [
-                    ['小', function(){
-                        $scope.fontsize = "td-font-xs";
-                    }],
-                    ['中', function(){
-                        $scope.fontsize = "td-font-sm";
-                    }],
-                    ['大', function(){
-                        $scope.fontsize = "td-font-lg";
-                    }]
-                ]],
-                ['列显示', [
-                    ['时间', function ($itemScope) {
-                        $itemScope.checked = !$itemScope.checked;
-                        $scope.timeItemSel = !$scope.timeItemSel;
-                    }, [
-                            ['显示秒', function ($itemScope) {
-                                $scope.showSecond = !$scope.showSecond;
-                            }]
-                        ]
-                    ],
-                    ['代码', function ($itemScope) {
-                        $itemScope.checked = !$itemScope.checked;
-                        $scope.equitCodeItemSel = !$scope.equitCodeItemSel;
-                    }],
-                    ['名称', function ($itemScope) {
-                        // $itemScope.item.check=!$itemScope.item.check;
-                        $itemScope.checked = !$itemScope.checked;
-                        $scope.equitNameItemSel = !$scope.equitNameItemSel;
-                    }],
-                    ['类型', function ($itemScope) {
-                        $itemScope.checked = !$itemScope.checked;
-                        $scope.signalTypeItemSel = !$scope.signalTypeItemSel;
-                    }],
-                    ['数量', function ($itemScope) {
-                        $itemScope.checked = !$itemScope.checked;
-                        $scope.VolumeItemSel = !$scope.VolumeItemSel;
-                    }]
-                ]]
-            ];
-        }
+            const menu = Menu.buildFromTemplate($scope.template);
+            //Menu.setApplicationMenu(menu);
+
+            const alertwin = document.getElementById('tb_alert');
+            alertwin.addEventListener('contextmenu', (e) => {
+                     e.preventDefault();
+                     menu.popup(remote.getCurrentWindow());
+            }, false);
+        };
 
         var reqobj = {
             reqno: 1,
@@ -278,7 +236,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             //alert(alertset.join());
             //$scope.$emit("alert_change", alertset, formatset);
             alert_pub(alertset, formatset);
-            //setContextMenu();
+            setContextMenu();
             saveConfig();
         };
 
@@ -361,7 +319,7 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
             });
         };
 
-        const template = [
+         $scope.template = [
                 {
                     label: '返回',
                     click (item, focusedWindow) {
@@ -463,16 +421,8 @@ angular.module('app_alert', ['treeControl', 'ui.bootstrap.contextMenu'])
                         $scope.showSecond = !$scope.showSecond;
                     }
                 }
-        ]
-        const Menu = remote.Menu;
-        const menu = Menu.buildFromTemplate(template);
-        Menu.setApplicationMenu(menu);
+        ];
 
-        const alertwin = document.getElementById('tb_alert');
-        alertwin.addEventListener('contextmenu', (e) => {
-        e.preventDefault()
-        menu.popup(remote.getCurrentWindow())
-        }, true)
 
         var frontListener = function (alerts, formats) {
 
