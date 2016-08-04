@@ -76,7 +76,8 @@ angular.module('app_alert', ['treeControl'])
                     label: '置顶',
                     type: 'checkbox',
                     click (item, focusedWindow) {
-                         ipcRenderer.send('set-window-top' + temparg.winID, item.checked);
+                         //ipcRenderer.send('set-window-top' + temparg.winID, item.checked);
+                         focusedWindow.setAlwaysOnTop(item.checked);
                     }         
                 },
 
