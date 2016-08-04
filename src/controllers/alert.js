@@ -28,8 +28,10 @@ angular.module('app_alert', ['treeControl'])
         $scope.signalTypeItemSel = true;
         $scope.VolumeItemSel = true;
         $scope.fontsize = "td-font-lg";
+        //$scope.clSlide ="slide future";
 
         var showSecond = true;
+        var showSlide = true;
         var configContent = null;
         // 切换全选, 非全选
         $scope.toggleAll = function () {
@@ -59,12 +61,11 @@ angular.module('app_alert', ['treeControl'])
 
         var frontListenerObj = null;
         var temparg = null;
-
         
         var template = [
                 {
                     label: '返回',
-                    click (item, focusedWindow) {
+                    click: function () {
                          angular.element(document.getElementById("tv_alert")).removeClass("future").addClass("current");
                          angular.element(document.getElementById("tb_alert")).removeClass("current").addClass("future");
                          ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
@@ -75,7 +76,7 @@ angular.module('app_alert', ['treeControl'])
                 {
                     label: '置顶',
                     type: 'checkbox',
-                    click (item, focusedWindow) {
+                    click: function () {
                          ipcRenderer.send('set-window-top' + temparg.winID, item.checked);
                     }         
                 },
@@ -84,7 +85,7 @@ angular.module('app_alert', ['treeControl'])
                 {
                     label: '字体小',
                     type: 'radio',
-                    click (item, focusedWindow) {
+                    click: function () {
                           $scope.fontsize = "td-font-xs";
                     }         
                 },
@@ -92,14 +93,14 @@ angular.module('app_alert', ['treeControl'])
                 {
                     label: '字体中',
                     type: 'radio',
-                    click (item, focusedWindow) {
+                    click: function () {
                         $scope.fontsize = "td-font-sm";
                     }         
                 },
                 {
                     label: '字体大',
                     type: 'radio',
-                    click (item, focusedWindow) {
+                    click: function () {
                         $scope.fontsize = "td-font-lg";
                     }         
                 },
@@ -109,7 +110,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '时间',
                     type: 'checkbox',
                     checked: true,
-                    click (item, focusedWindow) {
+                    click: function () {
                       $scope.timeItemSel = !$scope.timeItemSel;
                     },
                      
@@ -119,7 +120,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '代码',
                     type: 'checkbox',
                     checked: false,
-                    click (item, focusedWindow) {
+                    click: function () {
                      $scope.equitCodeItemSel = !$scope.equitCodeItemSel;
                     }         
                 },
@@ -128,7 +129,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '名称',
                     type: 'checkbox',
                     checked: true,
-                    click (item, focusedWindow) {
+                    click: function () {
                       $scope.equitNameItemSel = !$scope.equitNameItemSel;
                     }         
                 },
@@ -137,7 +138,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '类型',
                     type: 'checkbox',
                     checked: true,
-                    click (item, focusedWindow) {
+                    click: function () {
                       $scope.signalTypeItemSel =!$scope.signalTypeItemSel;
                     }         
                 },
@@ -146,7 +147,7 @@ angular.module('app_alert', ['treeControl'])
                     label: '数量',
                     type: 'checkbox',
                     checked: true,
-                    click (item, focusedWindow) {
+                    click: function () {
                       $scope.VolumeItemSel =!$scope.VolumeItemSel;
                     }         
                 },
@@ -156,19 +157,40 @@ angular.module('app_alert', ['treeControl'])
                     label: '显示秒',
                     type: 'checkbox',
                     checked: true,
-                    click (item, focusedWindow) {
+                    click: function () {
                         showSecond =!showSecond;
                     }
+                },
+                {
+                    label: '滚动条',
+                    type: 'checkbox',
+                    checked: true,
+                    click: function (item, focusedWindow) {
+                        showSlide =!showSlide;
+                       // console.log("滚动条",showSlide);
+                        if(showSlide){
+                            //this.label='隐藏滚动条';
+                           angular.element(document.getElementById("tb_alert")).removeClass("slides").addClass("slide");
+                        }
+                        else{
+                            //this.label='显示滚动条';
+                           angular.element(document.getElementById("tb_alert")).removeClass("slide").addClass("slides");
+
+                        }
+                        $scope.$apply();
+                    }
                 }
+                
         ];
-        function setContextMenu() {
+        
+        (function() {
             const menu = remote.Menu.buildFromTemplate(template);
             window.addEventListener('contextmenu', (e) => {
                      e.preventDefault();
                      menu.popup(remote.getCurrentWindow());
             }, false);
-        };
-        setContextMenu();
+        })();
+        //setContextMenu();
 
         var reqobj = {
             reqno: 1,
@@ -366,7 +388,6 @@ angular.module('app_alert', ['treeControl'])
             temparg = arg;
         });
 
-        //$scope.headers = ['时间', '名称', '类型', '数量'];//'代码', 
         var codes = [];
         var bSelectedCode = [];
         var alert_pub = function (alerts, formats) {
