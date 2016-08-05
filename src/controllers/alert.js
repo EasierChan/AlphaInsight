@@ -87,7 +87,6 @@ angular.module('app_alert', ['treeControl'])
                 {
                     label: '字体小',
                     type: 'radio',
-
                     click: function (item, focusedWindow) {
                           $scope.fontsize = "td-font-xs";
                     }         
@@ -103,6 +102,7 @@ angular.module('app_alert', ['treeControl'])
                 {
                     label: '字体大',
                     type: 'radio',
+                    checked: true,
                     click: function (item, focusedWindow) {
                         $scope.fontsize = "td-font-lg";
                     }         
@@ -180,7 +180,6 @@ angular.module('app_alert', ['treeControl'])
                            angular.element(document.getElementById("tb_alert")).removeClass("slide").addClass("slides");
 
                         }
-                        $scope.$apply();
                     }
                 }
                 
