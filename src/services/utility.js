@@ -135,8 +135,10 @@
         //代码表
         global.codeTable = [];
         var fstockpath = __dirname + "/../conf/codetable.json";
-        global.codeTable = JSON.parse(fs.readFileSync(fstockpath));
-        console.log("local codetable is loaded.");
+        if(fs.existsSync(fstockpath)){
+            global.codeTable = JSON.parse(fs.readFileSync(fstockpath));
+            console.log("local codetable is loaded.");
+        }
         // fs.readFile(fstockpath, function (err, data) {
         //     if (err && err.code == 'ENOENT') {
         //         console.error("代码表文件不存在！");
