@@ -159,6 +159,17 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         var minInterval = null;
         $scope.reqToplist = function () {
 
+            minInterval = intervals.sort(function(a,b){
+                return parseInt(a) - parseInt(b);
+            })[0];
+            console.log(minInterval);
+            //console.log(reqObj.column);
+            //console.log($scope.shareObject.header);
+            $scope.shareObject.columns = reqObj.column;
+            reqObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)];
+            reqObj.master = reqObj.column[0];
+            console.log(reqObj);
+
             relateObj.reqno = -1;
             reqObj.reqno = -1;
             relateObj.codelist = [];
