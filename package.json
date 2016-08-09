@@ -1,7 +1,7 @@
 {
   "name": "alphainsight",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "version": "1.0.10",
+  "description": "Alpha insight - 行情分析软件",
   "main": "src/main.js",
   "scripts": {
     "start": "electron src/main.js"
@@ -14,6 +14,8 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "angular-ui-bootstrap": "^1.3.3",
+    "electron-squirrel-startup": "^1.0.0",
+    "gulp": "^3.9.1",
     "log4js": "^0.6.38"
   }
 }
