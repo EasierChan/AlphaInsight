@@ -7,6 +7,7 @@ const messageSvr = require('./base/message');
 const utility = require('./services/utility');
 const electron = require('electron');
 const PreferenceWindow = require('./base/internalwindow').PreferenceWindow;
+const userDir = electron.app.getPath("userData");
 
 const fs = require('fs');
 // Keep a global reference of the window object, if you don't, the window will
@@ -60,6 +61,7 @@ AIApplication.prototype.SetWindow = function (windId, config) {
 };
 
 AIApplication.prototype.SaveWindows = function () {
+  console.log("################SaveWindows!");
   var winsConfig = {};
   for (var windId in this.windows) {
 
@@ -79,27 +81,27 @@ AIApplication.prototype.SaveWindows = function () {
       winsConfig[windId].push(config);
     }
   }
-
-  fs.writeFileSync("./wins.json", JSON.stringify(winsConfig));
+  
+  fs.writeFileSync(userDir + "/wins.json", JSON.stringify(winsConfig));
 }
 
 AIApplication.prototype.loadlastWins = function () {
-
   try {
 
-    if (!fs.statSync('./wins.json').isFile())
+    if (!fs.statSync(userDir + '/wins.json').isFile()) {
       return;
+    }
 
-    var wins = require('../wins.json');
+    var wins = require(userDir + '/wins.json');
 
     var intervals = 500;
-    
+
     var rthis = this;
     function tmCreatWind(windId, wIndex) {
       if (wIndex < wins[windId].length) {
         rthis.SetWindow(windId, wins[windId][wIndex]);
         wIndex++;
-        setTimeout(function(){tmCreatWind(windId, wIndex);}, intervals);
+        setTimeout(function () { tmCreatWind(windId, wIndex); }, intervals);
       }
     }
 
