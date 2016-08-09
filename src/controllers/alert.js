@@ -6,6 +6,7 @@
 //const Qtp = require('../services/qtpmessage');
 jQuery = $ = require('../../resource/js/jquery.min.js');
 
+require("../../resource/js/bootstrap.min.js");
 require("../../resource/js/angular.js");
 require("../../resource/js/semantic.js");
 require("../../resource/js/angular-tree-control.js");
@@ -276,6 +277,12 @@ angular.module('app_alert', ['treeControl'])
                 if (typeof subObj.check == 'undefined') {
                     subObj.check = false;
                 }
+
+                if(typeof curalert.explain == 'undefined') {
+                    curalert.explain = '';
+                }
+
+                subObj.explain = curalert.explain;
 
                 subObj.children = new Array();
                 dataForTheTree[curalert.category].children.push(subObj);

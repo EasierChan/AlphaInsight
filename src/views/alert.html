@@ -25,7 +25,8 @@
                 <button name="btn_ok" id="btn_ok" class="btn-alert-ok" ng-click="subAlerts()">订阅信号</button>
                 <div class="ui segment" style="overflow: auto;">
                     <treecontrol class="tree-light" selected-nodes="selectedNodes" tree-model="dataForTheTree" options="treeOptions" on-selection="showSelected(node)">
-                        <input type="checkbox" ng-model="node.check" /> &nbsp; {{node.name}}
+                        <input type="checkbox" ng-model="node.check" />
+                        <label data-toggle="tooltip" title={{node.explain}}> &nbsp; {{node.name}}</label-->
                     </treecontrol>
                 </div>
                 <div class="ui segment" style="overflow: auto;">
