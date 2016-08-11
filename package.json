@@ -1,6 +1,6 @@
 {
   "name": "alphainsight",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Alpha insight - 行情分析软件",
   "main": "src/main.js",
   "scripts": {
