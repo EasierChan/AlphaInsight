@@ -1,6 +1,6 @@
 'use strict';
 
-
+require('./services/updater');
 // Module to control application life.
 const electron = require('electron');
 const app = electron.app;

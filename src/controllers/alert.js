@@ -15,6 +15,7 @@ const IPCMSG = require('../models/qtpmodel').IPCMSG;
 const remote = require('electron').remote;
 const ipcRenderer = require('electron').ipcRenderer;
 const fs = require('fs');
+const userDir = remote.app.getPath("userData");
 
 angular.module('app_alert', ['treeControl'])
     .controller('c_parent', ['$scope', function ($scope) {
@@ -207,8 +208,8 @@ angular.module('app_alert', ['treeControl'])
             configFileName = arg.curName;
             if (typeof arg.lastName != 'undefined') {
                 try {
-                    configContent = require('../../winconfig/' + arg.lastName);
-                    fs.rename('./winconfig/' + arg.lastName, './winconfig/' + arg.curName, function (e) { console.log(e, 'rm oldfile') });
+                    configContent = require(userDir + '/winconfig/' + arg.lastName);
+                    fs.rename(userDir+'/winconfig/' + arg.lastName, userDir+'/winconfig/' + arg.curName, function (e) { console.log(e, 'rm oldfile') });
                     $scope.codes1 = configContent.codes;
 
                     for (var i = 0; i < $scope.codes1.length; ++i) {
@@ -434,7 +435,7 @@ angular.module('app_alert', ['treeControl'])
 
             configContent.node = $scope.dataForTheTree;
             configContent.hasSub = angular.element(document.getElementById("tv_alert")).hasClass("future");
-            fs.writeFile("./winconfig/" + configFileName, JSON.stringify(configContent), function (err) {
+            fs.writeFile(userDir + "/winconfig/" + configFileName, JSON.stringify(configContent), function (err) {
                 if (err) {
                     console.log(err);
                 }

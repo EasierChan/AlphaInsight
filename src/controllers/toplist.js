@@ -5,6 +5,7 @@ const remote = require('electron').remote;
 const QtpConstant = require('../models/qtpmodel').QtpConstant;
 const IPCMSG = require('../models/qtpmodel').IPCMSG;
 const fs = require('fs');
+const userDir = remote.app.getPath("userData");
 
 angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
     .controller('c_parent', ['$scope', function ($scope) {
@@ -37,9 +38,9 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             winID = arg.winID;
             if (typeof arg.cfg.lastName != 'undefined') {
                 try {
-                    configContent = require('../../winconfig/' + arg.cfg.lastName);
+                    configContent = require(userDir + '/winconfig/' + arg.cfg.lastName);
                     console.log(configContent);
-                    fs.rename('./winconfig/' + arg.cfg.lastName, './winconfig/' + arg.cfg.curName, function (e) { console.log(e, 'rm oldfile') });
+                    fs.rename(userDir + '/winconfig/' + arg.cfg.lastName, userDir + '/winconfig/' + arg.cfg.curName, function (e) { console.log(e, 'rm oldfile') });
                 } catch (e) {
                     configContent = null;
                 }
@@ -258,7 +259,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             configContent.bCurCheck = $scope.shareObject.bCurCheck;
 
             configContent.hasSub = angular.element(document.getElementById("toplist_config")).hasClass("future");
-            fs.writeFile("./winconfig/" + configFileName, JSON.stringify(configContent), function (err) {
+            fs.writeFile(userDir + '/winconfig/' + configFileName, JSON.stringify(configContent), function (err) {
                 if (err) {
                     console.log(err);
                 }

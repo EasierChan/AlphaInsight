@@ -81,7 +81,7 @@ AIApplication.prototype.SaveWindows = function () {
       winsConfig[windId].push(config);
     }
   }
-  
+
   fs.writeFileSync(userDir + "/wins.json", JSON.stringify(winsConfig));
 }
 
@@ -91,6 +91,12 @@ AIApplication.prototype.loadlastWins = function () {
     if (!fs.statSync(userDir + '/wins.json').isFile()) {
       return;
     }
+
+    fs.access(userDir + '/winconfig', fs.R_OK | fs.W_OK, (err) => {
+      if(err){
+        fs.mkdirSync(userDir + '/winconfig');
+      }
+    });
 
     var wins = require(userDir + '/wins.json');
 
@@ -108,9 +114,6 @@ AIApplication.prototype.loadlastWins = function () {
     for (var windId in wins) {
       tmCreatWind(windId, 0);
     }
-
-
-
   } catch (e) {
     console.log(e);
   }

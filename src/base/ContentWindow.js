@@ -11,12 +11,13 @@
   const msgServ = require('./message');
   const IPCMSG = require('../models/qtpmodel').IPCMSG;
   const fs = require('fs');
+  const userDir = electron.app.getPath("userData");
   //class MyEmitter extends EventEmitter { }  
   //const myEmmiter = new EventEmitter();
   function closeListener(realthis, sign) {
     return function (event) {
       if (typeof realthis.config.lastName == 'undefined') {
-        fs.unlink('./winconfig/' + realthis.config.curName, function (e) { /*console.log(e, 'rm file', realthis.config.curName)*/ });
+        fs.unlink(userDir+ '/winconfig/' + realthis.config.curName, function (e) { /*console.log(e, 'rm file', realthis.config.curName)*/ });
       }
       removeUserStockListener(realthis);
       realthis.win = null;

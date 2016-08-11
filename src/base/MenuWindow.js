@@ -83,7 +83,7 @@
                     label: '关于',
                     click: function (item, wind) {
                         electron.dialog.showMessageBox(wind, {
-                            type: 'info', title: 'About', message: 'AlphaInsight version 0.1.0\nreserved by LeHigh',
+                            type: 'info', title: 'About', message: 'AlphaInsight version ' + electron.app.getVersion() + '\nreserved by LeHigh',
                             buttons: ['OK']
                         });
                     }
