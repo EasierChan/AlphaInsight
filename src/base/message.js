@@ -9,8 +9,9 @@
     const os = require('os');
 
     var alerts = new Array();
+    var messageSvr = {};
 
-    this.Start = function () {
+    messageSvr.Start = function () {
         console.log('start connect to server.');
         Qtp.getInstance().connectTo(global.Configuration.FeedHandler.ip
             , global.Configuration.FeedHandler.port);
@@ -177,7 +178,7 @@
         global.UserStock.save();
     });
 
-    this.CancelSub = function (type) {
+    messageSvr.CancelSub = function (type) {
         switch (type) {
             case 0: //cancel alert:
                 Qtp.getInstance().send(QtpConstant.MSG_TYPE_ALERT_CANCEL, { reqno: 1, msgtype: QtpConstant.MSG_TYPE_ALERT_CANCEL, alertset: [] });
@@ -188,5 +189,5 @@
         }
     };
 
-
-}).call(this);
+    module.exports = messageSvr;
+})(this);

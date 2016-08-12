@@ -17,7 +17,7 @@
   function closeListener(realthis, sign) {
     return function (event) {
       if (typeof realthis.config.lastName == 'undefined') {
-        fs.unlink(userDir+ '/winconfig/' + realthis.config.curName, function (e) { /*console.log(e, 'rm file', realthis.config.curName)*/ });
+        fs.unlink(userDir + '/winconfig/' + realthis.config.curName, function (e) { /*console.log(e, 'rm file', realthis.config.curName)*/ });
       }
       removeUserStockListener(realthis);
       realthis.win = null;
@@ -41,9 +41,9 @@
     userStockListener.push(winref);
   }
   function removeUserStockListener(winref) {
-    for(var i = 0; i< userStockListener.length; ++i){
-      if(winref === userStockListener[i]){
-        userStockListener.splice(i,1);
+    for (var i = 0; i < userStockListener.length; ++i) {
+      if (winref === userStockListener[i]) {
+        userStockListener.splice(i, 1);
         break;
       }
     }
@@ -52,7 +52,7 @@
   electron.ipcMain.on('userstock_change', function (e, arg) {
     global.Configuration.enableFavourites = arg;
     global.Configuration.save();
-    
+
     userStockListener.forEach(function (winref) {
       winref.win.webContents.send('backend_change'
         , {
@@ -86,7 +86,7 @@
           codes: global.UserStock,
           winID: realthis.win.id
         });
-      
+
       ++global.Subscriber.alerts;
     });
 
@@ -121,7 +121,7 @@
     this.config.bounds = bounds;
     this.config.lastName = this.config.curName;
     return this.config;
-  }
+  };
 
   function UserStockWind() {
     this.config = {};
@@ -209,7 +209,7 @@
     this.config.bounds = bounds;
     this.config.lastName = this.config.curName;
     return this.config;
-  }
+  };
 
   function ToplistWind() {
     this.config = {};
@@ -252,10 +252,10 @@
     this.config.bounds = bounds;
     this.config.lastName = this.config.curName;
     return this.config;
-  }
+  };
 
-  extension.registerWindow('UserStockWind', function () { return new UserStockWind() }, [], '自选股', true);
-  extension.registerWindow('TableWindow', function () { return new TableWindow() }, [0], '新建', false);
-  extension.registerWindow('Toplist', function () { return new ToplistWind() }, [1], '新建', false);
+  extension.registerWindow('UserStockWind', function () { return new UserStockWind(); }, [], '自选股', true);
+  extension.registerWindow('TableWindow', function () { return new TableWindow(); }, [0], '新建', false);
+  extension.registerWindow('Toplist', function () { return new ToplistWind(); }, [1], '新建', false);
 }).call(this);
 

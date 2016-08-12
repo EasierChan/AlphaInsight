@@ -5,15 +5,15 @@
 
     const autoUpdater = require('electron').autoUpdater;
 
-    autoUpdater.on('error', function (error) {
+    autoUpdater.on('error', (error) => {
         if (error) throw error;
     })
     // Sets the  url  and initialize the auto updater.
-    autoUpdater.setFeedURL("https://github.com/EasierChan/AlphaInsight");;
+    autoUpdater.setFeedURL("https://github.com/EasierChan/AlphaInsight");
     // Asks the server whether there is an update. You must call  setFeedURL  before using this API.
     //autoUpdater.checkForUpdates();
 
-    autoUpdater.on('checking-for-update', function () {
+    autoUpdater.on('checking-for-update',  () => {
         console.log("check for update");
     });
 

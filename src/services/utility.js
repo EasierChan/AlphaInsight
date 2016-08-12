@@ -17,8 +17,9 @@
         }
         return -1;
     }
-
-    this.loadExtension = function (windows) {
+    
+    var utility = {};
+    utility.loadExtension = function (windows) {
         console.log('start loading extension.');
         var app = require('electron').app;
         extension.windowsMap.forEach(function (obj) {
@@ -54,7 +55,7 @@
         });
     }
 
-    this.loadConfig = function () {
+    utility.loadConfig = function () {
         console.log('start loading configuration.');
         loadDefaultSetting();
         loadCodeTable();
@@ -192,6 +193,6 @@
     }
 
     //startWatcher();
-    module.exports = this;
+    module.exports = utility;
 
 }).call(this);

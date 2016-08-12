@@ -1,4 +1,5 @@
 (function () {
+    'use strict';
     //const {Menu, app, BrowserWindow, dialog} = require('electron');
     const electron = require('electron');
 
@@ -95,7 +96,7 @@
     function MenuWindow() {
         var ssize = electron.screen.getPrimaryDisplay().workAreaSize;
         // Create the browser window.
-        option = {
+        var option = {
             title: 'AlphaInsight',
             autoHideMenuBar: false,
             show: false,
@@ -136,11 +137,11 @@
                 this.win.setAlwaysOnTop(true);
             }
         }
-    }
+    };
 
     MenuWindow.prototype.hide = function () {
         this.win.hide();
-    }
+    };
 
     module.exports.MenuWindow = MenuWindow;
     module.exports.menutemplate = menutemplate;
