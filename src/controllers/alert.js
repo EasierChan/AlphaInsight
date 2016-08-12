@@ -4,8 +4,7 @@
 
 //const { QtpConstant, QtpMessageClient } = require('../services/qtpmessage');
 //const Qtp = require('../services/qtpmessage');
-jQuery = $ = require('../../resource/js/jquery.min.js');
-
+window.$ = window.jQuery = require("../../resource/js/jquery.min.js");
 require("../../resource/js/bootstrap.min.js");
 require("../../resource/js/angular.js");
 require("../../resource/js/semantic.js");
