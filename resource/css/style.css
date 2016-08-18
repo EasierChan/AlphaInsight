@@ -76,9 +76,10 @@ tbody#content>tr>td {
     word-break: keep-all;
 }
 
-div#tb_alert {
+div#tb_alert,div#toplist_content {
     background-color: black;
 }
+
 
 .td-font-xs {
     font-size: 10px;
@@ -91,7 +92,7 @@ div#tb_alert {
 }
 
 td, th{
-    min-width: 50px;
+    min-width: 66px;
 }
 
 .sortorder:after {
@@ -100,4 +101,11 @@ td, th{
 
 .sortorder.reverse:after {
     content: '\25bc';
+}
+/*自定义对齐*/
+.table-condensed>tbody>tr>td:nth-child(1){
+    color: #03DA03
+}
+.table-condensed>tbody>tr>td:nth-child(2){
+    color: yellow 
 }
