@@ -22,8 +22,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="row in rows track by $index" ng-click="selectRow(row,$index)" ng-class="{selected: row.isChecked}"  >
-                        <td ng-repeat="col in row track by $index" ng-show="$index<2||menuShow[topArr[0].option[$index].columnname]" style="text-align: right ">{{col}}</td>
+                    <tr ng-repeat="row in rows track by $index" ng-click="selectRow(row,$index)"   >
+                        <td ng-repeat="col in row track by $index" ng-show="$index<2||menuShow[topArr[0].option[$index].columnname]" ng-class="col.infoColor ">
+                            {{col.strValue}}
+                        </td>
                     </tr>
                 </tbody>
             </table>

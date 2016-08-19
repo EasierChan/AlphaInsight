@@ -6,3 +6,5 @@
 /src/conf/
 /wins.json
 /winconfig/
+/src/npm-debug.log
+/src/wins.json

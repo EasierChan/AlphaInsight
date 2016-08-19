@@ -166,7 +166,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                         $scope.shareObject.header = ['相关系数', '代码', '名称', '现价', '涨幅', '涨速'];
                         $scope.shareObject.columns = relateObj.column;
 
-                        formats = [1000, 1000, 1002, 1001, 1001];
+                        relateFormats = [1000, 1000, 1002, 1001, 1001];
                         $scope.status.bopen=true;
                         delRowIndex =-1;
                         ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
@@ -238,7 +238,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
            //相关性排序
             $scope.shareObject.header = ['相关系数', '代码', '名称', '现价', '涨幅', '涨速'];
             $scope.shareObject.columns = relateObj.column;
-            formats = [1000, 1000, 1002, 1001, 1001];
+            relateFormats = [1000, 1000, 1002, 1001, 1001];
           
             if (relateObj.codelist.indexOf($scope.shareObject.curCode) < 0)
                 relateObj.codelist.push($scope.shareObject.curCode);
@@ -290,7 +290,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                 relateObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)];
                 $scope.shareObject.header = ['相关系数', '代码', '名称', '现价', '涨幅', '涨速'];
                 $scope.shareObject.columns = relateObj.column;
-                formats = [1000, 1000, 1002, 1001, 1001];
+                relateFormats = [1000, 1000, 1002, 1001, 1001];
                 ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
                 console.log(relateObj);
             }
@@ -310,7 +310,9 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         }
 
         var baseHeader = [];
-        var formats =  [];
+        var baseFormats =  [];
+        var relateFormats =  [];
+
         var menuGroup = [];
         var intervals = [];
 
@@ -318,8 +320,8 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             console.log( arg);
             reqObj.column.push(arg.toplisttype[0].option[0].fieldname);//for PreClose
             reqObj.column.push(arg.toplisttype[0].option[1].fieldname);
-            formats.push(1000); //代码
-            formats.push(1000); //名称
+            baseFormats.push(1000); //代码
+            baseFormats.push(1000); //名称
             baseHeader.push(arg.toplisttype[0].option[0].columnname);
             baseHeader.push(arg.toplisttype[0].option[1].columnname);
             arg.toplisttype[0].option.splice(0, 2);
@@ -330,9 +332,9 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                 //$scope.topArr[0].option[j].bCheck = true;
                 $scope.menuShow[topItem.columnname]=true;
                 reqObj.column.push($scope.topArr[0].option[j].fieldname);//for PreClose
-                formats.push($scope.topArr[0].option[j].format);
+                baseFormats.push($scope.topArr[0].option[j].format);
                 baseHeader.push($scope.topArr[0].option[j].columnname);//for  昨收 
-
+                
                 var p_interval = $scope.topArr[0].option[j].interval;
                 if (p_interval > 0 && intervals.indexOf(p_interval) < 0) {
                     intervals.push(p_interval);
@@ -405,7 +407,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
              if ($scope.status.bopen) { //相关性排序
                 $scope.shareObject.header = ['相关系数', '代码', '名称', '现价', '涨幅', '涨速'];
                 $scope.shareObject.columns = relateObj.column;
-                formats = [1000, 1000, 1002, 1001, 1001];
+                relateFormats = [1000, 1000, 1002, 1001, 1001];
                 //relateObj.codelist.length = 0;
                 //console.log($scope.shareObject.curCode);
                 if (relateObj.codelist.indexOf($scope.shareObject.curCode) < 0)
@@ -463,37 +465,54 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             $scope.rows = [];
             //$scope.isRowShow={};
             var delIndex=[];
-
+           
             return function (e, res) {
 
                 //console.log(res);
                 if (res.msgtype == QtpConstant.MSG_TYPE_TOPLIST_BASE) {
                     //console.log(res.data);
                     res.data.forEach(function (obj, index) {
-                        // console.log(obj);
-                        // console.log(index);
-                        // var codeItem=obj[$scope.shareObject.columns[0]];
-
-                        //  if(delCodeList.indexOf(codeItem)>-1){
-                        //      delIndex.push(index);
-                        //      console.log(index,codeItem);
-                        //      //res.data.splice(index,1);
-                        //      //return true;
-                        //  }
-                        // $scope.isRowShow[codeItem]=true;
+                        
                         $scope.rows[index] = new Array();
                         for (var col in $scope.shareObject.columns) {
-                            //$scope.rows[index].push(eval("obj." + $scope.shareObject.columns[col]));
-                            if (formats[col] == 1001) {
-                                $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 100 + '%');
-                                continue;
+                            // if (formats[col] == 1001) {
+                            //     $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 100 + '%');
+                            //     continue;
+                            // }
+                            // if (formats[col] == 1002) {
+                            //     $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 10000);
+                            //     continue;
+                            // }
+                            // $scope.rows[index].push(obj[$scope.shareObject.columns[col]]);
+        
+                            var insertObj= {};
+                            if (baseFormats[col] == 1001) {
+                                insertObj.strValue =((parseFloat(obj[$scope.shareObject.columns[col]]) / 100) + '%');
+                                //$scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 100 + '%');
+                               // continue;
                             }
-                            if (formats[col] == 1002) {
-                                $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 10000);
-                                continue;
+                            else if (baseFormats[col] == 1002) {
+                                insertObj.strValue = parseFloat(obj[$scope.shareObject.columns[col]])/10000;
+                                // $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 10000);
+                                // continue;
                             }
-                            $scope.rows[index].push(obj[$scope.shareObject.columns[col]]);
-                        }
+                            else 
+                                insertObj.strValue = obj[$scope.shareObject.columns[col]];
+                                 
+
+                            
+                                if($scope.shareObject.columns[col]=="szCNName")
+                                    insertObj.infoColor= 'flowerblue'; 
+                                else if($scope.shareObject.columns[col]=="nChg")//涨幅
+                                    insertObj.infoColor=(insertObj.strValue>0)?'red':'green';
+                                else{
+                                    insertObj.infoColor=(col%2==0)?'yellow':'red';
+                                }
+                                    
+                                $scope.rows[index].push(insertObj);
+                                //insertObj.strValue='';
+                                insertObj= {};
+                         }
 
                     });
                   
@@ -514,19 +533,46 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     res.data.forEach(function (obj, index) {
                         $scope.rows[index] = new Array();
                         //相关性系数列
-                        $scope.rows[index].push(res.relevance[index]);
+                        var insertObj2= {};
+                        insertObj2.strValue=res.relevance[index];
+                        insertObj2.infoColor='green';
+                        $scope.rows[index].push(insertObj2);
+
+                        //$scope.rows[index].push(res.relevance[index]);
                         //
                         for (var col in $scope.shareObject.columns) {
+                           
+                            var columeValue1="";
+                            var insertObj1= {};
 
-                            if (formats[col] == 1001) {
-                                $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 100 + '%');
-                                continue;
+                            if (relateFormats[col] == 1001) {
+                                columeValue1 =parseFloat(obj[$scope.shareObject.columns[col]]) / 100 + '%';
+                                //$scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 100 + '%');
+                               // continue;
                             }
-                            if (formats[col] == 1002) {
-                                $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 10000);
-                                continue;
+                            else if (relateFormats[col] == 1002) {
+                                columeValue1 = parseFloat(obj[$scope.shareObject.columns[col]]) / 10000;
+                                // $scope.rows[index].push(parseFloat(obj[$scope.shareObject.columns[col]]) / 10000);
+                                // continue;
                             }
-                            $scope.rows[index].push(obj[$scope.shareObject.columns[col]]);
+                            else 
+                                columeValue1 = obj[$scope.shareObject.columns[col]];
+                                 
+                                insertObj1.strValue =columeValue1;
+                            
+                                if($scope.shareObject.columns[col]=="szCNName")
+                                    insertObj1.infoColor= 'flowerblue'; 
+                                else if($scope.shareObject.columns[col]=="nChg")//涨幅
+                                    insertObj1.infoColor=(columeValue1>0)?'red':'green';
+                                else{
+                                    insertObj1.infoColor= 'green';
+                                }
+                                    
+                                $scope.rows[index].push(insertObj1);
+                                //insertObj1.strValue='';
+                                insertObj1= {};
+                            
+                                //$scope.rows[index].push(obj[$scope.shareObject.columns[col]]);
                         }
 
                     });

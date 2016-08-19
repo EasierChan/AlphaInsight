@@ -10,6 +10,7 @@ div.slides {
     overflow: hidden;
     left: 0;
     top: 0;
+
     position: absolute;
     display: block;
     -webkit-transition: -webkit-transform 2s ease-in-out;
@@ -22,6 +23,9 @@ div.slide {
     overflow: auto;
     width: 100%;
     height: 100%;
+   
+    
+
     /*left: 50%;
     top: 50%;
     margin-top: -150px;
@@ -31,6 +35,11 @@ div.slide {
     transition: margin 0.25s ease-in-out;
     background-color: #eee;
 }
+
+/*div#toplist_config {
+   width: 80;
+   height: 60;
+} */
 
 div.current {
     display: block;
@@ -62,6 +71,9 @@ treecontrol {
 
 .yellow {
     color: #d8d800;
+}
+.flowerblue{
+    color: cadetblue
 }
 
 .table {
@@ -103,9 +115,6 @@ td, th{
     content: '\25bc';
 }
 /*自定义对齐*/
-/*.table-condensed>tbody>tr>td:nth-child(1){
+div#toplist_content>t{
     color: #03DA03
 }
-.table-condensed>tbody>tr>td:nth-child(2){
-    color: yellow 
-}*/
