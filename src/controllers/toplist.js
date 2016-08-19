@@ -134,7 +134,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                 label: '相关性',
                 click: function(item, focusedWindow) {
                         if(delRowIndex==-1){
-                             console.log("未选中行！");
+                              alert("单击行头，选中行！");
                               return;
                         }
                           
