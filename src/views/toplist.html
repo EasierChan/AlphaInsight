@@ -32,9 +32,9 @@
         <div id="dlgRangeInput" class="future slide" >  
             <span class="text ">查询范围</span> 
             <input class="input-s" type="number" min="0" ng-change="saveConfig()" ng-model="shareObject.rankMin"> 至 <input class="input-s" type="number" min="0" ng-change="saveConfig()" ng-model="shareObject.rankMax"> 
-            <button class="ui button"  ng-click="btnBaseTopSelect()"> 确定 </button>      
+            <button class="ui button"  ng-click="btnRangeSelect()"> 确定 </button>      
         </div>
-        <div id="toplist_config" class="future slide " >
+        <div id="toplist_config" class="future slide " style = "" >
             <div >
                 <label>相关代码</label>
                 <input type="text" class="input-s" placeholder="600446" ng-change="saveConfig(2)" ng-model="shareObject.curCode"/>

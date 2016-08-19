@@ -81,6 +81,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     $scope.rows = [];
                     clearTimeout($scope.shareObject.normalTimer);
                     clearTimeout($scope.shareObject.relateTimer);
+                    //$scope.status.bopen=true;
                     //$scope.shareObject = angular.copy(shareObject_bak);
                     $scope.saveConfig();
                 }
@@ -119,7 +120,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     $scope.predicate = reqObj.master;
                     ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
                     ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
-
+                    $scope.status.bopen=false;
                     $scope.saveConfig();
                 }
             },
@@ -166,7 +167,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                         $scope.shareObject.columns = relateObj.column;
 
                         formats = [1000, 1000, 1002, 1001, 1001];
-                        
+                        $scope.status.bopen=true;
                         delRowIndex =-1;
                         ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
                         //angular.element(document.getElementById("toplist_content")).removeClass("future").addClass("current");
@@ -186,7 +187,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                   }
                 }
             }
-            //,{
+            // ,{
             //     label: '删除行',
             //     click: function(item, focusedWindow) {
             //         if(delRowIndex==-1){
@@ -196,7 +197,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             //        // $scope.rows.splice(delRowIndex,1);
             //        // $scope.$apply();
             //         if(delCodeList.indexOf(delcodeId)<0){
-            //           delCodeList.push(delcodeId);
+            //            delCodeList.push(delcodeId);
             //         }
             //         delRowIndex=-1;
             //     }
@@ -268,19 +269,44 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         };
         
 
-        $scope.btnBaseTopSelect = function(){
-            reqObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)]; 
-            $scope.shareObject.header = baseHeader;
-            $scope.shareObject.columns = reqObj.column;
-            reqObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)];
-            reqObj.master = reqObj.column[0];
-            $scope.predicate = reqObj.master;
+        $scope.btnRangeSelect = function(){
+            console.log($scope.status.bopen);
+           
+            if(!$scope.status.bopen){
+                reqObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)]; 
+                $scope.shareObject.header = baseHeader;
+                $scope.shareObject.columns = reqObj.column;
+                reqObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)];
+                reqObj.master = reqObj.column[0];
+                $scope.predicate = reqObj.master;
+                ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
+            }
+            else{
+                 
+                relateObj.reqno = -1;
+                reqObj.reqno = -1;
+                //relateObj.codelist = [];
+                //相关性排序
+                relateObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)];
+                $scope.shareObject.header = ['相关系数', '代码', '名称', '现价', '涨幅', '涨速'];
+                $scope.shareObject.columns = relateObj.column;
+                formats = [1000, 1000, 1002, 1001, 1001];
+                ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
+                console.log(relateObj);
+            }
             
-            ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
-            $scope.status.bopen=false;//相关性页面关闭
-
+            //$scope.status.bopen=false;//相关性页面关闭
+             if (frontListenerObj == null) {
+                //console.log("hee456");
+                frontListenerObj = new frontListener();
+                relateObj.reqno = 1;// 第一次send，=1；非第一次，=-1，防止主程序创建多个监听回调
+                reqObj.reqno = 1;
+            }
+        
             angular.element(document.getElementById("dlgRangeInput")).removeClass("current").addClass("future");
+           // angular.element(document.getElementById("toplist_content")).removeClass("future").addClass("current");
             ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
+           // $scope.saveConfig();
         }
 
         var baseHeader = [];
@@ -449,11 +475,10 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                         // var codeItem=obj[$scope.shareObject.columns[0]];
 
                         //  if(delCodeList.indexOf(codeItem)>-1){
-                        //      $scope.isRowShow[codeItem]=false;
                         //      delIndex.push(index);
-                        //      console.log($scope.isRowShow[codeItem],index,codeItem);
+                        //      console.log(index,codeItem);
                         //      //res.data.splice(index,1);
-                        //      return true;
+                        //      //return true;
                         //  }
                         // $scope.isRowShow[codeItem]=true;
                         $scope.rows[index] = new Array();
@@ -471,16 +496,15 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                         }
 
                     });
-                   // console.log(delIndex);
+                  
 
-                    // for(var idel in delIndex){
-                    //     $scope.rows.splice(delIndex[idel], 1);
-                    //   //  console.log(delIndex[idel]);
-                    // }
+                    //  var lth= delIndex.length;
+                    //  for(var i=0 ;i<lth ; i++){
+                    //      $scope.rows.splice(delIndex[i], 1);
+                    //      console.log(delIndex[i],i);
+                    //  }
 
-                   
 
-                    // console.log("reqObj:", reqObj);
                     $scope.$apply();
                     delIndex=[];
                     $scope.shareObject.normalTimer = setTimeout(function () {
