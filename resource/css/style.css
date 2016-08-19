@@ -103,9 +103,9 @@ td, th{
     content: '\25bc';
 }
 /*自定义对齐*/
-.table-condensed>tbody>tr>td:nth-child(1){
+/*.table-condensed>tbody>tr>td:nth-child(1){
     color: #03DA03
 }
 .table-condensed>tbody>tr>td:nth-child(2){
     color: yellow 
-}
+}*/
