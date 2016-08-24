@@ -29,6 +29,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         $scope.codes = [];
         var pattern = /^[0-9]{6}$/;
         var bself=false;
+        //var menu={};
        
          
 
@@ -82,7 +83,18 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         };
 
         var template = [{
-                label: '自设相关性排序',
+                label: '置顶',
+                type: 'checkbox',
+                click: function(item, focusedWindow) {
+                    focusedWindow.setAlwaysOnTop(item.checked);
+                }
+            },
+            {
+                type: 'separator',
+            },
+
+            {
+                label: '相关性排序',
                 click: function(item, focusedWindow) {
                     angular.element(document.getElementById("toplist_config")).removeClass("future").addClass("current");
                     angular.element(document.getElementById("toplist_content")).removeClass("current").addClass("future");
@@ -94,26 +106,8 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     //$scope.shareObject = angular.copy(shareObject_bak);
                     $scope.saveConfig();
                 }
-            },{
-                label: '置顶',
-                type: 'checkbox',
-                click: function(item, focusedWindow) {
-                    focusedWindow.setAlwaysOnTop(item.checked);
-                }
-            },{
-                label: '基本列',
-                submenu:[]
-            },{
-                label: '股票显示数',
-                click: function(item, focusedWindow) {
-                    angular.element(document.getElementById("dlgRangeInput")).removeClass("future").addClass("current");
-                    //angular.element(document.getElementById("toplist_content")).removeClass("current").addClass("future");  
-                    ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
-                    $scope.rows = [];
-                    clearTimeout($scope.shareObject.normalTimer);
-                    clearTimeout($scope.shareObject.relateTimer);
-               }
-            },{
+            },
+            {
                 label: '基本排序',
                 click: function(item, focusedWindow) {
                     angular.element(document.getElementById("toplist_config")).removeClass("current").addClass("future");
@@ -134,6 +128,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     $scope.saveConfig();
                 }
             },
+
             {
                 label: '自选股',
                 click: function(item, focusedWindow) {
@@ -145,8 +140,53 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                         clearTimeout($scope.shareObject.relateTimer);    
                     }
             },
+            
             {
-                label: '相关性',
+                type: 'separator',
+            },
+
+            {
+                label: '基本列',
+                submenu:[]
+            },
+            // {
+            //     label: '删除列',
+            //     click: function(item, focusedWindow) {
+            //       $scope.menuShow[$scope.selectCol] = false;
+            //       for(var menuIm in template[2].submenu ){
+            //           if(template[2].submenu[menuIm].label==selectCol){
+            //               $scope.menuShow[selectCol]=!$scope.menuShow[selectCol]; 
+
+            //               menu.items[6].submenu[menuIm].checked=false;
+            //               template[6].submenu[menuIm].checked = !template[6].submenu[menuIm].checked;
+            //               selectCol='';
+            //               break;
+            //           }
+            //       }
+            //     }
+            // },
+            {
+                type: 'separator',
+            },
+            
+            
+            {
+                label: '股票显示数',
+                click: function(item, focusedWindow) {
+                    angular.element(document.getElementById("dlgRangeInput")).removeClass("future").addClass("current");
+                    
+                    angular.element(document.getElementById("toplist_content")).removeClass("current").addClass("future");  
+                   
+                    ipcRenderer.removeListener(IPCMSG.FrontendPoint, frontListenerObj);
+                    $scope.rows = [];
+                    clearTimeout($scope.shareObject.normalTimer);
+                    clearTimeout($scope.shareObject.relateTimer);
+               }
+            },
+            
+            
+            {
+                label: '相关股票',
                 click: function(item, focusedWindow) {
                         if(delRowIndex==-1){
                               alert("单击行头，选中行！");
@@ -162,12 +202,9 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                         reqObj.reqno = -1;
                         relateObj.codelist = [];
 
-                        var rowSel = $scope.rows[delRowIndex];
-                        for(var item in $scope.rows[delRowIndex]){
-                           $scope.shareObject.curCode = $scope.rows[delRowIndex][item];
-                         //  console.log( $scope.shareObject.curCode);
-                           break;
-                        }
+                        
+                        $scope.shareObject.curCode = delcodeId ;
+                        
                        
                         
                        // console.log($scope.shareObject.curCode);
@@ -183,6 +220,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
 
                         relateFormats = [1000, 1000, 1002, 1001, 1001];
                         $scope.status.bopen=true;
+                        delcodeId='';
                         delRowIndex =-1;
                         ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
                         //angular.element(document.getElementById("toplist_content")).removeClass("future").addClass("current");
@@ -197,7 +235,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                         return ;
                     }
                     if($scope.status.bopen){
-                       alert("代码相关页面不支持删除操作！");
+                       alert("代码相关页面不支持加入自选股！");
                         return ;
                     }
 
@@ -227,44 +265,31 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     //delcodeName='';
                     $scope.$apply();
 
-                    saveToFile();
+                    // saveToFile();
                  
                 }
             },
 
-            {
-                label: '删除列',
-                click: function(item, focusedWindow) {
-                  $scope.menuShow[$scope.selectCol] = false;
-                  for(var menuIm in template[2].submenu ){
-                      if(template[2].submenu[menuIm].label==selectCol){
-                          $scope.menuShow[selectCol]=!$scope.menuShow[selectCol]; 
-                          template[2].submenu[menuIm].checked = !template[2].submenu[menuIm].checked;
-                          selectCol='';
-                          break;
-                      }
-                  }
-                }
-            }
-            ,{
-                label: '删除行',
-                click: function(item, focusedWindow) {
-                    if(delRowIndex==-1){
-                        alert("未选中行！");
-                        return ;
-                    }
-                    if($scope.status.bopen){
-                       alert("代码相关页面不支持删除操作！");
-                        return ;
-                    }
-                   // $scope.rows.splice(delRowIndex,1);
-                   // $scope.$apply();
-                    if(delCodeList.indexOf(delcodeId)<0){
-                       delCodeList.push(delcodeId);
-                    }
-                    delRowIndex=-1;
-                }
-            }
+           
+            // ,{
+            //     label: '删除行',
+            //     click: function(item, focusedWindow) {
+            //         if(delRowIndex==-1){
+            //             alert("未选中行！");
+            //             return ;
+            //         }
+            //         if($scope.status.bopen){
+            //            alert("代码相关页面不支持删除操作！");
+            //             return ;
+            //         }
+            //        // $scope.rows.splice(delRowIndex,1);
+            //        // $scope.$apply();
+            //         if(delCodeList.indexOf(delcodeId)<0){
+            //            delCodeList.push(delcodeId);
+            //         }
+            //         delRowIndex=-1;
+            //     }
+            // }
 
         ];
 
@@ -292,7 +317,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
              delcodeId=row[0].strValue;
              delcodeName = row[1].strValue; 
              //selectRow=row;
-             console.log(delcodeId,delcodeName);
+            // console.log(delcodeId,delcodeName);
         };
 
         $scope.relaseWinShow = function(){
@@ -354,7 +379,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
         };
 
         $scope.btnRangeSelect = function(){
-            console.log($scope.status.bopen);
+           // console.log($scope.status.bopen);
            
             if(!$scope.status.bopen){
                 reqObj.ranke = [parseInt($scope.shareObject.rankMin), parseInt($scope.shareObject.rankMax)]; 
@@ -377,7 +402,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                 $scope.shareObject.columns = relateObj.column;
                 relateFormats = [1000, 1000, 1002, 1001, 1001];
                 ipcRenderer.send(IPCMSG.BackendPoint, relateObj);
-                console.log(relateObj);
+               // console.log(relateObj);
             }
             
             //$scope.status.bopen=false;//相关性页面关闭
@@ -389,7 +414,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             }
         
             angular.element(document.getElementById("dlgRangeInput")).removeClass("current").addClass("future");
-           // angular.element(document.getElementById("toplist_content")).removeClass("future").addClass("current");
+            angular.element(document.getElementById("toplist_content")).removeClass("future").addClass("current");
             ipcRenderer.on(IPCMSG.FrontendPoint, frontListenerObj);
            // $scope.saveConfig();
         }
@@ -433,7 +458,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                         $scope.menuShow[item.label]=!$scope.menuShow[item.label];           
                     }
                 }
-                template[2].submenu.push(menuItem);      
+                template[6].submenu.push(menuItem);      
             }       
 
             if (configContent != null) {
@@ -462,7 +487,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             $scope.reqToplist();
         });
 
-
+       
         var frontListenerObj = null;
         var minInterval = null;
         $scope.reqToplist = function () {
@@ -560,8 +585,16 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                     var addIndex=0;
                     //console.log(res.data);
                     res.data.forEach(function (obj, index) {
-                        var bAdd=false;
-                        $scope.rows[addIndex] = new Array();  
+                        
+                        // if(delCodeList.indexOf(obj["szWindCode"])>=0){//不在删除表内
+                        //           console.log("删除股票行",obj["szWindCode"]);
+                        //           return true;
+                        //    }
+
+                         var nchgvalue= parseFloat(obj["nChg"])/10000; 
+                         var fieldColor=(nchgvalue>0)?'red':'green';
+
+                         $scope.rows[addIndex] = new Array();  
                         for (var col in $scope.shareObject.columns) {
                             var insertObj= {};
                             if (baseFormats[col] == 1001) {
@@ -580,31 +613,15 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                                 insertObj.infoColor= 'yellow'; 
                             else if($scope.shareObject.columns[col]=="nPreClose")//代码
                                 insertObj.infoColor= 'green'; 
-                            else if($scope.shareObject.columns[col]=="nChg")//涨幅
-                                insertObj.infoColor=(insertObj.strValue>0)?'red':'green';
-                            else{
-                                insertObj.infoColor=(col%2==0)?'green':'red';
-                            }
+                            else
+                                insertObj.infoColor=fieldColor;
                            
                             $scope.rows[addIndex].push(insertObj);
-                            if(delCodeList.indexOf($scope.shareObject.columns[0])<0){//不在删除表内
-                                  bAdd=true;  
-                            }
-                           
-                            insertObj= {};
                          }//for
-                         if(bAdd){
-                           
-                           addIndex++;                            
-                         }
-                         else{
-                               $scope.rows.splice(addIndex,1);
-                                  return;
-                         }
+                         addIndex++;
                     });
 
                     $scope.$apply();
-                    delIndex=[];
                     $scope.shareObject.normalTimer = setTimeout(function () {
                         ipcRenderer.send(IPCMSG.BackendPoint, reqObj);
                     }, minInterval * 1000);
@@ -644,7 +661,6 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             }
         };
 ////////////////////处理自选股////////////////////////////
-       {
          
        
         function saveToFile() {
@@ -792,7 +808,6 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
             }
         };
 
-       } 
 
 
         var headerMap = new Object();

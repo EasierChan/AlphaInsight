@@ -14,14 +14,14 @@
         <div id="toplist_content" class="slide current" style="overflow: auto">
             <table class="table table-condensed ">
                 <thead id="header">
-                    <tr style="background-color: lightblue;">
+                    <tr style="background-color: lightblue;" class="locktop">
                         <th ng-repeat="hdr in shareObject.header track by $index"  ng-click="setOption(hdr, $index)"  ng-show="$index<2||menuShow[hdr]||status.bopen" ng-mouseover="setSelCol(hdr)" >
                                    {{hdr}}
                                <span class="sortorder" ng-show="predicate === hdr"  ng-class="{reverse:reverse}"></span>
                         </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody >
                     <tr ng-repeat="row in rows track by $index" ng-click="selectRow(row,$index)"   >
                         <td ng-repeat="col in row track by $index" ng-show="$index<2||menuShow[topArr[0].option[$index].columnname]" ng-class="col.infoColor ">
                             {{col.strValue}}

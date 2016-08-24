@@ -36,6 +36,11 @@ div.slide {
     background-color: #eee;
 }
 
+tr.locktop{
+  position:relative;
+  top:expression((this.offsetParent.scrollTop>this.parentElement.parentElement.offsetTop?this.offsetParent.scrollTop-this.parentElement.parentElement.offsetTop-1:0)-1);
+}
+
 /*div#toplist_config {
    width: 80;
    height: 60;
