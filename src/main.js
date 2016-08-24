@@ -4,6 +4,8 @@ require('./services/updater');
 // Module to control application life.
 const electron = require('electron');
 const app = electron.app;
+const Menu = electron.Menu;
+const Tray = electron.Tray;
 
 const AIApplication = require('./AIApplication');
 var application = null;
@@ -12,6 +14,15 @@ var application = null;
 app.on('ready', function () {
   application = new AIApplication();
   application.Start();
+  // tray = new Tray('/path/to/my/icon')
+  // const contextMenu = Menu.buildFromTemplate([
+  //   {label: 'Item1', type: 'radio'},
+  //   {label: 'Item2', type: 'radio'},
+  //   {label: 'Item3', type: 'radio', checked: true},
+  //   {label: 'Item4', type: 'radio'}
+  // ])
+  // tray.setToolTip('This is my application.')
+  // tray.setContextMenu(contextMenu)
   console.log(process.versions['chrome']);
 });
 

@@ -592,7 +592,17 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                         //    }
 
                          var nchgvalue= parseFloat(obj["nChg"])/10000; 
-                         var fieldColor=(nchgvalue>0)?'red':'green';
+                         var  fieldColor="";
+                         if(nchgvalue>0){
+                              fieldColor='red';
+                         }
+                         else if(nchgvalue==0){
+                              fieldColor='white';
+                         }
+                         else{
+                              fieldColor='green';
+                         }
+                           
 
                          $scope.rows[addIndex] = new Array();  
                         for (var col in $scope.shareObject.columns) {
@@ -612,7 +622,7 @@ angular.module("app_toplist", ['ui.bootstrap', 'ngAnimate'])
                             else if($scope.shareObject.columns[col]=="szWindCode")//代码
                                 insertObj.infoColor= 'yellow'; 
                             else if($scope.shareObject.columns[col]=="nPreClose")//代码
-                                insertObj.infoColor= 'green'; 
+                                insertObj.infoColor= 'powderblue'; 
                             else
                                 insertObj.infoColor=fieldColor;
                            

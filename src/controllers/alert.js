@@ -188,12 +188,21 @@ angular.module('app_alert', ['treeControl'])
         
         (function() {
             const menu = remote.Menu.buildFromTemplate(template);
-            window.addEventListener('contextmenu', function(e) {
+            var alertWin=document.getElementById('tb_alert');
+            alertWin.addEventListener('contextmenu', function(e) {
                      e.preventDefault();
                      menu.popup(remote.getCurrentWindow());
             }, false);
         })();
         //setContextMenu();
+
+        (function() {
+            var alertWinHk=document.getElementById('tb_alert');
+            alertWinHk.addEventListener('click', function(e) {
+                     e.preventDefault(); 
+                     alert('查看代码'); 
+            }, false);
+        })();
 
         var reqobj = {
             reqno: 1,
