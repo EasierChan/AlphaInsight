@@ -14461,7 +14461,7 @@ ol.ui.horizontal.list li:before,
 
 .ui.segment {
   position: relative;
-  background: #ffffff;
+  /*background: #ffffff;*/
   box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
   margin: 1rem 0em;
   padding: 1em 1em;
@@ -14824,7 +14824,7 @@ ol.ui.horizontal.list li:before,
   background-color: transparent;
   border-radius: 0px;
   padding: 0em;
-  background-color: #ffffff;
+  /*background-color: #ffffff;*/
   box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
   margin: 1rem 0em;
   border-radius: 0.28571429rem;
@@ -14851,7 +14851,7 @@ ol.ui.horizontal.list li:before,
   -ms-flex: 1 1 0px;
   /* Solves #2550 MS Flex */
   margin: 0em;
-  min-width: 0px;
+  /*min-width: 0px;*/
   background-color: transparent;
   border-radius: 0px;
   border: none;
@@ -27018,7 +27018,8 @@ a.ui.card:hover,
 
 .ui.checkbox label,
 .ui.checkbox + label {
-  color: rgba(0, 0, 0, 0.87);
+  font-family: "Microsoft YaHei",arial;
+  color: rgb(220,220,220);
   -webkit-transition: color 0.1s ease;
   transition: color 0.1s ease;
 }
@@ -27045,7 +27046,7 @@ a.ui.card:hover,
 
 .ui.checkbox label:hover,
 .ui.checkbox + label:hover {
-  color: rgba(0, 0, 0, 0.8);
+  color: rgb(240,240,240);
 }
 
 /*--------------
@@ -27083,7 +27084,7 @@ a.ui.card:hover,
 }
 
 .ui.checkbox input:focus ~ label {
-  color: rgba(0, 0, 0, 0.95);
+  color: rgb(244,244,244);
 }
 
 /*--------------

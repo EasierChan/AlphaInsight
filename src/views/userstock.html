@@ -1,48 +1,58 @@
 <!Doctype html>
-<html lang="zh-cn">
-
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../../resource/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../resource/css/semantic.css">
+    <link rel="stylesheet" type="text/css" href="../../resource/css/style.css">
     <script src="../../resource/js/angular.js"></script>
     <!--<script src="http://apps.bdimg.com/libs/angular.js/1.4.6/angular.min.js"></script>-->
     <title>自选股</title>
 </head>
 
-<body ng-app="app_userstock" ng-strict-di>
-    <div id="tb_stock" ng-controller="c_userstock">
-        <div class="input-prepend" style="padding-left: 10px;">
+<body ng-app="app_userstock" ng-strict-di class="userstock">
+    <div id="tb_stock" ng-controller="c_userstock" style="height:100%">
+        <div class="input-prepend">
             <!--<span class="add-on">股票代码</span>-->
-            <input type="checkbox" ng-model="bEnable" ng-click="enableThis()">启用过滤</button>
+            <div class="ui checkbox">
+               <input type="checkbox" ng-model="bEnable" ng-click="enableThis()">
+               <label>启用过滤</label>
+            </div>
             <input class="span2" type="text" placeholder="股票代码: 600446" ng-model="newcode">
-            <button id="enter" class="btn btn-default" ng-click="addCode()" title="add code">添加自选</button>
+            <button id="enter" class="tiny ui primary button" ng-click="addCode()" title="add code">添加自选</button>
             <!--<button class="btn btn-default" ng-click="delCode()">删除</button>-->
-            <button class="btn btn-default" ng-click="importFromFile()">导入</button>
-            <button class="btn btn-default" ng-click="exportToFile()">导出</button>
+            <button class="tiny ui primary button" ng-click="importFromFile()">导入</button>
+            <button class="tiny ui primary button" ng-click="exportToFile()">导出</button>
         </div>
-        <table class="table table-bordered table-condensed table-hover">
+        <div class="tb_container">
+            <table class="table table-striped table-condensed table-hover">
             <thead id="header">
-                <tr style="background-color: lightblue;">
+                <tr>
                     <th>
                         <!--<input type="checkbox" ng-model="bAllSelect" ng-click="toggleAll()"></button>-->
                     </th>
                     <th ng-repeat="header in headers">{{header}}</th>
                 </tr>
             </thead>
-            <tbody id="content">
+            <tbody>
                 <tr ng-repeat="row in codes">
                     <td>
                         <!--<input type="checkbox" ng-model="row.checked" ng-change="toggle(row)"></button>-->
-                        <button type="button" class="btn btn-sm btn-default" aria-label="remove" ng-click="remove(row)">
-                            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-                        </button>
                     </td>
                     <td ng-repeat="col in row">
                         {{col}}
                     </td>
+                    <td class="op">
+                        <button type="button" class="btn btn-primary btn-xs" aria-label="remove" ng-click="remove(row)">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>
+
+        </div>
+        
     </div>
 </body>
 <script src="../controllers/userstock.js"></script>

@@ -1,5 +1,5 @@
 <!Doctype html>
-<html lang="zh-cn">
+<html lang="zh-CN">
 
 <head>
     <meta charset="utf-8">
@@ -22,18 +22,20 @@
     <div class="slides" ng-controller="c_parent">
         <div id="tv_alert" class="slide current">
             <div class="ui horizontal segments" style="height:100%;margin:0;">
-                <button name="btn_ok" id="btn_ok" class="btn-alert-ok" ng-click="subAlerts()">订阅信号</button>
-                <div class="ui segment" style="overflow: auto;">
-                    <treecontrol class="tree-light" selected-nodes="selectedNodes" tree-model="dataForTheTree" options="treeOptions" on-selection="showSelected(node)">
-                        <input type="checkbox" ng-model="node.check" />
-                        <label data-toggle="tooltip" title={{node.explain}}> &nbsp; {{node.name}}</label-->
-                    </treecontrol>
+                <div class="ui segment op">
+                    <button name="btn_ok" id="btn_ok" class="tiny ui primary button btn-alert-ok" ng-click="subAlerts()">订阅信号</button>
+                    <div class="border">
+                        <treecontrol class="tree-light" selected-nodes="selectedNodes" tree-model="dataForTheTree" options="treeOptions" on-selection="showSelected(node)">
+                            <input type="checkbox" ng-model="node.check" />
+                            <label data-toggle="tooltip" title={{node.explain}}> &nbsp; {{node.name}}</label-->
+                        </treecontrol>
+                    </div>
                 </div>
-                <div class="ui segment" style="overflow: auto;">
-                    <div>                        
-                        <table class="table table-bordered table-condensed table-hover">
+                <div class="ui segment tb">
+                    <div class="tb_container">                        
+                        <table class="table table-striped table-condensed">
                             <thead>
-                              <tr style="background-color: lightblue;">
+                              <tr>
                                    <th>
                                       <input type="checkbox" ng-model="bAllSelect" ng-click="toggleAll()"></button>
                                     </th>

@@ -10,7 +10,7 @@ const StringDecoder = require('string_decoder').StringDecoder;
 
 angular.module('app_userstock', [])
     .controller('c_userstock', ['$scope', function ($scope) {
-        $scope.headers = ['股票代码', '股票名称'];
+        $scope.headers = ['股票代码', '股票名称','删除'];
         $scope.bAllSelect = false;
         $scope.codes = [];
         var pattern = /^[0-9]{6}$/;
