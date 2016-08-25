@@ -4,17 +4,17 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../../resource/css/bootstrap.min.css">
-
+    <link rel="stylesheet" href="../../resource/css/semantic.css">
     <link rel="stylesheet" type="text/css" href="../../resource/css/style.css">
     <title>排序窗口</title>
 </head>
 
-<body ng-app="app_toplist" ng-strict-di>
+<body ng-app="app_toplist" ng-strict-di class="toplist">
     <div class="slides" ng-controller="c_parent">
         <div id="toplist_content" class="slide current" style="overflow: auto">
-            <table class="table table-condensed ">
+            <table class="ui striped single line selectable table">
                 <thead id="header">
-                    <tr style="background-color: lightblue;">
+                    <tr>
                         <th ng-repeat="hdr in shareObject.header track by $index"  ng-click="setOption(hdr, $index)"  ng-show="$index<2||menuShow[hdr]||status.bopen" ng-mouseover="setSelCol(hdr)" >
                                    {{hdr}}
                                <span class="sortorder" ng-show="predicate === hdr"  ng-class="{reverse:reverse}"></span>

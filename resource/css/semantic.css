@@ -22453,7 +22453,7 @@ Floated Menu / Item
 
 /* Responsive */
 
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 400px) {
   .ui.table:not(.unstackable) {
     width: 100%;
   }
@@ -22812,7 +22812,7 @@ Floated Menu / Item
 
 .ui.selectable.table tbody tr:hover,
 .ui.table tbody tr td.selectable:hover {
-  background: rgba(0, 0, 0, 0.05) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
   color: rgba(0, 0, 0, 0.95) !important;
 }
 
