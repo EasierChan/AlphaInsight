@@ -18,7 +18,7 @@
     <title>信号监视窗口</title>
 </head>
 
-<body ng-app="app_alert" ng-strict-di>
+<body ng-app="app_alert" ng-strict-di class="alert">
     <div class="slides" ng-controller="c_parent">
         <div id="tv_alert" class="slide current">
             <div class="ui horizontal segments" style="height:100%;margin:0;">
@@ -37,7 +37,7 @@
                             <thead>
                               <tr>
                                    <th>
-                                      <input type="checkbox" ng-model="bAllSelect" ng-click="toggleAll()"></button>
+                                     <input type="checkbox" ng-model="bAllSelect" ng-click="toggleAll()"></button>
                                     </th>
                                     <th ng-repeat="header in stockheaders">{{header}}</th>
                                 </tr>

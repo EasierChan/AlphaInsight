@@ -19,6 +19,10 @@ div.slides {
     -webkit-transition: -webkit-transform 2s ease-in-out;
     transition: -webkit-transform 2s ease-in-out;
 }
+body{
+    color: #e6e6e6;
+    background-color: #000010;
+}
 
 div.slide {
     display: none;
@@ -34,6 +38,11 @@ div.slide {
     -webkit-transition: margin 0.25s ease-in-out;
     transition: margin 0.25s ease-in-out;
     /*background-color: #eee;*/
+}
+
+tr.locktop{
+  position:relative;
+  top:expression((this.offsetParent.scrollTop>this.parentElement.parentElement.offsetTop?this.offsetParent.scrollTop-this.parentElement.parentElement.offsetTop-1:0)-1);
 }
 
 /*div#toplist_config {
@@ -61,6 +70,13 @@ div.future {
 
 .yellow {
     color: #d8d800;
+}
+
+.powderblue {
+    color: #b1e2e8;
+}
+.white {
+    color: white;
 }
 .flowerblue{
     color: #5ccace;
@@ -124,15 +140,13 @@ table thead th,.ui.table thead th{
 .ui.table thead th{
     padding: 0 3px;
 }
-body:not(.toplist) table tbody td,body:not(.toplist) .ui.table td{
-    color: #f79400;
-}
+
 .ui.table td {
     padding: 4px 3px;
 }
-/*table tbody td:nth-child(3){
+body.alert table tbody td:nth-child(1),body.alert table tbody td:nth-child(2),body.alert table tbody td:nth-child(3){
     color: #f79400;
-}*/
+}
 table tbody tr:nth-child(2n){
     background-color: #191919;
 }
@@ -158,11 +172,7 @@ body[name="chart"] .table-condensed>thead>tr>th{
     padding: 5px 2px;
 }
 /*alert page*/
-body{
-    color: #333;
-    background-color: #000010;
-    font-family: arial,'Microsoft YaHei'；
-}
+
 .ui.segment.op{
     width: 38%;
     min-width: 207px;
@@ -220,4 +230,14 @@ body.userstock .table-condensed>tbody>tr>td{
 body.userstock .tb_container{
     height: calc(100% - 78px);
     margin: 0 10px;
+}
+
+/*Toplist*/
+#dlgRangeInput{
+    font-family: arial,'Microsoft YaHei';
+    line-height: 40px;
+    padding-left: 10px;
+}
+#dlgRangeInput input{
+    color: #333;
 }
