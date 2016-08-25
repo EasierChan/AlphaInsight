@@ -126,7 +126,8 @@
   function UserStockWind() {
     this.config = {};
     this.isClosed = false;
-    this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false });
+    this.winOption = { autoHideMenuBar: true, height: 300, width: 550, resizable: true, show: false };
+    this.win = new electron.BrowserWindow(this.winOption);
     this.win.loadURL('file://' + __dirname + '/../views/userstock.html');
     var realthis = this;
 
@@ -166,7 +167,7 @@
   UserStockWind.prototype.show = function (config) {
     if (this.isClosed) {
       this.config = {};
-      this.win = new electron.BrowserWindow({ autoHideMenuBar: true, skipTaskbar: true, height: 300, width: 500, resizable: true, show: false });
+      this.win = new electron.BrowserWindow(this.winOption);
       this.win.loadURL('file://' + __dirname + '/../views/userstock.html');
       var realthis = this;
 
