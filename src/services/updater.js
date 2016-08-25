@@ -5,7 +5,7 @@
 
     const autoUpdater = require('electron').autoUpdater;
 
-    autoUpdater.on('error', (error) => {
+    autoUpdater.on('error', function(error) {
         if (error) throw error;
     })
     // Sets the  url  and initialize the auto updater.
@@ -13,7 +13,7 @@
     // Asks the server whether there is an update. You must call  setFeedURL  before using this API.
     //autoUpdater.checkForUpdates();
 
-    autoUpdater.on('checking-for-update',  () => {
+    autoUpdater.on('checking-for-update',  function() {
         console.log("check for update");
     });
 
@@ -58,13 +58,13 @@
         const exeName = path.basename(process.execPath);
 
         const spawn = function (command, args) {
-            let spawnedProcess, error;
+            var spawnedProcess1, error;
 
             try {
-                spawnedProcess = ChildProcess.spawn(command, args, { detached: true });
+                spawnedProcess1 = ChildProcess.spawn(command, args, { detached: true });
             } catch (error) { }
 
-            return spawnedProcess;
+            return spawnedProcess1;
         };
 
         const spawnUpdate = function (args) {

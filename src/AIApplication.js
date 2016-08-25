@@ -92,7 +92,7 @@ AIApplication.prototype.loadlastWins = function () {
       return;
     }
 
-    fs.access(userDir + '/winconfig', fs.R_OK | fs.W_OK, (err) => {
+    fs.access(userDir + '/winconfig', fs.R_OK | fs.W_OK, function(err) {
       if(err){
         fs.mkdirSync(userDir + '/winconfig');
       }
